@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pemuda Innovation Hub - Desa Digital Hub</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fdesadigit8089back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <svg class="h-10 w-10 text-primary" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M20 2L4 8v12c0 11 7.8 21.3 16 24 8.2-2.7 16-13 16-24V8L20 2zm0 6l12 4.5v9.5c0 8.5-6 16.5-12 18.5-6-2-12-10-12-18.5v-9.5L20 8z"/>
+                        <circle cx="20" cy="16" r="3"/>
+                        <path d="M20 22c-3.3 0-6 2.7-6 6h12c0-3.3-2.7-6-6-6z"/>
+                    </svg>
+                    <span class="ml-3 text-xl font-jakarta font-bold text-primary">Desa Digital Hub</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="village_dashboard_homepage.html" class="text-text-secondary hover:text-primary transition-micro">Dashboard</a>
+                    <a href="umkm_business_directory.html" class="text-text-secondary hover:text-primary transition-micro">UMKM Directory</a>
+                    <a href="pemuda_innovation_hub.html" class="text-primary font-semibold border-b-2 border-primary pb-1">Pemuda Hub</a>
+                    <a href="village_heritage_gallery.html" class="text-text-secondary hover:text-primary transition-micro">Warisan Budaya</a>
+                    <a href="javascript:void(0)" class="text-text-secondary hover:text-primary transition-micro">Forum Komunitas</a>
+                    <a href="javascript:void(0)" class="text-text-secondary hover:text-primary transition-micro">Portal Pembangunan</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button class="text-text-secondary hover:text-primary">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Video Profiles -->
+    <section class="relative h-96 md:h-[600px] overflow-hidden">
+        <!-- Background Video/Image -->
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Pemuda Inovatif Bekerja Bersama" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'; this.onerror=null;" />
+            <div class="absolute inset-0 bg-gradient-to-r from-secondary-900/80 to-secondary-700/60"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
+                <!-- Welcome Content -->
+                <div class="text-white">
+                    <div class="inline-flex items-center bg-accent/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                        <svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span class="text-sm font-semibold text-accent">Generasi Inovator</span>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-jakarta font-bold mb-6">
+                        <span class="text-accent">Pemuda</span><br />
+                        Innovation Hub
+                    </h1>
+                    <p class="text-lg md:text-xl mb-8 text-secondary-100 leading-relaxed">
+                        Membangun masa depan desa melalui inovasi pemuda yang menggabungkan kearifan tradisional dengan teknologi modern.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="javascript:void(0)" class="btn-primary inline-flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Bergabung Sekarang
+                        </a>
+                        <a href="javascript:void(0)" class="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-jakarta font-semibold hover:bg-white/30 transition-micro inline-flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Lihat Mentor
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Featured Young Innovator -->
+                <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-jakarta font-semibold text-text-primary">Inovator Pilihan</h3>
+                        <div class="flex items-center text-success text-sm">
+                            <div class="w-2 h-2 bg-success rounded-full mr-2 animate-pulse"></div>
+                            Aktif
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 mx-auto mb-4 overflow-hidden rounded-full">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" alt="Sari Dewi" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=200'; this.onerror=null;" />
+                        </div>
+                        <h4 class="font-jakarta font-semibold text-lg text-text-primary">Sari Dewi, 22</h4>
+                        <p class="text-sm text-text-secondary mb-3">Modernisasi Teknik Tenun Tradisional</p>
+                        <div class="bg-accent-100 text-accent-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                            Wirausaha Muda Terbaik 2025
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="bg-primary-50 p-3 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-semibold text-primary-700">Proyek Terkini</span>
+                                <span class="text-xs text-primary-600">85% selesai</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">Platform e-commerce untuk produk tenun dengan AR try-on</p>
+                            <div class="w-full bg-primary-200 rounded-full h-2 mt-2">
+                                <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-text-secondary">Dampak Sosial:</span>
+                            <span class="font-semibold text-text-primary">15 penenun terlibat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Innovation Showcase -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Proyek Inovasi Terkini</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Ide-ide brilian pemuda desa yang siap mengubah masa depan dengan dukungan komunitas</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Innovation Project 1 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-secondary-100">
+                        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=400&auto=format&fit=crop" alt="Kemasan Berkelanjutan dari Sekam Padi" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=400'; this.onerror=null;" />
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-secondary-100 text-secondary-700 px-3 py-1 rounded-full text-sm font-semibold">Lingkungan</div>
+                        <span class="text-sm text-text-secondary">Budi Santoso, 20</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Kemasan Ramah Lingkungan</h3>
+                    <p class="text-text-secondary text-sm mb-4">Mengubah limbah sekam padi menjadi kemasan biodegradable untuk produk UMKM lokal.</p>
+                    
+                    <!-- Progress Tracking -->
+                    <div class="bg-surface rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-text-primary">Progress Pengembangan</span>
+                            <span class="text-sm text-secondary">70%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Funding & Support -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-accent">Rp 15M</div>
+                            <div class="text-xs text-text-secondary">Target Dana</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-success">Rp 8.5M</div>
+                            <div class="text-xs text-text-secondary">Terkumpul</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-primary">23</div>
+                            <div class="text-xs text-text-secondary">Pendukung</div>
+                        </div>
+                    </div>
+
+                    <a href="javascript:void(0)" class="w-full bg-secondary text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-secondary-600 transition-micro text-center block">
+                        Dukung Proyek
+                    </a>
+                </div>
+
+                <!-- Innovation Project 2 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-primary-100">
+                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=400&auto=format&fit=crop" alt="IoT untuk Monitoring Tanaman" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2020/05/18/16/17/social-media-5187243_960_720.png'; this.onerror=null;" />
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">AgriTech</div>
+                        <span class="text-sm text-text-secondary">Andi Pratama, 24</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Smart Farming IoT</h3>
+                    <p class="text-text-secondary text-sm mb-4">Sistem monitoring tanaman otomatis menggunakan sensor kelembaban dan suhu tanah.</p>
+                    
+                    <!-- Progress Tracking -->
+                    <div class="bg-surface rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-text-primary">Progress Pengembangan</span>
+                            <span class="text-sm text-primary">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Funding & Support -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-accent">Rp 25M</div>
+                            <div class="text-xs text-text-secondary">Target Dana</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-success">Rp 22M</div>
+                            <div class="text-xs text-text-secondary">Terkumpul</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-primary">45</div>
+                            <div class="text-xs text-text-secondary">Pendukung</div>
+                        </div>
+                    </div>
+
+                    <a href="javascript:void(0)" class="w-full bg-primary text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-primary-600 transition-micro text-center block">
+                        Dukung Proyek
+                    </a>
+                </div>
+
+                <!-- Innovation Project 3 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-accent-100">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=400&auto=format&fit=crop" alt="Aplikasi Marketplace Lokal" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_960_720.jpg'; this.onerror=null;" />
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-accent-100 text-accent-700 px-3 py-1 rounded-full text-sm font-semibold">Digital</div>
+                        <span class="text-sm text-text-secondary">Maya Sari, 21</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Marketplace Desa Digital</h3>
+                    <p class="text-text-secondary text-sm mb-4">Platform jual-beli khusus produk desa dengan sistem pembayaran yang mudah dan aman.</p>
+                    
+                    <!-- Progress Tracking -->
+                    <div class="bg-surface rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-text-primary">Progress Pengembangan</span>
+                            <span class="text-sm text-accent">45%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-accent h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Funding & Support -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-accent">Rp 30M</div>
+                            <div class="text-xs text-text-secondary">Target Dana</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-success">Rp 12M</div>
+                            <div class="text-xs text-text-secondary">Terkumpul</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-jakarta font-bold text-primary">18</div>
+                            <div class="text-xs text-text-secondary">Pendukung</div>
+                        </div>
+                    </div>
+
+                    <a href="javascript:void(0)" class="w-full bg-accent text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-accent-600 transition-micro text-center block">
+                        Dukung Proyek
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="javascript:void(0)" class="btn-secondary">Lihat Semua Proyek</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Skills Training -->
+    <section class="py-16 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Pelatihan Keterampilan Digital</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Program pelatihan komprehensif dalam Bahasa Indonesia dengan sertifikat yang diakui pemerintah</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Training Module 1 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-2xl flex items-center justify-center group-hover:bg-primary-200 transition-gentle">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">E-Commerce Setup</h3>
+                    <p class="text-text-secondary text-sm mb-4">Belajar membuat toko online dari nol hingga siap menerima pesanan</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-text-secondary">12 Modul</span>
+                        <span class="text-sm text-success font-semibold">Gratis</span>
+                    </div>
+                    <div class="bg-primary-50 rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-primary-700">Progress Anda</span>
+                            <span class="text-sm text-primary-600">0%</span>
+                        </div>
+                        <div class="w-full bg-primary-200 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="w-full bg-primary text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-primary-600 transition-micro text-center block">
+                        Mulai Belajar
+                    </a>
+                </div>
+
+                <!-- Training Module 2 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-secondary-100 rounded-2xl flex items-center justify-center group-hover:bg-secondary-200 transition-gentle">
+                        <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Social Media Marketing</h3>
+                    <p class="text-text-secondary text-sm mb-4">Strategi pemasaran efektif di Instagram, Facebook, dan TikTok</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-text-secondary">8 Modul</span>
+                        <span class="text-sm text-success font-semibold">Gratis</span>
+                    </div>
+                    <div class="bg-secondary-50 rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-secondary-700">Progress Anda</span>
+                            <span class="text-sm text-secondary-600">25%</span>
+                        </div>
+                        <div class="w-full bg-secondary-200 rounded-full h-2">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="w-full bg-secondary text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-secondary-600 transition-micro text-center block">
+                        Lanjutkan
+                    </a>
+                </div>
+
+                <!-- Training Module 3 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-accent-100 rounded-2xl flex items-center justify-center group-hover:bg-accent-200 transition-gentle">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Basic Web Design</h3>
+                    <p class="text-text-secondary text-sm mb-4">Membuat website sederhana untuk bisnis atau portofolio pribadi</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-text-secondary">15 Modul</span>
+                        <span class="text-sm text-warning font-semibold">Premium</span>
+                    </div>
+                    <div class="bg-accent-50 rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-accent-700">Progress Anda</span>
+                            <span class="text-sm text-accent-600">0%</span>
+                        </div>
+                        <div class="w-full bg-accent-200 rounded-full h-2">
+                            <div class="bg-accent h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="w-full bg-accent text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-accent-600 transition-micro text-center block">
+                        Upgrade Premium
+                    </a>
+                </div>
+
+                <!-- Training Module 4 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-success-100 rounded-2xl flex items-center justify-center group-hover:bg-success-200 transition-gentle">
+                        <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Financial Literacy</h3>
+                    <p class="text-text-secondary text-sm mb-4">Mengelola keuangan bisnis dan perencanaan investasi yang cerdas</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-text-secondary">10 Modul</span>
+                        <span class="text-sm text-success font-semibold">Gratis</span>
+                    </div>
+                    <div class="bg-success-50 rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-success-700">Progress Anda</span>
+                            <span class="text-sm text-success-600">60%</span>
+                        </div>
+                        <div class="w-full bg-success-200 rounded-full h-2">
+                            <div class="bg-success h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="w-full bg-success text-white py-2 rounded-lg font-jakarta font-semibold hover:bg-success-600 transition-micro text-center block">
+                        Lanjutkan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Certification Info -->
+            <div class="mt-12 bg-white rounded-2xl p-8 shadow-card">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-accent-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-jakarta font-bold text-text-primary mb-4">Sertifikat Resmi Pemerintah</h3>
+                    <p class="text-text-secondary mb-6 max-w-2xl mx-auto">Setiap modul yang diselesaikan akan mendapatkan sertifikat digital yang diakui oleh Kementerian Komunikasi dan Informatika serta dapat digunakan untuk melamar kerja atau mengajukan bantuan usaha.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-jakarta font-bold text-primary mb-2">1,247</div>
+                            <div class="text-sm text-text-secondary">Sertifikat Diterbitkan</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-jakarta font-bold text-secondary mb-2">89%</div>
+                            <div class="text-sm text-text-secondary">Tingkat Kelulusan</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-jakarta font-bold text-accent mb-2">156</div>
+                            <div class="text-sm text-text-secondary">Bisnis Baru Terbentuk</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mentorship Matching -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Program Mentorship</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Terhubung dengan mentor berpengalaman untuk mengembangkan ide dan bisnis Anda</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Available Mentors -->
+                <div>
+                    <h3 class="text-xl font-jakarta font-semibold text-text-primary mb-6">Mentor Tersedia</h3>
+                    <div class="space-y-4">
+                        <!-- Mentor 1 -->
+                        <div class="card border-l-4 border-primary">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-16 h-16 overflow-hidden rounded-full flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop" alt="Pak Joko Widodo" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=200'; this.onerror=null;" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-jakarta font-semibold text-lg">Pak Joko Widodo</h4>
+                                        <div class="flex items-center text-success text-sm">
+                                            <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                                            Online
+                                        </div>
+                                    </div>
+                                    <p class="text-text-secondary text-sm mb-2">Pengusaha UMKM • 15 tahun pengalaman</p>
+                                    <p class="text-text-secondary text-sm mb-3">Spesialisasi: Agribisnis, Pemasaran Tradisional, Manajemen Keuangan</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <span class="text-accent font-semibold">⭐ 4.9</span>
+                                            <span class="text-text-secondary">23 mentee</span>
+                                        </div>
+                                        <a href="javascript:void(0)" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-micro">
+                                            Hubungi
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mentor 2 -->
+                        <div class="card border-l-4 border-secondary">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-16 h-16 overflow-hidden rounded-full flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Mas Andi Pratama" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=200'; this.onerror=null;" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-jakarta font-semibold text-lg">Mas Andi Pratama</h4>
+                                        <div class="flex items-center text-warning text-sm">
+                                            <div class="w-2 h-2 bg-warning rounded-full mr-2"></div>
+                                            Sibuk
+                                        </div>
+                                    </div>
+                                    <p class="text-text-secondary text-sm mb-2">Tech Entrepreneur • Alumni Desa</p>
+                                    <p class="text-text-secondary text-sm mb-3">Spesialisasi: Teknologi, Startup Digital, E-commerce</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <span class="text-accent font-semibold">⭐ 4.8</span>
+                                            <span class="text-text-secondary">18 mentee</span>
+                                        </div>
+                                        <a href="javascript:void(0)" class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-secondary-600 transition-micro">
+                                            Antri
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mentor 3 -->
+                        <div class="card border-l-4 border-accent">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-16 h-16 overflow-hidden rounded-full flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" alt="Bu Sari Dewi" class="w-full h-full object-cover" onerror="this.src='https://images.pixabay.com/photo/2016/11/21/12/42/beard-1845166_960_720.jpg'; this.onerror=null;" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-jakarta font-semibold text-lg">Bu Sari Dewi</h4>
+                                        <div class="flex items-center text-success text-sm">
+                                            <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                                            Online
+                                        </div>
+                                    </div>
+                                    <p class="text-text-secondary text-sm mb-2">Creative Director • Profesional Urban</p>
+                                    <p class="text-text-secondary text-sm mb-3">Spesialisasi: Branding, Desain Produk, Social Media Strategy</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <span class="text-accent font-semibold">⭐ 5.0</span>
+                                            <span class="text-text-secondary">12 mentee</span>
+                                        </div>
+                                        <a href="javascript:void(0)" class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-accent-600 transition-micro">
+                                            Hubungi
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mentorship Application -->
+                <div>
+                    <h3 class="text-xl font-jakarta font-semibold text-text-primary mb-6">Daftar Sebagai Mentee</h3>
+                    <div class="card">
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-text-primary mb-2">Nama Lengkap</label>
+                                <input type="text" class="input-field" placeholder="Masukkan nama lengkap Anda" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-text-primary mb-2">Usia</label>
+                                <input type="number" class="input-field" placeholder="Contoh: 22" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-text-primary mb-2">Bidang Minat</label>
+                                <select class="input-field">
+                                    <option>Pilih bidang yang diminati</option>
+                                    <option>Agribisnis & Pertanian</option>
+                                    <option>Teknologi & Digital</option>
+                                    <option>Kreatif & Seni</option>
+                                    <option>Perdagangan & UMKM</option>
+                                    <option>Lingkungan & Sustainability</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-text-primary mb-2">Deskripsi Ide/Proyek</label>
+                                <textarea class="input-field h-24" placeholder="Ceritakan ide atau proyek yang ingin Anda kembangkan..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-text-primary mb-2">Tujuan Mentorship</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2 text-primary" />
+                                        <span class="text-sm">Mengembangkan ide bisnis</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2 text-primary" />
+                                        <span class="text-sm">Belajar keterampilan teknis</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2 text-primary" />
+                                        <span class="text-sm">Networking dan koneksi</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2 text-primary" />
+                                        <span class="text-sm">Mencari investor/pendanaan</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full btn-primary">
+                                Daftar Sebagai Mentee
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Success Stories -->
+                    <div class="mt-8">
+                        <h4 class="font-jakarta font-semibold text-lg mb-4">Kisah Sukses Mentorship</h4>
+                        <div class="bg-success-50 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 overflow-hidden rounded-full flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&auto=format&fit=crop" alt="Maya Sari" class="w-full h-full object-cover" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-text-primary mb-2">
+                                        <span class="font-semibold">Maya Sari</span> berhasil meluncurkan aplikasi marketplace desa setelah 6 bulan mentorship dengan Mas Andi. Sekarang aplikasinya digunakan oleh 3 desa di kabupaten.
+                                    </p>
+                                    <p class="text-xs text-success-600">Mentorship selesai • Januari 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collaboration Board -->
+    <section class="py-16 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Papan Kolaborasi</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Platform untuk menghubungkan generasi muda dengan sesepuh desa dalam proyek-proyek bermanfaat</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Collaboration Request 1 -->
+                <div class="card border-l-4 border-primary">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">Butuh Mentor</div>
+                        <span class="text-xs text-text-secondary">2 hari lalu</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Dokumentasi Resep Tradisional</h3>
+                    <p class="text-text-secondary text-sm mb-4">Mencari sesepuh yang mau berbagi resep masakan tradisional untuk dibuat video tutorial dan e-book.</p>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 overflow-hidden rounded-full">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Rudi Hartono" class="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-text-primary">Rudi Hartono, 19</p>
+                            <p class="text-xs text-text-secondary">Content Creator</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm">
+                            <span class="text-accent">💰 Berbayar</span>
+                            <span class="text-text-secondary">3 respons</span>
+                        </div>
+                        <a href="javascript:void(0)" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-micro">
+                            Bantu
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Collaboration Request 2 -->
+                <div class="card border-l-4 border-secondary">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-secondary-100 text-secondary-700 px-3 py-1 rounded-full text-sm font-semibold">Butuh Skill</div>
+                        <span class="text-xs text-text-secondary">5 hari lalu</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Website untuk Kelompok Tani</h3>
+                    <p class="text-text-secondary text-sm mb-4">Kelompok tani membutuhkan website sederhana untuk menjual hasil panen langsung ke konsumen.</p>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 overflow-hidden rounded-full">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop" alt="Pak Bambang" class="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-text-primary">Pak Bambang</p>
+                            <p class="text-xs text-text-secondary">Ketua Kelompok Tani</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm">
+                            <span class="text-success">🤝 Kolaborasi</span>
+                            <span class="text-text-secondary">1 respons</span>
+                        </div>
+                        <a href="javascript:void(0)" class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-secondary-600 transition-micro">
+                            Bantu
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Collaboration Request 3 -->
+                <div class="card border-l-4 border-accent">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-accent-100 text-accent-700 px-3 py-1 rounded-full text-sm font-semibold">Partnership</div>
+                        <span class="text-xs text-text-secondary">1 minggu lalu</span>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Bisnis Kerajinan Modern</h3>
+                    <p class="text-text-secondary text-sm mb-4">Mencari partner muda untuk mengembangkan kerajinan bambu dengan desain modern dan pemasaran online.</p>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 overflow-hidden rounded-full">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&auto=format&fit=crop" alt="Bu Siti" class="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-text-primary">Bu Siti Aminah</p>
+                            <p class="text-xs text-text-secondary">Pengrajin Bambu</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm">
+                            <span class="text-primary">💼 Bisnis</span>
+                            <span class="text-text-secondary">7 respons</span>
+                        </div>
+                        <a href="javascript:void(0)" class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-accent-600 transition-micro">
+                            Tertarik
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="javascript:void(0)" class="btn-secondary mr-4">Lihat Semua Kolaborasi</a>
+                <a href="javascript:void(0)" class="btn-primary">Posting Kebutuhan</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievement Gallery -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Galeri Prestasi</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Merayakan pencapaian luar biasa pemuda desa dalam berbagai bidang</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Achievement 1 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-accent-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Beasiswa</h3>
+                    <div class="text-3xl font-jakarta font-bold text-accent mb-2">47</div>
+                    <p class="text-text-secondary text-sm">Beasiswa diterima tahun ini</p>
+                </div>
+
+                <!-- Achievement 2 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Bisnis Baru</h3>
+                    <div class="text-3xl font-jakarta font-bold text-primary mb-2">23</div>
+                    <p class="text-text-secondary text-sm">Bisnis diluncurkan tahun ini</p>
+                </div>
+
+                <!-- Achievement 3 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-secondary-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Kompetisi</h3>
+                    <div class="text-3xl font-jakarta font-bold text-secondary mb-2">12</div>
+                    <p class="text-text-secondary text-sm">Juara kompetisi nasional</p>
+                </div>
+
+                <!-- Achievement 4 -->
+                <div class="card text-center group hover:shadow-card-hover transition-gentle">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-success-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Proyek Sosial</h3>
+                    <div class="text-3xl font-jakarta font-bold text-success mb-2">8</div>
+                    <p class="text-text-secondary text-sm">Proyek komunitas selesai</p>
+                </div>
+            </div>
+
+            <!-- Recent Achievements -->
+            <div class="mt-12">
+                <h3 class="text-xl font-jakarta font-semibold text-text-primary mb-6 text-center">Prestasi Terbaru</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card border-l-4 border-accent">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 overflow-hidden rounded-full flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Andi Pratama" class="w-full h-full object-cover" />
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-jakarta font-semibold text-lg mb-1">Andi Pratama</h4>
+                                <p class="text-text-secondary text-sm mb-2">Meraih beasiswa S1 Teknik Pertanian di Universitas Gadjah Mada</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-accent-100 text-accent-700 px-3 py-1 rounded-full text-xs font-semibold">Beasiswa Penuh</span>
+                                    <span class="text-xs text-text-secondary">15 Juli 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-l-4 border-primary">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 overflow-hidden rounded-full flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&auto=format&fit=crop" alt="Siti Nurhaliza" class="w-full h-full object-cover" />
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-jakarta font-semibold text-lg mb-1">Siti Nurhaliza</h4>
+                                <p class="text-text-secondary text-sm mb-2">Startup agritech-nya mencapai 500 petani pengguna</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-xs font-semibold">Milestone Bisnis</span>
+                                    <span class="text-xs text-text-secondary">28 Juli 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-text-primary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-primary" viewBox="0 0 40 40" fill="currentColor">
+                            <path d="M20 2L4 8v12c0 11 7.8 21.3 16 24 8.2-2.7 16-13 16-24V8L20 2zm0 6l12 4.5v9.5c0 8.5-6 16.5-12 18.5-6-2-12-10-12-18.5v-9.5L20 8z"/>
+                            <circle cx="20" cy="16" r="3"/>
+                            <path d="M20 22c-3.3 0-6 2.7-6 6h12c0-3.3-2.7-6-6-6z"/>
+                        </svg>
+                        <span class="ml-3 text-xl font-jakarta font-bold">Desa Digital Hub</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">Platform digital yang menghubungkan tradisi dengan inovasi, membangun desa yang mandiri dan berkelanjutan melalui kekuatan komunitas.</p>
+                    <div class="flex space-x-4">
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                            </svg>
+                        </a>
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z.017-.001z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-4">Navigasi</h3>
+                    <ul class="space-y-2">
+                        <li><a href="village_dashboard_homepage.html" class="text-gray-300 hover:text-primary transition-micro">Dashboard</a></li>
+                        <li><a href="umkm_business_directory.html" class="text-gray-300 hover:text-primary transition-micro">UMKM Directory</a></li>
+                        <li><a href="pemuda_innovation_hub.html" class="text-gray-300 hover:text-primary transition-micro">Pemuda Hub</a></li>
+                        <li><a href="village_heritage_gallery.html" class="text-gray-300 hover:text-primary transition-micro">Warisan Budaya</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-4">Kontak</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>Jl. Raya Desa No. 123</li>
+                        <li>Desa Maju Bersama</li>
+                        <li>Kab. Contoh, Jawa Tengah</li>
+                        <li>Telp: (0274) 123-4567</li>
+                        <li>Email: info@desamajubersama.id</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2025 Desa Digital Hub. Semua hak cipta dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

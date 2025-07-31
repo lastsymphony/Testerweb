@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeri Warisan Budaya - Desa Digital Hub</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fdesadigit8089back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <svg class="h-10 w-10 text-primary" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M20 2L4 8v12c0 11 7.8 21.3 16 24 8.2-2.7 16-13 16-24V8L20 2zm0 6l12 4.5v9.5c0 8.5-6 16.5-12 18.5-6-2-12-10-12-18.5v-9.5L20 8z"/>
+                        <circle cx="20" cy="16" r="3"/>
+                        <path d="M20 22c-3.3 0-6 2.7-6 6h12c0-3.3-2.7-6-6-6z"/>
+                    </svg>
+                    <span class="ml-3 text-xl font-jakarta font-bold text-primary">Desa Digital Hub</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="village_dashboard_homepage.html" class="text-text-secondary hover:text-primary transition-micro">Dashboard</a>
+                    <a href="umkm_business_directory.html" class="text-text-secondary hover:text-primary transition-micro">UMKM Directory</a>
+                    <a href="pemuda_innovation_hub.html" class="text-text-secondary hover:text-primary transition-micro">Pemuda Hub</a>
+                    <a href="village_heritage_gallery.html" class="text-primary font-semibold border-b-2 border-primary pb-1">Warisan Budaya</a>
+                    <a href="javascript:void(0)" class="text-text-secondary hover:text-primary transition-micro">Forum Komunitas</a>
+                    <a href="javascript:void(0)" class="text-text-secondary hover:text-primary transition-micro">Portal Pembangunan</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button class="text-text-secondary hover:text-primary">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-96 md:h-[500px] overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Warisan Budaya Tradisional Indonesia" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=2940'; this.onerror=null;" />
+            <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-secondary-700/60"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+            <div class="text-white max-w-3xl">
+                <h1 class="text-4xl md:text-6xl font-jakarta font-bold mb-6">
+                    Galeri <span class="text-accent">Warisan Budaya</span>
+                </h1>
+                <p class="text-lg md:text-xl mb-8 text-primary-100">
+                    Melestarikan kearifan lokal dan tradisi leluhur melalui dokumentasi digital yang interaktif. 
+                    Jelajahi sejarah, budaya, dan pengetahuan tradisional desa yang telah diwariskan turun-temurun.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#timeline" class="btn-primary inline-flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Jelajahi Timeline
+                    </a>
+                    <a href="#virtual-museum" class="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-jakarta font-semibold hover:bg-white/30 transition-micro inline-flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Museum Virtual
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Heritage Categories -->
+    <section class="py-16 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Kategori Warisan Budaya</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Temukan berbagai aspek kekayaan budaya desa melalui koleksi digital yang komprehensif</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Timeline Sejarah -->
+                <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer" onclick="scrollToSection('timeline')">
+                    <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-micro">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Timeline Sejarah</h3>
+                    <p class="text-text-secondary text-sm mb-4">Perjalanan desa dari masa ke masa dengan dokumentasi multimedia lengkap</p>
+                    <div class="text-primary text-sm font-semibold">25 Peristiwa Bersejarah →</div>
+                </div>
+
+                <!-- Tradisi & Upacara -->
+                <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer" onclick="scrollToSection('traditions')">
+                    <div class="w-16 h-16 bg-secondary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-secondary-200 transition-micro">
+                        <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Tradisi & Upacara</h3>
+                    <p class="text-text-secondary text-sm mb-4">Festival, upacara adat, dan tradisi yang masih dilestarikan hingga kini</p>
+                    <div class="text-secondary text-sm font-semibold">12 Tradisi Aktif →</div>
+                </div>
+
+                <!-- Kearifan Lokal -->
+                <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer" onclick="scrollToSection('wisdom')">
+                    <div class="w-16 h-16 bg-accent-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-accent-200 transition-micro">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Kearifan Lokal</h3>
+                    <p class="text-text-secondary text-sm mb-4">Pengetahuan tradisional tentang pengobatan, pertanian, dan kehidupan</p>
+                    <div class="text-accent text-sm font-semibold">89 Resep Tradisional →</div>
+                </div>
+
+                <!-- Museum Virtual -->
+                <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer" onclick="scrollToSection('virtual-museum')">
+                    <div class="w-16 h-16 bg-success-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-success-200 transition-micro">
+                        <svg class="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Museum Virtual</h3>
+                    <p class="text-text-secondary text-sm mb-4">Koleksi artefak, alat tradisional, dan benda bersejarah dalam format 3D</p>
+                    <div class="text-success text-sm font-semibold">156 Artefak →</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Timeline -->
+    <section id="timeline" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Timeline Sejarah Desa</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Perjalanan panjang desa dari masa ke masa dengan dokumentasi multimedia yang lengkap</p>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 bg-primary-200 h-full hidden md:block"></div>
+
+                <!-- Timeline Items -->
+                <div class="space-y-12">
+                    <!-- Timeline Item 1 -->
+                    <div class="relative flex items-center justify-between md:justify-center">
+                        <div class="md:w-1/2 md:pr-8 md:text-right">
+                            <div class="card">
+                                <div class="flex items-center mb-4 md:justify-end">
+                                    <div class="bg-primary-100 text-primary px-3 py-1 rounded-full text-sm font-semibold">1892</div>
+                                </div>
+                                <h3 class="font-jakarta font-semibold text-lg mb-2">Pendirian Desa</h3>
+                                <p class="text-text-secondary text-sm mb-4">Desa didirikan oleh para perintis yang datang dari Jawa Tengah untuk membuka lahan pertanian baru. Dipimpin oleh Kyai Suroso yang kemudian menjadi kepala desa pertama.</p>
+                                <div class="flex items-center gap-2 md:justify-end">
+                                    <button class="text-primary text-sm font-semibold hover:text-primary-600 transition-micro">Lihat Foto →</button>
+                                    <button class="text-secondary text-sm font-semibold hover:text-secondary-600 transition-micro">Dengar Cerita →</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Timeline Dot -->
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-white shadow-card hidden md:block"></div>
+                        <div class="md:w-1/2 md:pl-8">
+                            <div class="aspect-video rounded-lg overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=600&auto=format&fit=crop" alt="Foto Sejarah Pendirian Desa" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 2 -->
+                    <div class="relative flex items-center justify-between md:justify-center flex-row-reverse">
+                        <div class="md:w-1/2 md:pl-8">
+                            <div class="card">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-secondary-100 text-secondary px-3 py-1 rounded-full text-sm font-semibold">1945</div>
+                                </div>
+                                <h3 class="font-jakarta font-semibold text-lg mb-2">Era Kemerdekaan</h3>
+                                <p class="text-text-secondary text-sm mb-4">Masa perjuangan kemerdekaan dengan pembentukan laskar rakyat desa. Banyak pemuda desa yang bergabung dalam perjuangan melawan penjajah.</p>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-primary text-sm font-semibold hover:text-primary-600 transition-micro">Lihat Dokumen →</button>
+                                    <button class="text-secondary text-sm font-semibold hover:text-secondary-600 transition-micro">Wawancara Veteran →</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Timeline Dot -->
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-4 border-white shadow-card hidden md:block"></div>
+                        <div class="md:w-1/2 md:pr-8">
+                            <div class="aspect-video rounded-lg overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1586500036706-41963de24d8b?q=80&w=600&auto=format&fit=crop" alt="Era Kemerdekaan Indonesia" class="w-full h-full object-cover" onerror="this.src='https://images.pixabay.com/photo/2017/08/17/07/47/flag-2651281_960_720.jpg'; this.onerror=null;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 3 -->
+                    <div class="relative flex items-center justify-between md:justify-center">
+                        <div class="md:w-1/2 md:pr-8 md:text-right">
+                            <div class="card">
+                                <div class="flex items-center mb-4 md:justify-end">
+                                    <div class="bg-accent-100 text-accent px-3 py-1 rounded-full text-sm font-semibold">2025</div>
+                                </div>
+                                <h3 class="font-jakarta font-semibold text-lg mb-2">Era Digital</h3>
+                                <p class="text-text-secondary text-sm mb-4">Transformasi desa menuju digitalisasi dengan platform Desa Digital Hub. Pemberdayaan UMKM dan pemuda melalui teknologi modern.</p>
+                                <div class="flex items-center gap-2 md:justify-end">
+                                    <button class="text-primary text-sm font-semibold hover:text-primary-600 transition-micro">Lihat Progress →</button>
+                                    <button class="text-secondary text-sm font-semibold hover:text-secondary-600 transition-micro">Video Dokumenter →</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Timeline Dot -->
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-accent rounded-full border-4 border-white shadow-card hidden md:block"></div>
+                        <div class="md:w-1/2 md:pl-8">
+                            <div class="aspect-video rounded-lg overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=600&auto=format&fit=crop" alt="Era Digital Desa Modern" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cultural Traditions -->
+    <section id="traditions" class="py-16 bg-secondary-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Tradisi & Upacara Adat</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Dokumentasi lengkap festival, upacara, dan tradisi yang masih dilestarikan dengan bangga</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tradition 1 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=600&auto=format&fit=crop" alt="Upacara Slametan Desa" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                            <button class="text-white text-sm font-semibold">▶ Tonton Video</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-jakarta font-semibold text-lg">Slametan Desa</h3>
+                        <div class="bg-primary-100 text-primary px-2 py-1 rounded text-xs font-semibold">Tahunan</div>
+                    </div>
+                    <p class="text-text-secondary text-sm mb-4">Upacara syukuran desa yang dilaksanakan setiap tahun sebagai bentuk rasa syukur atas hasil panen dan keselamatan warga.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-text-secondary text-xs">Setiap bulan Suro</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">📸 Galeri</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">🎵 Audio</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tradition 2 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg relative">
+                        <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=600&auto=format&fit=crop" alt="Festival Panen Raya" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                            <button class="text-white text-sm font-semibold">▶ Tonton Video</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-jakarta font-semibold text-lg">Festival Panen Raya</h3>
+                        <div class="bg-secondary-100 text-secondary px-2 py-1 rounded text-xs font-semibold">Musiman</div>
+                    </div>
+                    <p class="text-text-secondary text-sm mb-4">Perayaan besar-besaran saat musim panen tiba dengan berbagai lomba tradisional dan pameran hasil bumi.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-text-secondary text-xs">Maret & September</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">📸 Galeri</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">🎵 Audio</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tradition 3 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg relative">
+                        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop" alt="Upacara Pernikahan Adat" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                            <button class="text-white text-sm font-semibold">▶ Tonton Video</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-jakarta font-semibold text-lg">Pernikahan Adat</h3>
+                        <div class="bg-accent-100 text-accent px-2 py-1 rounded text-xs font-semibold">Ritual</div>
+                    </div>
+                    <p class="text-text-secondary text-sm mb-4">Prosesi pernikahan dengan adat Jawa lengkap mulai dari siraman, midodareni, hingga panggih dengan gamelan.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-text-secondary text-xs">Sepanjang tahun</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">📸 Galeri</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">🎵 Audio</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button class="btn-secondary">Lihat Semua Tradisi</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Traditional Knowledge Archive -->
+    <section id="wisdom" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Arsip Kearifan Lokal</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Pengetahuan tradisional yang diwariskan turun-temurun dari para sesepuh desa</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Traditional Medicine -->
+                <div class="card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-jakarta font-semibold text-xl">Pengobatan Tradisional</h3>
+                            <p class="text-text-secondary text-sm">Resep jamu dan ramuan dari Mbah Darmo</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=60&auto=format&fit=crop" alt="Jamu Kunyit Asam" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=60'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Jamu Kunyit Asam</div>
+                                    <div class="text-text-secondary text-xs">Untuk kesehatan pencernaan</div>
+                                </div>
+                            </div>
+                            <button class="text-primary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?q=80&w=60&auto=format&fit=crop" alt="Ramuan Batuk" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pixabay.com/photo/2017/06/29/20/09/mexican-food-2456038_960_720.jpg'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Ramuan Batuk Jahe</div>
+                                    <div class="text-text-secondary text-xs">Obat batuk alami</div>
+                                </div>
+                            </div>
+                            <button class="text-primary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=60&auto=format&fit=crop" alt="Minyak Urut" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Minyak Urut Tradisional</div>
+                                    <div class="text-text-secondary text-xs">Untuk pegal-pegal</div>
+                                </div>
+                            </div>
+                            <button class="text-primary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Traditional Recipes -->
+                <div class="card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-jakarta font-semibold text-xl">Resep Tradisional</h3>
+                            <p class="text-text-secondary text-sm">Masakan khas dari dapur Bu Tuminah</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?q=80&w=60&auto=format&fit=crop" alt="Gudeg Jogja" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pixabay.com/photo/2017/06/29/20/09/mexican-food-2456038_960_720.jpg'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Gudeg Desa</div>
+                                    <div class="text-text-secondary text-xs">Resep turun-temurun</div>
+                                </div>
+                            </div>
+                            <button class="text-secondary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=60&auto=format&fit=crop" alt="Tempe Mendoan" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Tempe Mendoan</div>
+                                    <div class="text-text-secondary text-xs">Camilan favorit desa</div>
+                                </div>
+                            </div>
+                            <button class="text-secondary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                            <div class="flex items-center">
+                                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=60&auto=format&fit=crop" alt="Klepon" class="w-10 h-10 rounded-lg object-cover mr-3" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=60'; this.onerror=null;" />
+                                <div>
+                                    <div class="font-semibold text-sm">Klepon Gula Jawa</div>
+                                    <div class="text-text-secondary text-xs">Jajanan pasar tradisional</div>
+                                </div>
+                            </div>
+                            <button class="text-secondary text-sm font-semibold">Lihat Resep →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Craft Tutorials -->
+            <div class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-jakarta font-semibold text-xl">Tutorial Kerajinan</h3>
+                            <p class="text-text-secondary text-sm">Pelajari kerajinan tradisional dari para ahli</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary text-sm px-4 py-2">Lihat Semua</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="aspect-square mb-4 overflow-hidden rounded-lg">
+                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=300&auto=format&fit=crop" alt="Tutorial Batik" class="w-full h-full object-cover hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=300'; this.onerror=null;" />
+                        </div>
+                        <h4 class="font-jakarta font-semibold mb-2">Membatik Tulis</h4>
+                        <p class="text-text-secondary text-sm mb-3">12 video tutorial lengkap</p>
+                        <button class="text-accent text-sm font-semibold">Mulai Belajar →</button>
+                    </div>
+                    <div class="text-center">
+                        <div class="aspect-square mb-4 overflow-hidden rounded-lg">
+                            <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=300&auto=format&fit=crop" alt="Tutorial Anyaman" class="w-full h-full object-cover hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                        </div>
+                        <h4 class="font-jakarta font-semibold mb-2">Anyaman Bambu</h4>
+                        <p class="text-text-secondary text-sm mb-3">8 video tutorial dasar</p>
+                        <button class="text-accent text-sm font-semibold">Mulai Belajar →</button>
+                    </div>
+                    <div class="text-center">
+                        <div class="aspect-square mb-4 overflow-hidden rounded-lg">
+                            <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=300&auto=format&fit=crop" alt="Tutorial Ukir Kayu" class="w-full h-full object-cover hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=300'; this.onerror=null;" />
+                        </div>
+                        <h4 class="font-jakarta font-semibold mb-2">Ukir Kayu</h4>
+                        <p class="text-text-secondary text-sm mb-3">15 video tutorial mahir</p>
+                        <button class="text-accent text-sm font-semibold">Mulai Belajar →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Virtual Museum -->
+    <section id="virtual-museum" class="py-16 bg-surface">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Museum Virtual</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Jelajahi koleksi artefak dan benda bersejarah dalam pengalaman 3D yang interaktif</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Museum Categories -->
+                <div class="lg:col-span-1">
+                    <div class="card sticky top-24">
+                        <h3 class="font-jakarta font-semibold text-lg mb-4">Kategori Koleksi</h3>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-3 bg-primary-50 text-primary rounded-lg font-semibold transition-micro hover:bg-primary-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Alat Pertanian</span>
+                                    <span class="text-sm">45 item</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 bg-gray-50 text-text-secondary rounded-lg transition-micro hover:bg-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Peralatan Rumah</span>
+                                    <span class="text-sm">32 item</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 bg-gray-50 text-text-secondary rounded-lg transition-micro hover:bg-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Senjata Tradisional</span>
+                                    <span class="text-sm">18 item</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 bg-gray-50 text-text-secondary rounded-lg transition-micro hover:bg-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Pakaian Adat</span>
+                                    <span class="text-sm">25 item</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 bg-gray-50 text-text-secondary rounded-lg transition-micro hover:bg-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Alat Musik</span>
+                                    <span class="text-sm">15 item</span>
+                                </div>
+                            </button>
+                            <button class="w-full text-left p-3 bg-gray-50 text-text-secondary rounded-lg transition-micro hover:bg-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span>Dokumen Sejarah</span>
+                                    <span class="text-sm">21 item</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Museum Items -->
+                <div class="lg:col-span-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Museum Item 1 -->
+                        <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer">
+                            <div class="aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100 relative">
+                                <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=400&auto=format&fit=crop" alt="Cangkul Tradisional" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-primary">3D View</div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                                    <button class="text-white text-sm font-semibold">🔍 Lihat Detail 3D</button>
+                                </div>
+                            </div>
+                            <h3 class="font-jakarta font-semibold text-lg mb-2">Cangkul Tradisional</h3>
+                            <p class="text-text-secondary text-sm mb-3">Alat pertanian tradisional yang digunakan sejak tahun 1920-an. Terbuat dari besi tempa dengan gagang kayu jati.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-secondary">Era: 1920-1950</span>
+                                <div class="flex gap-2">
+                                    <button class="text-primary text-xs hover:text-primary-600">📱 AR View</button>
+                                    <button class="text-secondary text-xs hover:text-secondary-600">📖 Sejarah</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Museum Item 2 -->
+                        <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer">
+                            <div class="aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100 relative">
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=400&auto=format&fit=crop" alt="Batik Tulis Antik" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=400'; this.onerror=null;" />
+                                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-primary">3D View</div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                                    <button class="text-white text-sm font-semibold">🔍 Lihat Detail 3D</button>
+                                </div>
+                            </div>
+                            <h3 class="font-jakarta font-semibold text-lg mb-2">Batik Tulis Antik</h3>
+                            <p class="text-text-secondary text-sm mb-3">Kain batik tulis dengan motif parang rusak, karya pengrajin desa tahun 1940-an. Menggunakan pewarna alami indigo.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-secondary">Era: 1940-1960</span>
+                                <div class="flex gap-2">
+                                    <button class="text-primary text-xs hover:text-primary-600">📱 AR View</button>
+                                    <button class="text-secondary text-xs hover:text-secondary-600">📖 Sejarah</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Museum Item 3 -->
+                        <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer">
+                            <div class="aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100 relative">
+                                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=400&auto=format&fit=crop" alt="Gamelan Kecil" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=400'; this.onerror=null;" />
+                                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-primary">3D View</div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                                    <button class="text-white text-sm font-semibold">🔍 Lihat Detail 3D</button>
+                                </div>
+                            </div>
+                            <h3 class="font-jakarta font-semibold text-lg mb-2">Gamelan Bonang</h3>
+                            <p class="text-text-secondary text-sm mb-3">Alat musik gamelan bonang yang digunakan dalam upacara adat desa. Terbuat dari perunggu berkualitas tinggi.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-secondary">Era: 1930-sekarang</span>
+                                <div class="flex gap-2">
+                                    <button class="text-primary text-xs hover:text-primary-600">📱 AR View</button>
+                                    <button class="text-secondary text-xs hover:text-secondary-600">🎵 Dengar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Museum Item 4 -->
+                        <div class="card group hover:shadow-card-hover transition-gentle cursor-pointer">
+                            <div class="aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100 relative">
+                                <img src="https://images.unsplash.com/photo-1599599810694-57a2ca8276a8?q=80&w=400&auto=format&fit=crop" alt="Keris Pusaka" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2017/06/29/20/09/mexican-food-2456038_960_720.jpg'; this.onerror=null;" />
+                                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-primary">3D View</div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-micro flex items-end p-4">
+                                    <button class="text-white text-sm font-semibold">🔍 Lihat Detail 3D</button>
+                                </div>
+                            </div>
+                            <h3 class="font-jakarta font-semibold text-lg mb-2">Keris Pusaka</h3>
+                            <p class="text-text-secondary text-sm mb-3">Keris pusaka milik pendiri desa dengan pamor yang indah. Dipercaya memiliki kekuatan spiritual untuk melindungi desa.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-secondary">Era: 1890-sekarang</span>
+                                <div class="flex gap-2">
+                                    <button class="text-primary text-xs hover:text-primary-600">📱 AR View</button>
+                                    <button class="text-secondary text-xs hover:text-secondary-600">📖 Legenda</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-8">
+                        <button class="btn-primary">Jelajahi Museum Lengkap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Folklore Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Cerita Rakyat & Legenda</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Kumpulan cerita, legenda, dan dongeng yang diwariskan secara turun-temurun</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Folklore 1 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-gradient-to-br from-primary-100 to-secondary-100 relative">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=600&auto=format&fit=crop" alt="Legenda Sumber Air" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <div class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-xs font-semibold mb-2">Audio Tersedia</div>
+                        </div>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Legenda Sumber Tirta Mulya</h3>
+                    <p class="text-text-secondary text-sm mb-4">Kisah tentang asal-usul mata air suci yang tidak pernah kering dan dipercaya memiliki khasiat penyembuhan.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-text-secondary">Durasi: 12 menit</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">🎧 Dengar</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">📖 Baca</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Folklore 2 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-gradient-to-br from-secondary-100 to-accent-100 relative">
+                        <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?q=80&w=600&auto=format&fit=crop" alt="Dongeng Pohon Beringin" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pixabay.com/photo/2019/07/02/05/54/handicraft-4311512_960_720.jpg'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <div class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-xs font-semibold mb-2">Ilustrasi Interaktif</div>
+                        </div>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Dongeng Pohon Beringin Sakti</h3>
+                    <p class="text-text-secondary text-sm mb-4">Cerita tentang pohon beringin tua yang menjadi tempat berteduh dan memberikan petunjuk kepada para musafir.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-text-secondary">Durasi: 8 menit</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">🎧 Dengar</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">🎨 Ilustrasi</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Folklore 3 -->
+                <div class="card group hover:shadow-card-hover transition-gentle">
+                    <div class="aspect-video mb-4 overflow-hidden rounded-lg bg-gradient-to-br from-accent-100 to-primary-100 relative">
+                        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop" alt="Kisah Pahlawan Desa" class="w-full h-full object-cover group-hover:scale-105 transition-gentle" onerror="this.src='https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=600'; this.onerror=null;" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <div class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-xs font-semibold mb-2">Berdasarkan Kisah Nyata</div>
+                        </div>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Kisah Raden Suroso</h3>
+                    <p class="text-text-secondary text-sm mb-4">Cerita heroik pendiri desa yang berjuang melawan penjajah dan memimpin pembangunan desa pertama kali.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-text-secondary">Durasi: 15 menit</span>
+                        <div class="flex gap-2">
+                            <button class="text-primary text-xs hover:text-primary-600">🎧 Dengar</button>
+                            <button class="text-secondary text-xs hover:text-secondary-600">📜 Sejarah</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button class="btn-secondary">Dengarkan Semua Cerita</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Features -->
+    <section class="py-16 bg-primary-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-jakarta font-bold text-text-primary mb-4">Fitur Mobile</h2>
+                <p class="text-lg text-text-secondary max-w-2xl mx-auto">Akses warisan budaya kapan saja, di mana saja dengan fitur mobile yang canggih</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Offline Access -->
+                <div class="card text-center">
+                    <div class="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Akses Offline</h3>
+                    <p class="text-text-secondary text-sm mb-4">Download konten untuk dibaca dan dipelajari tanpa koneksi internet</p>
+                    <button class="text-primary text-sm font-semibold">Pelajari Lebih Lanjut →</button>
+                </div>
+
+                <!-- AR Features -->
+                <div class="card text-center">
+                    <div class="w-16 h-16 bg-secondary-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Augmented Reality</h3>
+                    <p class="text-text-secondary text-sm mb-4">Identifikasi tanaman obat dan arsitektur tradisional dengan kamera AR</p>
+                    <button class="text-secondary text-sm font-semibold">Coba Fitur AR →</button>
+                </div>
+
+                <!-- Easy Sharing -->
+                <div class="card text-center">
+                    <div class="w-16 h-16 bg-accent-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-2">Mudah Dibagikan</h3>
+                    <p class="text-text-secondary text-sm mb-4">Bagikan cerita dan tradisi keluarga dengan mudah ke media sosial</p>
+                    <button class="text-accent text-sm font-semibold">Mulai Berbagi →</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-text-primary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-primary" viewBox="0 0 40 40" fill="currentColor">
+                            <path d="M20 2L4 8v12c0 11 7.8 21.3 16 24 8.2-2.7 16-13 16-24V8L20 2zm0 6l12 4.5v9.5c0 8.5-6 16.5-12 18.5-6-2-12-10-12-18.5v-9.5L20 8z"/>
+                            <circle cx="20" cy="16" r="3"/>
+                            <path d="M20 22c-3.3 0-6 2.7-6 6h12c0-3.3-2.7-6-6-6z"/>
+                        </svg>
+                        <span class="ml-3 text-xl font-jakarta font-bold">Desa Digital Hub</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">Platform digital yang menghubungkan tradisi dengan inovasi, membangun desa yang mandiri dan berkelanjutan melalui kekuatan komunitas.</p>
+                    <div class="flex space-x-4">
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                            </svg>
+                        </a>
+                        <a href="javascript:void(0)" class="text-gray-300 hover:text-primary transition-micro">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z.017-.001z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-4">Navigasi</h3>
+                    <ul class="space-y-2">
+                        <li><a href="village_dashboard_homepage.html" class="text-gray-300 hover:text-primary transition-micro">Dashboard</a></li>
+                        <li><a href="umkm_business_directory.html" class="text-gray-300 hover:text-primary transition-micro">UMKM Directory</a></li>
+                        <li><a href="pemuda_innovation_hub.html" class="text-gray-300 hover:text-primary transition-micro">Pemuda Hub</a></li>
+                        <li><a href="village_heritage_gallery.html" class="text-gray-300 hover:text-primary transition-micro">Warisan Budaya</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-jakarta font-semibold text-lg mb-4">Kontak</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>Jl. Raya Desa No. 123</li>
+                        <li>Desa Maju Bersama</li>
+                        <li>Kab. Contoh, Jawa Tengah</li>
+                        <li>Telp: (0274) 123-4567</li>
+                        <li>Email: info@desamajubersama.id</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2025 Desa Digital Hub. Semua hak cipta dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>
