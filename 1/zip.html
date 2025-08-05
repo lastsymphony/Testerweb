@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Folder Genshin (Lowercase)</title>
+    <title>Generator Data Karakter Genshin Impact</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
+            font-family: 'Arial', sans-serif;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f7fa;
@@ -18,16 +18,18 @@
         h1 {
             color: #2c3e50;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
         }
         .container {
             background-color: white;
             border-radius: 10px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         button {
-            background-color: #3498db;
+            background-color: #4e73df;
             color: white;
             border: none;
             padding: 12px 30px;
@@ -37,9 +39,10 @@
             display: block;
             margin: 25px auto;
             transition: all 0.3s;
+            font-weight: bold;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color: #3a5bc7;
             transform: translateY(-2px);
         }
         button:disabled {
@@ -57,7 +60,7 @@
             width: 0%;
             height: 25px;
             border-radius: 5px;
-            background-color: #3498db;
+            background-color: #4e73df;
             text-align: center;
             line-height: 25px;
             color: white;
@@ -72,54 +75,59 @@
             white-space: pre;
             overflow-x: auto;
         }
-        .character-list {
+        .character-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 8px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
         }
-        .character-item {
-            padding: 6px;
+        .character-card {
+            padding: 10px;
             background-color: #eaf2f8;
-            border-radius: 3px;
-            font-size: 13px;
-            text-align: center;
+            border-radius: 5px;
+            border-left: 4px solid #4e73df;
+        }
+        .character-id {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .character-name {
+            color: #4e73df;
         }
     </style>
 </head>
 <body>
-    <h1>Generator Folder Genshin (Lowercase)</h1>
+    <h1>Generator Data Karakter Genshin Impact</h1>
     <div class="container">
-        <p>Generator ini akan membuat:</p>
+        <p>Generator ini akan membuat struktur folder dengan data lengkap untuk setiap karakter:</p>
         <ul>
             <li>Folder utama: 10000001 sampai 10000102</li>
-            <li>Subfolder: nama karakter genshin dalam huruf kecil</li>
-            <li>3 file json dalam setiap subfolder (data.json, constellation.json, talents.json)</li>
+            <li>Subfolder: nama karakter dalam lowercase</li>
+            <li>3 file JSON (data.json, talents.json, constellation.json) dengan struktur lengkap</li>
         </ul>
 
         <div class="progress-container" id="progressContainer">
             <div id="progressBar">0%</div>
         </div>
 
-        <button id="generateBtn">Buat File ZIP</button>
+        <button id="generateBtn">Generate Data ZIP</button>
 
         <div class="preview">
-📁 10000001/
-└── 📁 amber/
+📁 10000075/
+└── 📁 furina/
     ├── 📄 data.json
-    ├── 📄 constellation.json
-    └── 📄 talents.json
-...
-📁 10000102/
-└── 📁 ineffa/
-    ├── 📄 data.json
-    ├── 📄 constellation.json
-    └── 📄 talents.json
+    ├── 📄 talents.json
+    └── 📄 constellation.json
         </div>
 
-        <h3>Daftar Karakter:</h3>
-        <div class="character-list" id="characterList">
-            <!-- Daftar karakter akan diisi oleh JavaScript -->
+        <h3>Contoh Data Furina (10000075):</h3>
+        <div class="character-grid">
+            <div class="character-card">
+                <div class="character-id">10000075</div>
+                <div class="character-name">furina</div>
+                <div>Hydro Archon</div>
+                <div>⭐️⭐️⭐️⭐️⭐️</div>
+            </div>
         </div>
     </div>
 
@@ -149,53 +157,209 @@
             "skirk", "ineffa"
         ];
 
-        // Template JSON
-        const dataJsonTemplate = {
-            "id": 0,
-            "name": "",
-            "title": "",
-            "description": "",
-            "rarity": 5,
-            "element": "",
-            "weapon_type": "",
-            "birthday": "",
-            "region": "",
-            "affiliation": ""
-        };
+        // Fungsi untuk membuat data.json
+        function createDataJson(id, name) {
+            // Data dasar untuk semua karakter
+            const baseData = {
+                "id": id,
+                "name": name.charAt(0).toUpperCase() + name.slice(1),
+                "title": "",
+                "vision": "",
+                "weapon": "",
+                "nation": "",
+                "affiliation": "",
+                "rarity": 5,
+                "constellation": "",
+                "birthday": "",
+                "description": "",
+                "icon": `/assets/avatar/${id}/${name}.jpg`,
+                "splash": `/assets/splash/${id}/${name}.jpg`,
+                "vision_icon": `/assets/vision/${name}.jpg`,
+                "weapon_icon": `/assets/weapon/${name}.jpg`
+            };
 
-        const constellationJsonTemplate = {
-            "name": "",
-            "constellations": [
-                {"level": 1, "name": "", "effect": ""},
-                {"level": 2, "name": "", "effect": ""},
-                {"level": 3, "name": "", "effect": ""},
-                {"level": 4, "name": "", "effect": ""},
-                {"level": 5, "name": "", "effect": ""},
-                {"level": 6, "name": "", "effect": ""}
-            ]
-        };
+            // Data khusus untuk Furina (contoh)
+            if (id === 10000075) {
+                return {
+                    ...baseData,
+                    "name": "Furina",
+                    "title": "Endless Solo of Solitude",
+                    "vision": "Hydro",
+                    "weapon": "Sword",
+                    "nation": "Fontaine",
+                    "affiliation": "Fontaine Court",
+                    "rarity": 5,
+                    "constellation": "Animula Choragi",
+                    "birthday": "10-13",
+                    "description": "Furina, the Hydro Archon of Fontaine, is known for her extravagant performances and theatrical demeanor, though she hides deeper burdens behind her stage persona."
+                };
+            }
 
-        const talentsJsonTemplate = {
-            "name": "",
-            "combat_skills": {
-                "normal_attack": {"name": "", "description": ""},
-                "elemental_skill": {"name": "", "description": "", "cooldown": 0},
-                "elemental_burst": {"name": "", "description": "", "energy_cost": 0}
-            },
-            "passive_skills": [
-                {"name": "", "description": ""},
-                {"name": "", "description": ""},
-                {"name": "", "description": ""}
-            ]
-        };
+            return baseData;
+        }
+
+        // Fungsi untuk membuat talents.json
+        function createTalentsJson(id, name) {
+            // Data dasar untuk semua karakter
+            const baseTalents = {
+                "normal_attack": {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/talent/${id}/basic.jpg`
+                },
+                "elemental_skill": {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/talent/${id}/elemental.jpg`
+                },
+                "elemental_burst": {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/talent/${id}/burst.jpg`
+                },
+                "passives": [
+                    {
+                        "name": "",
+                        "description": ""
+                    },
+                    {
+                        "name": "",
+                        "description": ""
+                    },
+                    {
+                        "name": "",
+                        "description": ""
+                    }
+                ]
+            };
+
+            // Data khusus untuk Furina (contoh)
+            if (id === 10000075) {
+                return {
+                    "normal_attack": {
+                        "name": "Soloist's Solicitation",
+                        "description": "Performs up to 4 consecutive strikes with a sword. Charged attack consumes stamina to perform a quick dash and two rapid slashes.",
+                        "icon": `/assets/talent/${id}/basic.jpg`
+                    },
+                    "elemental_skill": {
+                        "name": "Salon Solitaire",
+                        "description": "Summons Salon Members: three anthropomorphic creatures (Gentilhomme Usher, Surintendante Chevalmarin, and Mademoiselle Crabaletta), each with different effects. Also summons the Singer of Many Waters if Arkhe alignment is Pneuma.",
+                        "icon": `/assets/talent/${id}/elemental.jpg`
+                    },
+                    "elemental_burst": {
+                        "name": "Let the People Rejoice",
+                        "description": "Furina enters a special state where she continuously heals party members and deals Hydro DMG to nearby enemies, based on the number of Fanfare points.",
+                        "icon": `/assets/talent/${id}/burst.jpg`
+                    },
+                    "passives": [
+                        {
+                            "name": "Endless Waltz",
+                            "description": "If a party member's HP is increased or decreased during combat, Furina gains 1 Fanfare point. Max 300 points."
+                        },
+                        {
+                            "name": "Dance of the Moonlight",
+                            "description": "Increases the effects of Fanfare for both healing and damage, scaling with Furina's Max HP."
+                        },
+                        {
+                            "name": "Screenplay of Eternity",
+                            "description": "Decreases sprinting stamina consumption for party members by 20%."
+                        }
+                    ]
+                };
+            }
+
+            return baseTalents;
+        }
+
+        // Fungsi untuk membuat constellation.json
+        function createConstellationJson(id, name) {
+            // Data dasar untuk semua karakter
+            const baseConstellations = [
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/1.jpg`
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/2.jpg`
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/3.jpg`
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/4.jpg`
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/5.jpg`
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "icon": `/assets/constellation/${id}/6.jpg`
+                }
+            ];
+
+            // Data khusus untuk Furina (contoh)
+            if (id === 10000075) {
+                return [
+                    {
+                        "name": "Love Is a Rebellious Bird That None Can Tame",
+                        "description": "When the Salon Members from Salon Solitaire hit an opponent, or when the Singer of Many Waters deals Hydro DMG to an opponent, Furina will gain 1 Fanfare point. This effect can occur once every 0.1s.",
+                        "icon": `/assets/constellation/${id}/1.jpg`
+                    },
+                    {
+                        "name": "A Woman Adapts Like Duckweed in Water",
+                        "description": "When Furina uses her Elemental Skill, she will summon 1 additional Salon Member.",
+                        "icon": `/assets/constellation/${id}/2.jpg`
+                    },
+                    {
+                        "name": "My Life is a Sea of Yearning",
+                        "description": "Increases the Level of Let the People Rejoice by 3. Maximum upgrade level is 15.",
+                        "icon": `/assets/constellation/${id}/3.jpg`
+                    },
+                    {
+                        "name": "They Know Not Life, Who Dwelt in the Netherworld Not!",
+                        "description": "When the Salon Members hit an opponent, the opponent's Hydro RES will be decreased by 35% for 4s.",
+                        "icon": `/assets/constellation/${id}/4.jpg`
+                    },
+                    {
+                        "name": "His Name I Now Know, It Is...",
+                        "description": "Increases the Level of Salon Solitaire by 3. Maximum upgrade level is 15.",
+                        "icon": `/assets/constellation/${id}/5.jpg`
+                    },
+                    {
+                        "name": "To Suffer, To Heal, and To Enlighten",
+                        "description": "Furina gains a 75% Healing Bonus and 40% Hydro DMG Bonus based on the Fanfare points she has accumulated.",
+                        "icon": `/assets/constellation/${id}/6.jpg`
+                    }
+                ];
+            }
+
+            return baseConstellations;
+        }
 
         // Tampilkan daftar karakter
-        const characterList = document.getElementById('characterList');
+        const characterGrid = document.querySelector('.character-grid');
         characters.forEach((character, index) => {
-            const item = document.createElement('div');
-            item.className = 'character-item';
-            item.textContent = `${10000001 + index}/${character}`;
-            characterList.appendChild(item);
+            const id = 10000001 + index;
+            if (id === 10000075) return; // Skip karena sudah ada contoh Furina
+            
+            const card = document.createElement('div');
+            card.className = 'character-card';
+            card.innerHTML = `
+                <div class="character-id">${id}</div>
+                <div class="character-name">${character}</div>
+                <div>⭐️⭐️⭐️⭐️${id % 2 ? '⭐️' : ''}</div>
+            `;
+            characterGrid.appendChild(card);
         });
 
         document.getElementById('generateBtn').addEventListener('click', async function() {
@@ -204,7 +368,7 @@
             const progressBar = document.getElementById('progressBar');
             
             btn.disabled = true;
-            btn.textContent = 'Sedang membuat...';
+            btn.textContent = 'Generating...';
             progressContainer.style.display = 'block';
             
             const zip = new JSZip();
@@ -222,26 +386,14 @@
                 const charFolder = mainFolder.folder(characterName);
                 
                 // Buat file JSON
-                const dataJson = JSON.stringify({
-                    ...dataJsonTemplate,
-                    id: folderNumber,
-                    name: characterName
-                }, null, 2);
-                
-                const constellationJson = JSON.stringify({
-                    ...constellationJsonTemplate,
-                    name: characterName
-                }, null, 2);
-                
-                const talentsJson = JSON.stringify({
-                    ...talentsJsonTemplate,
-                    name: characterName
-                }, null, 2);
+                const dataJson = JSON.stringify(createDataJson(folderNumber, characterName), null, 2);
+                const talentsJson = JSON.stringify(createTalentsJson(folderNumber, characterName), null, 2);
+                const constellationJson = JSON.stringify(createConstellationJson(folderNumber, characterName), null, 2);
                 
                 // Tambahkan file JSON ke folder karakter
                 charFolder.file("data.json", dataJson);
-                charFolder.file("constellation.json", constellationJson);
                 charFolder.file("talents.json", talentsJson);
+                charFolder.file("constellation.json", constellationJson);
                 
                 // Update progress
                 const progress = Math.floor((i + 1) / totalFolders * 100);
@@ -258,10 +410,10 @@
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
             }).then(function(content) {
-                saveAs(content, "genshin_lowercase.zip");
+                saveAs(content, "genshin_complete_data.zip");
                 btn.disabled = false;
-                btn.textContent = 'Buat File ZIP';
-                progressBar.textContent = '100% - Selesai!';
+                btn.textContent = 'Generate Data ZIP';
+                progressBar.textContent = '100% - Completed!';
             });
         });
     </script>
