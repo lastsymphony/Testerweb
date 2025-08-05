@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Folder Genshin Impact</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4e73df;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 25px auto;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #3a5bc7;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        #progressBar {
+            width: 0%;
+            height: 25px;
+            border-radius: 5px;
+            background-color: #4e73df;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            transition: width 0.3s;
+        }
+        .file-structure {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .character-card {
+            padding: 8px;
+            background-color: #e9f7fe;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+            border-left: 3px solid #4e73df;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generator Folder Genshin Impact + JSON</h1>
+    <div class="container">
+        <p>Generator ini akan membuat struktur folder dengan:</p>
+        <ul>
+            <li>Folder utama dari 10000001 hingga 10000102</li>
+            <li>Subfolder dengan nama karakter Genshin Impact</li>
+            <li>3 file JSON di setiap subfolder (data.json, constellation.json, talents.json)</li>
+        </ul>
+
+        <div class="progress-container" id="progressContainer">
+            <div id="progressBar">0%</div>
+        </div>
+
+        <button id="generateBtn">Generate ZIP File</button>
+
+        <div class="file-structure">
+📁 10000001/
+└── 📁 Amber/
+    ├── 📄 data.json
+    ├── 📄 constellation.json
+    └── 📄 talents.json
+...
+📁 10000102/
+└── 📁 Ineffa/
+    ├── 📄 data.json
+    ├── 📄 constellation.json
+    └── 📄 talents.json
+        </div>
+
+        <h3>Daftar Karakter:</h3>
+        <div class="character-grid" id="characterGrid">
+            <!-- Daftar karakter akan diisi oleh JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Daftar karakter Genshin Impact
+        const characters = [
+            "Amber", "Barbara", "Beidou", "Bennett", "Chongyun", 
+            "Diluc", "Fischl", "Jean", "Kaeya", "Keqing", 
+            "Lisa", "Mona", "Ningguang", "Noelle", "Qiqi", 
+            "Razor", "Sucrose", "Traveler", "Venti", "Xiangling", 
+            "Xingqiu", "Klee", "Diona", "Tartaglia", "Xinyan", 
+            "Zhongli", "Albedo", "Ganyu", "Xiao", "Hu Tao", 
+            "Rosaria", "Yanfei", "Eula", "Kaedehara Kazuha", "Kamisato Ayaka", 
+            "Sayu", "Yoimiya", "Aloy", "Kujou Sara", "Raiden Shogun", 
+            "Sangonomiya Kokomi", "Thoma", "Arataki Itto", "Gorou", "Shenhe", 
+            "Yun Jin", "Yae Miko", "Kamisato Ayato", "Yelan", "Kuki Shinobu", 
+            "Shikanoin Heizou", "Collei", "Tighnari", "Dori", "Candace", 
+            "Cyno", "Nilou", "Nahida", "Layla", "Faruzan", 
+            "Wanderer", "Alhaitham", "Yaoyao", "Dehya", "Mika", 
+            "Baizhu", "Kaveh", "Kirara", "Lynette", "Lyney", 
+            "Freminet", "Neuvillette", "Wriothesley", "Charlotte", "Furina", 
+            "Navia", "Chevreuse", "Gaming", "Xianyun", "Chiori", 
+            "Arlecchino", "Clorinde", "Sethos", "Sigewinne", "Emilie", 
+            "Kachina", "Mualani", "Kinich", "Xilonen", "Chasca", 
+            "Ororon", "Citlali", "Mavuika", "Lan Yan", "Yumemizuki Mizuki", 
+            "Iansan", "Varesa", "Escoffier", "Ifa", "Dahlia", 
+            "Skirk", "Ineffa"
+        ];
+
+        // Template JSON
+        const dataJsonTemplate = {
+            "id": 0,
+            "name": "",
+            "title": "",
+            "description": "",
+            "rarity": 5,
+            "element": "",
+            "weapon_type": "",
+            "birthday": "",
+            "region": "",
+            "affiliation": ""
+        };
+
+        const constellationJsonTemplate = {
+            "name": "",
+            "constellations": [
+                {"level": 1, "name": "", "effect": ""},
+                {"level": 2, "name": "", "effect": ""},
+                {"level": 3, "name": "", "effect": ""},
+                {"level": 4, "name": "", "effect": ""},
+                {"level": 5, "name": "", "effect": ""},
+                {"level": 6, "name": "", "effect": ""}
+            ]
+        };
+
+        const talentsJsonTemplate = {
+            "name": "",
+            "combat_skills": {
+                "normal_attack": {"name": "", "description": ""},
+                "elemental_skill": {"name": "", "description": "", "cooldown": 0},
+                "elemental_burst": {"name": "", "description": "", "energy_cost": 0}
+            },
+            "passive_skills": [
+                {"name": "", "description": ""},
+                {"name": "", "description": ""},
+                {"name": "", "description": ""}
+            ]
+        };
+
+        // Tampilkan daftar karakter
+        const characterGrid = document.getElementById('characterGrid');
+        characters.forEach((character, index) => {
+            const card = document.createElement('div');
+            card.className = 'character-card';
+            card.textContent = `${10000001 + index} - ${character}`;
+            characterGrid.appendChild(card);
+        });
+
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const btn = this;
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            progressContainer.style.display = 'block';
+            
+            const zip = new JSZip();
+            const totalFolders = characters.length;
+            
+            for (let i = 0; i < totalFolders; i++) {
+                const folderNumber = 10000001 + i;
+                const folderName = folderNumber.toString();
+                const characterName = characters[i];
+                
+                // Buat folder utama
+                const mainFolder = zip.folder(folderName);
+                
+                // Buat subfolder karakter
+                const charFolder = mainFolder.folder(characterName);
+                
+                // Buat file JSON dengan template yang sudah diisi nama karakter
+                const dataJson = JSON.stringify({
+                    ...dataJsonTemplate,
+                    id: folderNumber,
+                    name: characterName
+                }, null, 2);
+                
+                const constellationJson = JSON.stringify({
+                    ...constellationJsonTemplate,
+                    name: characterName
+                }, null, 2);
+                
+                const talentsJson = JSON.stringify({
+                    ...talentsJsonTemplate,
+                    name: characterName
+                }, null, 2);
+                
+                // Tambahkan file JSON ke folder karakter
+                charFolder.file("data.json", dataJson);
+                charFolder.file("constellation.json", constellationJson);
+                charFolder.file("talents.json", talentsJson);
+                
+                // Update progress
+                const progress = Math.floor((i + 1) / totalFolders * 100);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                
+                // Beri waktu untuk update UI
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            // Generate ZIP file
+            zip.generateAsync({type: 'blob'}, metadata => {
+                const progress = Math.floor(metadata.percent);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+            }).then(function(content) {
+                saveAs(content, "genshin_data.zip");
+                btn.disabled = false;
+                btn.textContent = 'Generate ZIP File';
+                progressBar.textContent = '100% - Completed!';
+            });
+        });
+    </script>
+</body>
+</html>
