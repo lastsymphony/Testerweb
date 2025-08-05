@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Folder Genshin Impact</title>
+    <title>Generator Folder Genshin (Lowercase)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f8f9fa;
+            background-color: #f5f7fa;
             color: #333;
         }
         h1 {
             color: #2c3e50;
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
+            margin-bottom: 25px;
         }
         .container {
             background-color: white;
             border-radius: 10px;
             padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         button {
-            background-color: #4e73df;
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 30px;
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             display: block;
             margin: 25px auto;
             transition: all 0.3s;
-            font-weight: bold;
         }
         button:hover {
-            background-color: #3a5bc7;
+            background-color: #2980b9;
             transform: translateY(-2px);
         }
         button:disabled {
@@ -60,13 +57,13 @@
             width: 0%;
             height: 25px;
             border-radius: 5px;
-            background-color: #4e73df;
+            background-color: #3498db;
             text-align: center;
             line-height: 25px;
             color: white;
             transition: width 0.3s;
         }
-        .file-structure {
+        .preview {
             background-color: #f8f9fa;
             border-radius: 5px;
             padding: 15px;
@@ -75,82 +72,81 @@
             white-space: pre;
             overflow-x: auto;
         }
-        .character-grid {
+        .character-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
         }
-        .character-card {
-            padding: 8px;
-            background-color: #e9f7fe;
-            border-radius: 4px;
+        .character-item {
+            padding: 6px;
+            background-color: #eaf2f8;
+            border-radius: 3px;
             font-size: 13px;
             text-align: center;
-            border-left: 3px solid #4e73df;
         }
     </style>
 </head>
 <body>
-    <h1>Generator Folder Genshin Impact + JSON</h1>
+    <h1>Generator Folder Genshin (Lowercase)</h1>
     <div class="container">
-        <p>Generator ini akan membuat struktur folder dengan:</p>
+        <p>Generator ini akan membuat:</p>
         <ul>
-            <li>Folder utama dari 10000001 hingga 10000102</li>
-            <li>Subfolder dengan nama karakter Genshin Impact</li>
-            <li>3 file JSON di setiap subfolder (data.json, constellation.json, talents.json)</li>
+            <li>Folder utama: 10000001 sampai 10000102</li>
+            <li>Subfolder: nama karakter genshin dalam huruf kecil</li>
+            <li>3 file json dalam setiap subfolder (data.json, constellation.json, talents.json)</li>
         </ul>
 
         <div class="progress-container" id="progressContainer">
             <div id="progressBar">0%</div>
         </div>
 
-        <button id="generateBtn">Generate ZIP File</button>
+        <button id="generateBtn">Buat File ZIP</button>
 
-        <div class="file-structure">
+        <div class="preview">
 📁 10000001/
-└── 📁 Amber/
+└── 📁 amber/
     ├── 📄 data.json
     ├── 📄 constellation.json
     └── 📄 talents.json
 ...
 📁 10000102/
-└── 📁 Ineffa/
+└── 📁 ineffa/
     ├── 📄 data.json
     ├── 📄 constellation.json
     └── 📄 talents.json
         </div>
 
         <h3>Daftar Karakter:</h3>
-        <div class="character-grid" id="characterGrid">
+        <div class="character-list" id="characterList">
             <!-- Daftar karakter akan diisi oleh JavaScript -->
         </div>
     </div>
 
     <script>
-        // Daftar karakter Genshin Impact
+        // Daftar karakter Genshin Impact dalam lowercase
         const characters = [
-            "Amber", "Barbara", "Beidou", "Bennett", "Chongyun", 
-            "Diluc", "Fischl", "Jean", "Kaeya", "Keqing", 
-            "Lisa", "Mona", "Ningguang", "Noelle", "Qiqi", 
-            "Razor", "Sucrose", "Traveler", "Venti", "Xiangling", 
-            "Xingqiu", "Klee", "Diona", "Tartaglia", "Xinyan", 
-            "Zhongli", "Albedo", "Ganyu", "Xiao", "Hu Tao", 
-            "Rosaria", "Yanfei", "Eula", "Kaedehara Kazuha", "Kamisato Ayaka", 
-            "Sayu", "Yoimiya", "Aloy", "Kujou Sara", "Raiden Shogun", 
-            "Sangonomiya Kokomi", "Thoma", "Arataki Itto", "Gorou", "Shenhe", 
-            "Yun Jin", "Yae Miko", "Kamisato Ayato", "Yelan", "Kuki Shinobu", 
-            "Shikanoin Heizou", "Collei", "Tighnari", "Dori", "Candace", 
-            "Cyno", "Nilou", "Nahida", "Layla", "Faruzan", 
-            "Wanderer", "Alhaitham", "Yaoyao", "Dehya", "Mika", 
-            "Baizhu", "Kaveh", "Kirara", "Lynette", "Lyney", 
-            "Freminet", "Neuvillette", "Wriothesley", "Charlotte", "Furina", 
-            "Navia", "Chevreuse", "Gaming", "Xianyun", "Chiori", 
-            "Arlecchino", "Clorinde", "Sethos", "Sigewinne", "Emilie", 
-            "Kachina", "Mualani", "Kinich", "Xilonen", "Chasca", 
-            "Ororon", "Citlali", "Mavuika", "Lan Yan", "Yumemizuki Mizuki", 
-            "Iansan", "Varesa", "Escoffier", "Ifa", "Dahlia", 
-            "Skirk", "Ineffa"
+            "amber", "barbara", "beidou", "bennett", "chongyun", 
+            "diluc", "fischl", "jean", "kaeya", "keqing", 
+            "lisa", "mona", "ningguang", "noelle", "qiqi", 
+            "razor", "sucrose", "traveler", "venti", "xiangling", 
+            "xingqiu", "klee", "diona", "tartaglia", "xinyan", 
+            "zhongli", "albedo", "ganyu", "xiao", "hu tao", 
+            "rosaria", "yanfei", "eula", "kaedehara kazuha", "kamisato ayaka", 
+            "sayu", "yoimiya", "aloy", "kujou sara", "raiden shogun", 
+            "sangonomiya kokomi", "thoma", "arataki itto", "gorou", "shenhe", 
+            "yun jin", "yae miko", "kamisato ayato", "yelan", "kuki shinobu", 
+            "shikanoin heizou", "collei", "tighnari", "dori", "candace", 
+            "cyno", "nilou", "nahida", "layla", "faruzan", 
+            "wanderer", "alhaitham", "yaoyao", "dehya", "mika", 
+            "baizhu", "kaveh", "kirara", "lynette", "lyney", 
+            "freminet", "neuvillette", "wriothesley", "charlotte", "furina", 
+            "navia", "chevreuse", "gaming", "xianyun", "chiori", 
+            "arlecchino", "clorinde", "sethos", "sigewinne", "emilie", 
+            "kachina", "mualani", "kinich", "xilonen", "chasca", 
+            "ororon", "citlali", "mavuika", "lan yan", "yumemizuki mizuki", 
+            "iansan", "varesa", "escoffier", "ifa", "dahlia", 
+            "skirk", "ineffa"
         ];
 
         // Template JSON
@@ -194,12 +190,12 @@
         };
 
         // Tampilkan daftar karakter
-        const characterGrid = document.getElementById('characterGrid');
+        const characterList = document.getElementById('characterList');
         characters.forEach((character, index) => {
-            const card = document.createElement('div');
-            card.className = 'character-card';
-            card.textContent = `${10000001 + index} - ${character}`;
-            characterGrid.appendChild(card);
+            const item = document.createElement('div');
+            item.className = 'character-item';
+            item.textContent = `${10000001 + index}/${character}`;
+            characterList.appendChild(item);
         });
 
         document.getElementById('generateBtn').addEventListener('click', async function() {
@@ -208,7 +204,7 @@
             const progressBar = document.getElementById('progressBar');
             
             btn.disabled = true;
-            btn.textContent = 'Generating...';
+            btn.textContent = 'Sedang membuat...';
             progressContainer.style.display = 'block';
             
             const zip = new JSZip();
@@ -225,7 +221,7 @@
                 // Buat subfolder karakter
                 const charFolder = mainFolder.folder(characterName);
                 
-                // Buat file JSON dengan template yang sudah diisi nama karakter
+                // Buat file JSON
                 const dataJson = JSON.stringify({
                     ...dataJsonTemplate,
                     id: folderNumber,
@@ -262,10 +258,10 @@
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
             }).then(function(content) {
-                saveAs(content, "genshin_data.zip");
+                saveAs(content, "genshin_lowercase.zip");
                 btn.disabled = false;
-                btn.textContent = 'Generate ZIP File';
-                progressBar.textContent = '100% - Completed!';
+                btn.textContent = 'Buat File ZIP';
+                progressBar.textContent = '100% - Selesai!';
             });
         });
     </script>
