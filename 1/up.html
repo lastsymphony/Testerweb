@@ -2,90 +2,355 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>JSON Generator + Catbox Uploader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Generator + File Uploader</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-    input, select { padding: 5px; margin: 5px 0; width: 100%; }
-    textarea { width: 100%; height: 120px; margin-top: 10px; }
-    button { padding: 10px 15px; margin-top: 10px; background: #4caf50; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #45a049; }
-    .copy-btn { background: #2196f3; }
-    .copy-btn:hover { background: #1976d2; }
-    .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      padding: 20px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    
+    .container { 
+      max-width: 600px; 
+      margin: auto; 
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 1.8em;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label { 
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    input, select { 
+      padding: 12px; 
+      width: 100%; 
+      border: 2px solid #e1e1e1;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    textarea { 
+      width: 100%; 
+      height: 150px; 
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    button { 
+      padding: 12px 20px; 
+      margin: 10px 5px 10px 0; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff; 
+      border: none; 
+      border-radius: 8px;
+      cursor: pointer; 
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+    
+    button:hover { 
+      transform: translateY(-2px);
+    }
+    
+    .copy-btn { 
+      background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%);
+    }
+    
+    .manual-btn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    }
+    
+    .generate-btn {
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: 500;
+    }
+    
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    
+    .upload-methods {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .method-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>JSON + Catbox Uploader</h2>
-
-    <label>Title:</label>
-    <input type="text" id="title" placeholder="contoh: guaxichan">
-
-    <label>File Upload (image/video/doc):</label>
-    <input type="file" id="fileUpload">
-
-    <label>Category:</label>
-    <select id="category">
-      <option value="image">image</option>
-      <option value="video">video</option>
-      <option value="document">document</option>
-      <option value="audio">audio</option>
-    </select>
-
-    <label>Upload Date:</label>
-    <input type="datetime-local" id="upload">
-
-    <button onclick="uploadAndGenerate()">Upload ke Catbox & Generate JSON</button>
-
-    <textarea id="result" readonly placeholder="Hasil JSON muncul di sini..."></textarea>
-    <button class="copy-btn" onclick="copyResult()">ðŸ“‹ Copy</button>
+    <h2>🚀 JSON Generator + File Uploader</h2>
+    
+    <div class="form-group">
+      <label>📝 Title:</label>
+      <input type="text" id="title" placeholder="contoh: guaxichan">
+    </div>
+    
+    <div class="form-group">
+      <label>📁 File Upload:</label>
+      <input type="file" id="fileUpload" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
+    </div>
+    
+    <div class="form-group">
+      <label>🏷️ Category:</label>
+      <select id="category">
+        <option value="image">📸 Image</option>
+        <option value="video">🎥 Video</option>
+        <option value="document">📄 Document</option>
+        <option value="audio">🎵 Audio</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>📅 Upload Date:</label>
+      <input type="datetime-local" id="upload">
+    </div>
+    
+    <div class="form-group">
+      <label>🔗 File URL (manual input):</label>
+      <input type="url" id="manualUrl" placeholder="https://files.catbox.moe/abc123.jpg">
+    </div>
+    
+    <button class="generate-btn" onclick="generateWithManualUrl()">📋 Generate JSON (Manual URL)</button>
+    <button class="manual-btn" onclick="tryDirectUpload()">⬆️ Try Direct Upload</button>
+    
+    <div id="statusDiv"></div>
+    
+    <div class="upload-methods">
+      <div class="method-title">💡 Alternative Upload Methods:</div>
+      <p><strong>1. Manual Upload:</strong> Upload file to <a href="https://catbox.moe" target="_blank">catbox.moe</a>, copy URL, paste above</p>
+      <p><strong>2. Drag & Drop:</strong> Try the direct upload button (may work in some browsers)</p>
+      <p><strong>3. Browser Extension:</strong> Use catbox browser extension for easier uploads</p>
+    </div>
+    
+    <textarea id="result" readonly placeholder="Hasil JSON akan muncul di sini..."></textarea>
+    
+    <button class="copy-btn" onclick="copyResult()">📋 Copy JSON</button>
+    <button onclick="clearAll()">🗑️ Clear All</button>
   </div>
 
   <script>
-    async function uploadAndGenerate() {
-      const title = document.getElementById("title").value;
+    // Set current datetime on load
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('upload').value = now.toISOString().slice(0, 16);
+    });
+
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusDiv');
+      statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+      setTimeout(() => {
+        statusDiv.innerHTML = '';
+      }, 5000);
+    }
+
+    function generateWithManualUrl() {
+      const title = document.getElementById("title").value.trim();
+      const manualUrl = document.getElementById("manualUrl").value.trim();
+      const category = document.getElementById("category").value;
+      const uploadRaw = document.getElementById("upload").value;
+      const uploadDate = uploadRaw ? new Date(uploadRaw).toISOString() : new Date().toISOString();
+
+      if (!title) {
+        showStatus("❌ Harap isi title!", "error");
+        return;
+      }
+
+      if (!manualUrl) {
+        showStatus("❌ Harap masukkan URL file!", "error");
+        return;
+      }
+
+      if (!isValidUrl(manualUrl)) {
+        showStatus("❌ URL tidak valid!", "error");
+        return;
+      }
+
+      const jsonData = {
+        title: title,
+        url: manualUrl,
+        category: category,
+        upload: uploadDate,
+        generated_at: new Date().toISOString()
+      };
+
+      document.getElementById("result").value = JSON.stringify(jsonData, null, 2);
+      showStatus("✅ JSON berhasil dibuat!", "success");
+    }
+
+    async function tryDirectUpload() {
+      const title = document.getElementById("title").value.trim();
       const fileInput = document.getElementById("fileUpload");
       const category = document.getElementById("category").value;
       const uploadRaw = document.getElementById("upload").value;
       const uploadDate = uploadRaw ? new Date(uploadRaw).toISOString() : new Date().toISOString();
 
-      if (fileInput.files.length === 0) {
-        alert("Pilih file dulu!");
+      if (!title) {
+        showStatus("❌ Harap isi title!", "error");
         return;
       }
 
+      if (fileInput.files.length === 0) {
+        showStatus("❌ Pilih file dulu!", "error");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const maxSize = 200 * 1024 * 1024; // 200MB
+      
+      if (file.size > maxSize) {
+        showStatus("❌ File terlalu besar! Maksimal 200MB", "error");
+        return;
+      }
+
+      showStatus("⏳ Sedang mengupload...", "warning");
+
       const formData = new FormData();
       formData.append("reqtype", "fileupload");
-      formData.append("fileToUpload", fileInput.files[0]);
+      formData.append("fileToUpload", file);
 
       try {
         const response = await fetch("https://catbox.moe/user/api.php", {
           method: "POST",
-          body: formData
+          body: formData,
+          mode: "cors"
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const fileURL = await response.text();
+        
+        if (fileURL.startsWith('http')) {
+          const jsonData = {
+            title: title,
+            url: fileURL.trim(),
+            category: category,
+            upload: uploadDate,
+            file_info: {
+              name: file.name,
+              size: file.size,
+              type: file.type
+            },
+            generated_at: new Date().toISOString()
+          };
 
-        const jsonData = {
-          title: title,
-          url: fileURL,
-          category: category,
-          upload: uploadDate
-        };
-
-        document.getElementById("result").value = JSON.stringify(jsonData, null, 2);
+          document.getElementById("result").value = JSON.stringify(jsonData, null, 2);
+          document.getElementById("manualUrl").value = fileURL.trim();
+          showStatus("✅ Upload berhasil dan JSON dibuat!", "success");
+        } else {
+          throw new Error("Upload gagal: " + fileURL);
+        }
 
       } catch (error) {
-        alert("Upload gagal: " + error);
+        console.error('Upload error:', error);
+        showStatus(`❌ Upload gagal: ${error.message}. Silakan gunakan metode manual!`, "error");
       }
     }
 
     function copyResult() {
       const resultArea = document.getElementById("result");
+      if (!resultArea.value.trim()) {
+        showStatus("❌ Tidak ada JSON untuk di-copy!", "error");
+        return;
+      }
+      
       resultArea.select();
       resultArea.setSelectionRange(0, 99999);
-      document.execCommand("copy");
+      
+      try {
+        document.execCommand("copy");
+        showStatus("✅ JSON berhasil di-copy!", "success");
+      } catch (err) {
+        navigator.clipboard.writeText(resultArea.value).then(() => {
+          showStatus("✅ JSON berhasil di-copy!", "success");
+        }).catch(() => {
+          showStatus("❌ Gagal copy JSON!", "error");
+        });
+      }
     }
+
+    function clearAll() {
+      document.getElementById("title").value = "";
+      document.getElementById("fileUpload").value = "";
+      document.getElementById("manualUrl").value = "";
+      document.getElementById("result").value = "";
+      document.getElementById("category").selectedIndex = 0;
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('upload').value = now.toISOString().slice(0, 16);
+      showStatus("🗑️ Semua data telah dibersihkan!", "success");
+    }
+
+    function isValidUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // File drag and drop
+    document.addEventListener('dragover', function(e) {
+      e.preventDefault();
+    });
+
+    document.addEventListener('drop', function(e) {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        document.getElementById('fileUpload').files = files;
+        showStatus("📁 File berhasil di-drop!", "success");
+      }
+    });
   </script>
 </body>
 </html>
