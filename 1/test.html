@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Uploader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contoh Plugin Upload AnhMoe</title>
+  <!-- Memasukkan plugin pup.js dari AnhMoe -->
+  <script async src="//anh.moe/sdk/pup.js" data-url="https://anh.moe/upload"></script>
 </head>
 <body>
-  <h1>Simple Upload Page</h1>
-  <p>Klik tombol di bawah untuk upload file via anh.moe:</p>
+  <h1>Plugin Upload AnhMoe Demo</h1>
+  <p>Di bawah ini editor teks: tombol upload akan otomatis muncul pada toolbar (jika didukung).</p>
 
-  <!-- Script SDK dari anh.moe -->
-  <script async src="//anh.moe/sdk/pup.js" data-url="https://anh.moe/upload"></script>
-
-  <!-- Tombol trigger -->
-  <button onclick="pup()">Upload File</button>
+  <!-- Contoh editor teks berbasis konten, misalnya contenteditable atau textarea -->
+  <div id="editor" contenteditable="true" style="width: 100%; height: 200px; border: 1px solid #ccc; padding: 10px;">
+    Tulis sesuatu di sini... Coba upload gambar dengan tombol yang muncul di toolbar sebelah atas.
+  </div>
 </body>
 </html>
