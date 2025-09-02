@@ -3,28 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo AnhMoe Upload + Preview</title>
-  <script async src="//anh.moe/sdk/pup.js" data-url="https://anh.moe/upload"></script>
+  <title>AnhMoe API Upload Demo</title>
 </head>
 <body>
-  <h1>Upload Demo</h1>
-  <button data-pup id="uploadBtn">Upload File</button>
+  <h1>Upload ke AnhMoe via API</h1>
 
-  <h2>Hasil Upload:</h2>
+  <!-- Input file -->
+  <input type="file" id="fileInput" />
+  <button id="uploadBtn">Upload</button>
+
+  <h2>Hasil:</h2>
   <div id="result"></div>
 
   <script>
-    // Plugin pup.js akan trigger event 'message' setelah upload
-    window.addEventListener("message", function(event) {
-      if (event.origin.includes("anh.moe") && event.data?.link) {
-        const url = event.data.link; 
-        const resultDiv = document.getElementById("result");
-        
-        // tampilkan link + preview
-        resultDiv.innerHTML = `
-          <p><a href="${url}" target="_blank">${url}</a></p>
-          <img src="${url}" style="max-width:300px; margin-top:10px;" />
-        `;
+    const API_URL = "https://anh.moe/api/1/upload";
+    const API_KEY = "chv_OGlH_c32109500d92df262a084a9dc31686f7261a3e8bb3f1e1310516c4ce7f8289d24356904e1c375b7d1f82eb2c2cde4d9a2ade0037ea99794c5582be9bbc590c4e"; // API key kamu
+
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) {
+        alert("Pilih file dulu!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("source", file);
+      formData.append("key", API_KEY);
+      formData.append("format", "json");
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.status_code === 200) {
+          const url = data.image.url;
+          document.getElementById("result").innerHTML = `
+            <p><strong>Link File:</strong> <a href="${url}" target="_blank">${url}</a></p>
+            <img src="${url}" style="max-width:300px; margin-top:10px;" />
+          `;
+        } else {
+          document.getElementById("result").innerText = "Upload gagal: " + data.status_txt;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerText = "Error upload: " + err.message;
       }
     });
   </script>
