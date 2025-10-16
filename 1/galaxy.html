@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Animation | @coding.stella</title>
+    <style>
+        /* Content from style.css */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            overflow: hidden;
+        }
+
+        .webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="webgl"></canvas>
+    <script type="module">
+        // Content from script.js
+        import * as THREE from "https://cdn.skypack.dev/three@0.132.2";
+
+        import { OrbitControls } from "https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js";
+
+        /**
+         * Base
+         */
+        // Canvas
+        const canvas = document.querySelector('canvas.webgl')
+
+        // Scene
+        const scene = new THREE.Scene()
+
+        // galaxy parameters
+        const parameters = {}
+        parameters.count = 100000;
+        parameters.size = 0.01;
+        parameters.radius = 2.15; 
+        parameters.branches = 3; 
+        parameters.spin = 3;
+        parameters.randomness = 5;
+        parameters.randomnessPower = 4;
+        parameters.insideColor = '#ff6030';
+        parameters.outsideColor = '#0949f0';
+
+        let material = null; 
+        let geometry = null; 
+        let points = null; 
+
+        const generateGalaxy = () => {
+            
+            if(points !== null){
+                geometry.dispose();
+                material.dispose();
+                scene.remove(points);
+            }
+            material = new THREE.PointsMaterial({
+                size: parameters.size,
+                sizeAttenuation: true,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending,
+                vertexColors: true
+            })
+
+            geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(parameters.count * 3);
+
+            const colors = new Float32Array(parameters.count * 3);
+            const colorInside = new THREE.Color(parameters.insideColor);
+            const colorOutside = new THREE.Color(parameters.outsideColor);
+
+
+            for(let i=0; i<parameters.count; i++){
+                const i3 = i*3;
+                // Note: The original script seems to have a typo or unusual logic here:
+                // 'Math.random()*parameters.randomness' and 'Math.random()*parameters.radius'
+                // The intended calculation for radius seems more likely to be based on a non-power-of-randomness scale,
+                // but I'm keeping the original logic structure as requested by combining files.
+                // Original: const radius = Math.pow(Math.random()*parameters.randomness, Math.random()*parameters.radius);
+                
+                // Assuming the original intent was to get a radius value that increases towards the edge (up to parameters.radius),
+                // but with an unusual power-law distribution. I'll maintain the exact original logic for merging.
+                const radius = Math.pow(Math.random()*parameters.randomness, Math.random()*parameters.radius); 
+                // A common pattern is: const radius = Math.random() * parameters.radius;
+                
+                const spinAngle = radius*parameters.spin;
+                const branchAngle = ((i%parameters.branches)/parameters.branches)*Math.PI*2;
+                
+
+                const negPos = [1,-1];
+                const randomX = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
+                const randomY = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
+                const randomZ = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
+
+                positions[i3] = Math.cos(branchAngle + spinAngle)*(radius) + randomX;
+                positions[i3+1] = randomY;
+                positions[i3+2] = Math.sin(branchAngle + spinAngle)*(radius) + randomZ;
+
+                const mixedColor = colorInside.clone();
+                // Color mixing based on radius relative to maximum radius
+                const colorMixFactor = radius / parameters.radius; // The Math.random() in the original script inside lerp seems wrong for a gradient
+                // The original script used: mixedColor.lerp(colorOutside, Math.random()*radius/parameters.radius);
+                // I will keep the original logic for a literal merge, even if it produces a less structured gradient.
+                mixedColor.lerp(colorOutside, Math.random()*radius/parameters.radius);
+
+                colors[i3] = mixedColor.r;
+                colors[i3+1] = mixedColor.g;
+                colors[i3+2] = mixedColor.b;
+                
+                
+            }
+            geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+            geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));
+
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+        }
+        generateGalaxy();
+
+        /**
+         * Sizes
+         */
+        const sizes = {
+            width: window.innerWidth,
+            height: window.innerHeight
+        }
+
+        window.addEventListener('resize', () =>
+        {
+            // Update sizes
+            sizes.width = window.innerWidth
+            sizes.height = window.innerHeight
+
+            // Update camera
+            camera.aspect = sizes.width / sizes.height
+            camera.updateProjectionMatrix()
+
+            // Update renderer
+            renderer.setSize(sizes.width, sizes.height)
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        })
+
+        /**
+         * Camera
+         */
+        // Base camera
+        const camera = new 
+        THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+        camera.position.x = 3
+        camera.position.y = 3
+        camera.position.z = 3
+        scene.add(camera)
+
+        // Controls
+        const controls = new OrbitControls(camera, canvas)
+        controls.enableDamping = true
+
+        /**
+         * Renderer
+         */
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas
+        })
+        renderer.setSize(sizes.width, sizes.height)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+        /**
+         * Animate
+         */
+        const clock = new THREE.Clock()
+
+        const tick = () =>
+        {
+            const elapsedTime = clock.getElapsedTime()
+
+            // Update controls
+            controls.update()
+
+            // Orbit the camera slowly
+            camera.position.x = Math.cos(elapsedTime*0.05) * 5; // Increased radius for better view
+            camera.position.z = Math.sin(elapsedTime*0.05) * 5; // Increased radius for better view
+            camera.position.y = 3; // Keep y fixed for a horizontal orbit
+            camera.lookAt(0,0,0);
+
+            // Render
+            renderer.render(scene, camera)
+
+            // Call tick again on the next frame
+            window.requestAnimationFrame(tick)
+        }
+
+        tick()
+    </script>
+</body>
+</html>
