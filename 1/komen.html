@@ -130,7 +130,10 @@
   /* ====== STATE ====== */
   const savedName = localStorage.getItem('kathy_comment_name') || '';
   const isAdmin = ()=> localStorage.getItem('kathy_is_admin')==='1';
-  let data=[]; let EMOJI_ITEMS=[]; let activeTextArea = E.msg;
+  let data=[]; 
+  let EMOJI_ITEMS=[]; // [{name,url}]
+  let EMOJI_MAP=new Map(); // name -> url
+  let activeTextArea = E.msg;
 
   /* ====== UTILS ====== */
   const esc = s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
@@ -138,7 +141,6 @@
   const setStatus=(m,t='')=>{ E.status.textContent=m||''; E.status.className='status '+t; };
   const sum = a=>a.reduce((x,y)=>x+Number(y||0),0);
   const score = it => Number(it.likes||0)+sum(Object.values(it.reactions||{}));
-
   const safeJson=async(res)=>{ const ct=res.headers.get('content-type')||''; if(!ct.includes('application/json')){ const text=await res.text(); throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`);} return res.json(); };
 
   /* ====== API ====== */
@@ -147,7 +149,7 @@
   async function apiLike(id,delta=1){ try{ const r=await fetch(EP.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,delta})}); if(r.status===404) throw new Error('no-like'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j; }catch{ const k='k_like_'+id, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; } }
   async function apiReact(id,key,delta=1){ try{ const r=await fetch(EP.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,key,delta})}); if(r.status===404) throw new Error('no-react'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j; }catch{ const k='k_react_'+id+'_'+key, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; } }
   async function apiUpload(file){ try{ const buf=await file.arrayBuffer(); const b64=btoa(String.fromCharCode(...new Uint8Array(buf))); const r=await fetch(EP.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,contentType:file.type,dataBase64:b64})}); if(r.status===404) throw new Error('no-upload'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j.url; }catch{ return new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(file); }); } }
-  async function loadEmojis(){ try{ const r=await fetch(EP.EMOJI,{cache:'no-store'}); const j=await r.json(); EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; E.emojiPicker.innerHTML = EMOJI_ITEMS.length? EMOJI_ITEMS.map(e=>`<button type="button" data-url="${e.url}" title="${e.name}"><img src="${e.url}" alt="${e.name}"></button>`).join('') : '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; }catch{ E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; } }
+  async function loadEmojis(){ try{ const r=await fetch(EP.EMOJI,{cache:'no-store'}); const j=await r.json(); EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; EMOJI_MAP = new Map(EMOJI_ITEMS.map(x=>[x.name,x.url])); E.emojiPicker.innerHTML = EMOJI_ITEMS.length? EMOJI_ITEMS.map(e=>`<button type="button" data-name="${e.name}" title="${e.name}"><img src="${e.url}" alt="${e.name}"></button>`).join('') : '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; }catch{ E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; } }
 
   /* ====== RENDER ====== */
   function buildTree(items){
@@ -165,8 +167,11 @@
   const badge = role=>`<span class="badge ${role==='admin'?'admin':''}">${role==='admin'?'katheryne':'visitor'}</span>`;
   function renderMessage(text){
     let s = esc(text || '');
-    // token [[emoji:<URL>]] -> <img>
-    s = s.replace(/\[\[emoji:(https?:\/\/[^\]\s]+)\]\]/g,(m,url)=> EMOJI_ITEMS.some(x=>x.url===url) ? `<img src="${url}" alt="emoji" class="emojiimg">` : m);
+    // token [[emoji:nama.ext]] -> <img src=url-dari-map>
+    s = s.replace(/\[\[emoji:([\w.\-]+)\]\]/g,(m,name)=>{
+      const url = EMOJI_MAP.get(name);
+      return url ? `<img src="${url}" alt="emoji" class="emojiimg">` : m;
+    });
     return s;
   }
   function itemHTML(it){
@@ -234,18 +239,20 @@
   E.badgeLabel.textContent = isAdmin() ? ADMIN_BADGE : 'visitor';
   loadAll(); loadEmojis();
 
-  // emoji picker (toggle + insert)
+  // emoji picker (toggle + insert token [[emoji:nama.ext]])
   function insertAtCursor(el, text){
     const start = el.selectionStart ?? el.value.length;
     const end   = el.selectionEnd ?? el.value.length;
     el.value = el.value.slice(0,start) + text + el.value.slice(end);
     el.focus(); el.selectionStart = el.selectionEnd = start + text.length;
   }
-  E.emojiBtn.addEventListener('click',()=>{ E.emojiPicker.style.display = (E.emojiPicker.style.display==='grid'?'none':'grid'); });
+  E.emojiBtn.addEventListener('click',()=>{ 
+    E.emojiPicker.style.display = (E.emojiPicker.style.display==='grid'?'none':'grid'); 
+  });
   E.emojiPicker.addEventListener('click', e=>{
     const btn = e.target.closest('button'); if(!btn) return;
-    const url = btn.getAttribute('data-url');
-    insertAtCursor(activeTextArea, ` [[emoji:${url}]] `);
+    const name = btn.getAttribute('data-name');
+    insertAtCursor(activeTextArea, ` [[emoji:${name}]] `);
   });
 
   // tools
