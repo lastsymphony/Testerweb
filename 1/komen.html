@@ -1459,24 +1459,27 @@
         console.error('React error');
       }
     } else if(act==='pin'){
-      try{ 
-        await apiPin(id); 
-        PIN_ID=id; 
-        render(); 
-        setStatus('📌 Dipin','ok'); 
-      }catch(e){ 
-        console.error('Pin error:', e);
-      }
-    } else if(act==='unpin'){
-      try{ 
-        await apiUnpin(); 
-        PIN_ID=null; 
-        render(); 
-        setStatus('✅ Unpin','ok'); 
-      }catch(e){ 
-        console.error('Unpin error:', e);
-      }
-    } else if(act==='delete'){
+  try{
+    await apiPin(id);
+    // sinkron dari server, jangan hanya set lokal
+    const items = await apiGet();
+    data = items;
+    render();
+    setStatus('📌 Dipin','ok');
+  }catch(e){
+    console.error('Pin error:', e);
+  }
+} else if(act==='unpin'){
+  try{
+    await apiUnpin();
+    const items = await apiGet();
+    data = items;
+    render();
+    setStatus('✅ Unpin','ok');
+  }catch(e){
+    console.error('Unpin error:', e);
+  }
+} else if(act==='delete'){
       if(!confirm('Hapus komentar ini (termasuk balasannya)?')) return;
       try{ 
         await apiDelete(id); 
