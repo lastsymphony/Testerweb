@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Komentar + Reply + Upload + React (No Login)</title>
+<title>Komentar + Reply + Upload + Emoji Custom</title>
 <style>
   :root{--bg:#0a0a0f;--panel:#101018;--line:#232545;--txt:#eef1ff;--muted:#9aa4bf;--pri:#7c4dff;--pri2:#8b5dff}
-  *{box-sizing:border-box} body{margin:0;background:#0a0a0f;color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:#0a0a0f;color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   main{max-width:860px;margin:28px auto;padding:0 14px}
   .panel{background:#121322;border:1px solid var(--line);border-radius:16px;padding:16px}
   label{display:block;font-size:13px;font-weight:700;color:#cfd6ff;margin-bottom:6px}
@@ -16,10 +17,11 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   button{cursor:pointer;background:linear-gradient(135deg,var(--pri),var(--pri2));border:none;font-weight:800}
   button.alt{background:#20255a;border:1px solid #313b7a}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;position:relative}
   .tool{padding:8px 10px;border:1px solid #2a2e63;border-radius:999px;background:#0f1130;cursor:pointer}
-  .picker{display:none;position:absolute;background:#0e1030;border:1px solid #2a2e63;border-radius:12px;padding:8px;grid-template-columns:repeat(8,28px);gap:6px}
   .status{font-size:13px;margin-top:6px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;color:#cbd1ff}
+  .chip{border:1px solid #2a2e63;background:#0f1130;padding:6px 10px;border-radius:999px;font-size:12px}
   .list{display:grid;gap:12px;margin-top:12px}
   .item{background:#14162a;border:1px solid #2a2e63;border-radius:12px;padding:12px}
   .head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -27,8 +29,8 @@
   .badge{font-size:11px;border:1px solid #3a3f86;background:#121540;color:#cfe1ff;padding:3px 8px;border-radius:999px}
   .badge.admin{border-color:#8aa0ff;background:#1a245a}
   .time{color:var(--muted);font-size:12px;margin-left:auto}
-  .body{white-space:pre-wrap;margin-top:8px}
   .replyto{display:inline-block;margin-top:6px;font-size:12px;color:#cfe1ff;border:1px solid #2a2e63;background:#0f1130;padding:2px 8px;border-radius:999px}
+  .body{white-space:pre-wrap;margin-top:8px}
   .imgwrap{margin-top:10px}
   .imgwrap img{max-width:100%;border-radius:10px;border:1px solid #2a2e63}
   .actions{display:flex;gap:8px;align-items:center;margin-top:10px;color:#cbd5ff}
@@ -38,8 +40,11 @@
   .reaction img{width:16px;height:16px}
   .children{margin-left:18px;border-left:2px dashed #2a2e63;padding-left:10px;display:grid;gap:10px;margin-top:12px}
   .replybox{margin-top:10px;border:1px dashed #394182;border-radius:12px;padding:10px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;color:#cbd1ff}
-  .chip{border:1px solid #2a2e63;background:#0f1130;padding:6px 10px;border-radius:999px;font-size:12px}
+  /* emoji picker custom */
+  #emojiPicker{display:none;position:absolute;top:46px;left:0;background:#0e1030;border:1px solid #2a2e63;border-radius:12px;padding:8px;grid-template-columns:repeat(8,34px);gap:6px;z-index:50}
+  #emojiPicker button{padding:4px;border-radius:8px;border:1px solid #2a2e63;background:#151848;display:flex;align-items:center;justify-content:center}
+  #emojiPicker img{width:22px;height:22px}
+  .emojiimg{width:22px;height:22px;vertical-align:middle;border-radius:4px}
 </style>
 </head>
 <body>
@@ -54,14 +59,14 @@
       <textarea id="message" placeholder="Tulis komentar (Shift+Enter = baris baru)" maxlength="2000"></textarea>
     </div>
 
-    <div class="toolbar" style="position:relative">
+    <div class="toolbar">
       <span class="tool" id="emojiBtn">😀</span>
       <span class="tool" id="imageUrlBtn">🖼️ URL</span>
       <span class="tool" id="uploadBtn">⬆️ Upload</span>
       <span class="tool" id="adminBtn">Badge: <b id="badgeLabel">visitor</b></span>
       <input type="text" id="imageUrlInput" placeholder="https://…" style="display:none;min-width:260px">
       <input type="file" id="fileInput" accept="image/*" style="display:none">
-      <div class="picker" id="emojiPicker"></div>
+      <div id="emojiPicker"></div>
     </div>
 
     <div class="grid2">
@@ -84,35 +89,33 @@
         </select>
       </span>
     </div>
-
     <div class="list" id="list"></div>
   </section>
 </main>
 
 <script>
 (function(){
-  // ======= KONFIG =======
-  const API_BASE = 'https://telestick.vercel.app/api'; // ganti bila perlu
+  /* ====== CONFIG ====== */
+  const API_BASE = 'https://telestick.vercel.app/api'; // ganti jika perlu
   const EP = {
     GET:   s => `${API_BASE}/comments-get?slug=${encodeURIComponent(s)}`,
     POST:  `${API_BASE}/comments-post`,
     LIKE:  `${API_BASE}/comments-like`,
     REACT: `${API_BASE}/comments-react`,
-    UPLOAD:`${API_BASE}/comments-upload`
+    UPLOAD:`${API_BASE}/comments-upload`,
+    EMOJI: `${API_BASE}/emoji-list`
   };
-  // Reactions per-komentar (TANPA like supaya tidak dobel ikon)
+  // Reaksi per-komentar (TANPA like supaya tidak dobel ikon)
   const COMMENT_REACTIONS = [
     { key:'heart', label:'Love', icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/2764.svg' },
     { key:'joy',   label:'Haha', icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f602.svg' },
     { key:'wow',   label:'Wow',  icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f62e.svg' }
   ];
   const ADMIN_KEY='kathy-admin', ADMIN_BADGE='katheryne';
+  // slug otomatis
+  const SLUG = (new URL(location.href)).searchParams.get('slug') || location.pathname || '/';
 
-  // ======= SLUG OTOMATIS =======
-  const url = new URL(location.href);
-  const SLUG = (url.searchParams.get('slug') || location.pathname || '/').trim();
-
-  // ======= ELEM =======
+  /* ====== ELEMENTS ====== */
   const $=s=>document.querySelector(s);
   const E={
     name:$('#name'), msg:$('#message'),
@@ -124,79 +127,48 @@
     list:$('#list'), sortSel:$('#sortSel'), count:$('#countComments')
   };
 
-  // ======= STATE =======
+  /* ====== STATE ====== */
   const savedName = localStorage.getItem('kathy_comment_name') || '';
   const isAdmin = ()=> localStorage.getItem('kathy_is_admin')==='1';
-  let data=[];           // flat items
-  let mapById=new Map(); // id -> item (untuk render parentName)
-  let optimisticQueue=new Set(); // id yang baru dipost (untuk highlight jika mau)
+  let data=[]; let EMOJI_ITEMS=[]; let activeTextArea = E.msg;
 
-  // ======= UTILS =======
+  /* ====== UTILS ====== */
   const esc = s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
   const time = s=>{ const d=new Date(s); return isNaN(d)?s:d.toLocaleString(); };
   const setStatus=(m,t='')=>{ E.status.textContent=m||''; E.status.className='status '+t; };
-  const safeJson=async(res)=>{ const ct=res.headers.get('content-type')||''; if(!ct.includes('application/json')){ const text=await res.text(); throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`);} return res.json(); };
   const sum = a=>a.reduce((x,y)=>x+Number(y||0),0);
   const score = it => Number(it.likes||0)+sum(Object.values(it.reactions||{}));
 
-  // ======= API =======
-  async function apiGet(){
-    const r = await fetch(EP.GET(SLUG), {cache:'no-store'});
-    const j = await safeJson(r);
-    if(!j.ok) throw new Error(j.error||'Gagal memuat');
-    return (j.items||[]).map(it=>({ ...it,
-      parentId: it.parentId ?? null, likes: it.likes ?? 0, reactions: it.reactions ?? {}, role: it.role ?? 'visitor'
-    }));
-  }
-  async function apiPost(p){
-    const r = await fetch(EP.POST, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
-    const j = await safeJson(r); if(!j.ok) throw new Error(j.error||`HTTP ${r.status}`); return j.item;
-  }
-  async function apiLike(id, delta=1){
-    try{
-      const r=await fetch(EP.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,delta})});
-      if(r.status===404) throw new Error('no-like'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j;
-    }catch{ const k='k_like_'+id, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; }
-  }
-  async function apiReact(id, key, delta=1){
-    try{
-      const r=await fetch(EP.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,key,delta})});
-      if(r.status===404) throw new Error('no-react'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j;
-    }catch{ const k='k_react_'+id+'_'+key, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; }
-  }
-  async function apiUpload(file){
-    try{
-      const buf=await file.arrayBuffer(); const b64=btoa(String.fromCharCode(...new Uint8Array(buf)));
-      const r=await fetch(EP.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,contentType:file.type,dataBase64:b64})});
-      if(r.status===404) throw new Error('no-upload'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j.url;
-    }catch{ // fallback dataURL
-      return new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(file); });
-    }
-  }
+  const safeJson=async(res)=>{ const ct=res.headers.get('content-type')||''; if(!ct.includes('application/json')){ const text=await res.text(); throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`);} return res.json(); };
 
-  // ======= RENDER =======
-  function buildMaps(items){ mapById = new Map(items.map(x=>[x.id,x])); }
+  /* ====== API ====== */
+  async function apiGet(){ const r=await fetch(EP.GET(SLUG),{cache:'no-store'}); const j=await safeJson(r); if(!j.ok) throw new Error(j.error||'Gagal memuat'); return (j.items||[]).map(it=>({...it,parentId:it.parentId??null,likes:it.likes??0,reactions:it.reactions??{},role:it.role??'visitor'})); }
+  async function apiPost(p){ const r=await fetch(EP.POST,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}); const j=await safeJson(r); if(!j.ok) throw new Error(j.error||`HTTP ${r.status}`); return j.item; }
+  async function apiLike(id,delta=1){ try{ const r=await fetch(EP.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,delta})}); if(r.status===404) throw new Error('no-like'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j; }catch{ const k='k_like_'+id, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; } }
+  async function apiReact(id,key,delta=1){ try{ const r=await fetch(EP.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,key,delta})}); if(r.status===404) throw new Error('no-react'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j; }catch{ const k='k_react_'+id+'_'+key, v=Number(localStorage.getItem(k)||0)+Number(delta||1); localStorage.setItem(k,Math.max(0,v)); return {ok:true,local:true}; } }
+  async function apiUpload(file){ try{ const buf=await file.arrayBuffer(); const b64=btoa(String.fromCharCode(...new Uint8Array(buf))); const r=await fetch(EP.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,contentType:file.type,dataBase64:b64})}); if(r.status===404) throw new Error('no-upload'); const j=await safeJson(r); if(!j.ok) throw new Error(j.error); return j.url; }catch{ return new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(file); }); } }
+  async function loadEmojis(){ try{ const r=await fetch(EP.EMOJI,{cache:'no-store'}); const j=await r.json(); EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; E.emojiPicker.innerHTML = EMOJI_ITEMS.length? EMOJI_ITEMS.map(e=>`<button type="button" data-url="${e.url}" title="${e.name}"><img src="${e.url}" alt="${e.name}"></button>`).join('') : '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; }catch{ E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; } }
+
+  /* ====== RENDER ====== */
   function buildTree(items){
-    buildMaps(items);
-    const map=new Map(items.map(x=>[x.id,x])); items.forEach(x=>{x.children=[]; x.parentName=null;});
+    const byId=new Map(items.map(x=>[x.id,x])); items.forEach(x=>{x.children=[]; x.parentName=null;});
     const root=[];
-    for(const it of items){
-      if(it.parentId && map.has(it.parentId)){
-        it.parentName = map.get(it.parentId).name || null;
-        map.get(it.parentId).children.push(it);
-      } else root.push(it);
-    }
+    for(const it of items){ if(it.parentId && byId.has(it.parentId)){ it.parentName = byId.get(it.parentId).name || null; byId.get(it.parentId).children.push(it); } else root.push(it); }
     const sortNew=(a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')); 
     const sortOld=(a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||'')); 
     const sortTop=(a,b)=>score(b)-score(a);
     const sort = E.sortSel.value==='new'?sortNew:E.sortSel.value==='old'?sortOld:sortTop;
     const w=arr=>{ arr.sort(sort); arr.forEach(x=>w(x.children)); }; w(root); return root;
   }
-
   function likeLocal(it){ const s=Number(it.likes||0), l=Number(localStorage.getItem('k_like_'+it.id)||0); const t=s+l; return t?` ${t}`:''; }
   function reactLocal(it,key){ const s=Number((it.reactions||{})[key]||0), l=Number(localStorage.getItem('k_react_'+it.id+'_'+key)||0); const t=s+l; return t?` ${t}`:''; }
   const badge = role=>`<span class="badge ${role==='admin'?'admin':''}">${role==='admin'?'katheryne':'visitor'}</span>`;
-
+  function renderMessage(text){
+    let s = esc(text || '');
+    // token [[emoji:<URL>]] -> <img>
+    s = s.replace(/\[\[emoji:(https?:\/\/[^\]\s]+)\]\]/g,(m,url)=> EMOJI_ITEMS.some(x=>x.url===url) ? `<img src="${url}" alt="emoji" class="emojiimg">` : m);
+    return s;
+  }
   function itemHTML(it){
     const img = it.imageUrl?`<div class="imgwrap"><img src="${esc(it.imageUrl)}" alt=""></div>`:'';
     const replyTo = it.parentName ? `<span class="replyto">balas → @${esc(it.parentName)}</span>` : '';
@@ -207,7 +179,7 @@
         <span class="time">${esc(time(it.createdAt))}</span>
       </div>
       ${replyTo}
-      <div class="body">${esc(it.message)}</div>
+      <div class="body">${renderMessage(it.message)}</div>
       ${img}
       <div class="actions">
         <span class="action" data-act="like" data-id="${it.id}">👍<b>${likeLocal(it)}</b></span>
@@ -226,18 +198,10 @@
       ${it.children?.length?`<div class="children">${it.children.map(itemHTML).join('')}</div>`:''}
     </div>`;
   }
+  function render(){ const tree=buildTree([...data]); E.count.textContent=data.length; E.list.innerHTML=tree.length?tree.map(itemHTML).join(''):'<div class="status">Belum ada komentar.</div>'; }
 
-  function render(){ 
-    const tree=buildTree([...data]); 
-    E.count.textContent=data.length; 
-    E.list.innerHTML=tree.length?tree.map(itemHTML).join(''):'<div class="status">Belum ada komentar.</div>'; 
-  }
-
-  // ======= LOAD/SUBMIT =======
-  async function loadAll(){
-    try{ setStatus('Memuat…'); data = await apiGet(); setStatus(''); render(); }
-    catch(e){ setStatus('❌ '+(e.message||e),'err'); }
-  }
+  /* ====== LOAD & SUBMIT ====== */
+  async function loadAll(){ try{ setStatus('Memuat…'); data = await apiGet(); setStatus(''); render(); } catch(e){ setStatus('❌ '+(e.message||e),'err'); } }
 
   async function submit(parentId=null, file=null){
     const role=isAdmin()?'admin':'visitor';
@@ -246,45 +210,46 @@
     let imageUrl=(parentId?($('#r-img-'+parentId)||{}).value:E.imageUrlInput.value)||'';
     if(!name.trim() || !message.trim()){ setStatus('Nama & komentar wajib.','err'); return; }
     if(file){ imageUrl = await apiUpload(file); }
-
-    // kirim ke server
     try{
       setStatus('Mengirim…');
       const item = await apiPost({ slug:SLUG, name:name.trim(), message:message.trim(), imageUrl:imageUrl.trim()||null, parentId:parentId||null, role });
 
-      // ======= OPTIMISTIC RENDER (langsung tampil tanpa refresh) =======
-      optimisticQueue.add(item.id);
-      data.push({ ...item, likes:0, reactions:{}, parentName: parentId && mapById.get(parentId) ? mapById.get(parentId).name : null });
+      // Optimistic render: langsung tampil tanpa refresh
+      const parentName = parentId ? (data.find(x=>x.id===parentId)?.name || null) : null;
+      data.push({ ...item, likes:0, reactions:{}, parentName });
       render();
 
-      // bersihkan form utama
       if(!parentId){ E.msg.value=''; E.imageUrlInput.value=''; E.fileInput.value=''; }
       setStatus('✅ Terkirim','ok');
+      localStorage.setItem('kathy_comment_name', name.trim());
 
-      // sync nyata dari server (biar count konsisten)
+      // Sync dari server supaya count konsisten
       apiGet().then(items=>{ data=items; render(); }).catch(()=>{});
       setTimeout(()=>setStatus(''),1200);
-      localStorage.setItem('kathy_comment_name', name.trim());
     }catch(e){ setStatus('❌ '+(e.message||e),'err'); }
   }
 
-  // ======= INIT & EVENTS =======
+  /* ====== INIT & EVENTS ====== */
   E.name.value = savedName;
   E.badgeLabel.textContent = isAdmin() ? ADMIN_BADGE : 'visitor';
-  loadAll();
+  loadAll(); loadEmojis();
 
-  // emoji picker
-  const EMOJIS="😀😁😂🤣😊😍😘🤩😎🙂😉😇🥰🤗🤔😭😱😳👍🙏✨🔥🎉".split('');
-  E.emojiPicker.innerHTML = EMOJIS.map(e=>`<button type="button" style="padding:4px;border-radius:8px;border:1px solid #2a2e63;background:#151848">${e}</button>`).join('');
-  E.emojiBtn.addEventListener('click',()=>{ 
-    E.emojiPicker.style.display = E.emojiPicker.style.display==='grid'?'none':'grid'; 
+  // emoji picker (toggle + insert)
+  function insertAtCursor(el, text){
+    const start = el.selectionStart ?? el.value.length;
+    const end   = el.selectionEnd ?? el.value.length;
+    el.value = el.value.slice(0,start) + text + el.value.slice(end);
+    el.focus(); el.selectionStart = el.selectionEnd = start + text.length;
+  }
+  E.emojiBtn.addEventListener('click',()=>{ E.emojiPicker.style.display = (E.emojiPicker.style.display==='grid'?'none':'grid'); });
+  E.emojiPicker.addEventListener('click', e=>{
+    const btn = e.target.closest('button'); if(!btn) return;
+    const url = btn.getAttribute('data-url');
+    insertAtCursor(activeTextArea, ` [[emoji:${url}]] `);
   });
-  E.emojiPicker.addEventListener('click',e=>{ if(e.target.tagName==='BUTTON') E.msg.value += e.target.textContent; });
 
   // tools
-  E.imageUrlBtn.addEventListener('click',()=>{ 
-    E.imageUrlInput.style.display = E.imageUrlInput.style.display==='none'?'inline-block':'none'; 
-  });
+  E.imageUrlBtn.addEventListener('click',()=>{ E.imageUrlInput.style.display = E.imageUrlInput.style.display==='none'?'inline-block':'none'; });
   E.uploadBtn.addEventListener('click',()=>E.fileInput.click());
   E.fileInput.addEventListener('change',()=> setStatus(E.fileInput.files[0]?'📷 Gambar siap.':'','ok'));
   E.adminBtn.addEventListener('click',()=>{
@@ -293,7 +258,7 @@
   });
 
   // submit & reload
-  E.send.addEventListener('click',e=>{ e.preventDefault(); submit(null, E.fileInput.files[0]||null); });
+  E.send.addEventListener('click',e=>{ e.preventDefault(); activeTextArea = E.msg; submit(null, E.fileInput.files[0]||null); });
   E.reload.addEventListener('click',e=>{ e.preventDefault(); loadAll(); });
   E.msg.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); E.send.click(); } });
 
@@ -304,14 +269,15 @@
     if(act==='reply'){
       const box=$('#replybox-'+id);
       box.style.display = box.style.display==='none'?'block':'none';
+      const ta=$('#r-msg-'+id); if(ta){ activeTextArea=ta; ta.focus(); }
     } else if(act==='pick-child'){
       const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
       inp.onchange=()=>{ const box=t.closest('.replybox'); box._file = inp.files?.[0]||null; setStatus('📷 Gambar balasan siap.','ok'); };
       inp.click();
     } else if(act==='send-reply'){
       const box=$('#replybox-'+id); await submit(id, box?._file||null); if(box){ box._file=null; box.style.display='none'; }
+      activeTextArea = E.msg;
     } else if(act==='like'){
-      // satu ikon saja (👍), update angka langsung
       const b=t.querySelector('b'); b.textContent=' '+(Number((b.textContent||'').trim())+1 || 1);
       try{ await apiLike(id,+1); }catch{}
     } else if(act==='react'){
