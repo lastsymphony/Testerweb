@@ -919,14 +919,47 @@
   };
 
   /* ====== STATE ====== */
-  const savedName = localStorage.getItem('kathy_comment_name') || '';
-  const adminKey = localStorage.getItem('kathy_admin_key') || '';
-  const isAdmin = ()=> !!adminKey;
+  let ADMIN_OK = false;
+  const storedKey = localStorage.getItem('kathy_admin_key') || '';
   let data=[]; 
   let EMOJI_ITEMS=[], EMOJI_MAP=new Map(); 
   let activeTextArea = E.msg;
   let PIN_ID = null;
   let currentSort = 'new';
+
+  /* ====== ADMIN VERIFICATION ====== */
+  async function verifyAdmin(key) {
+    try {
+      const r = await fetch(`${API_BASE}/admin-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key })
+      });
+      ADMIN_OK = r.ok;
+      if (ADMIN_OK) {
+        localStorage.setItem('kathy_admin_key', key);
+        E.badgeLabel.textContent = 'katheryne';
+        setStatus('🔑 Admin on','ok');
+      } else {
+        localStorage.removeItem('kathy_admin_key');
+        E.badgeLabel.textContent = 'visitor';
+        setStatus('Admin off','warn');
+      }
+    } catch {
+      ADMIN_OK = false;
+      E.badgeLabel.textContent = 'visitor';
+    }
+  }
+
+  const isAdmin = () => ADMIN_OK;
+
+  function adminHeader() {
+    const k = localStorage.getItem('kathy_admin_key') || '';
+    return k ? { 'x-admin-key': k } : {};
+  }
+
+  // inisialisasi awal
+  verifyAdmin(storedKey);
 
   /* ====== UTILS ====== */
   const esc = s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
@@ -1004,40 +1037,34 @@
     } 
   }
   
-  async function apiPin(id){ 
-    try{ 
-      const r=await fetch(EP.PIN,{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':(localStorage.getItem('kathy_admin_key')||'')},body:JSON.stringify({slug:SLUG,id})}); 
-      const j=await safeJson(r); 
-      if(!j.ok) throw new Error(j.error||'pin fail'); 
-      return j; 
-    }catch(e){ 
-      setStatus('❌ '+e.message,'err'); 
-      throw e;
-    } 
+  async function apiPin(id){
+    const r = await fetch(EP.PIN, { method:'POST',
+      headers: { 'Content-Type':'application/json', ...adminHeader() },
+      body: JSON.stringify({ slug: SLUG, id })
+    });
+    const j = await r.json();
+    if(!r.ok || !j.ok) throw new Error(j.error || 'pin fail');
+    PIN_ID = j.pinId ?? id;
+    return j;
   }
-  
-  async function apiUnpin(){ 
-    try{ 
-      const r=await fetch(EP.PIN,{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':(localStorage.getItem('kathy_admin_key')||'')},body:JSON.stringify({slug:SLUG,id:null})}); 
-      const j=await safeJson(r); 
-      if(!j.ok) throw new Error(j.error||'unpin fail'); 
-      return j; 
-    }catch(e){ 
-      setStatus('❌ '+e.message,'err'); 
-      throw e;
-    } 
+
+  async function apiUnpin(){
+    const r = await fetch(EP.PIN, { method:'POST',
+      headers: { 'Content-Type':'application/json', ...adminHeader() },
+      body: JSON.stringify({ slug: SLUG, id: null })
+    });
+    const j = await r.json();
+    if(!r.ok || !j.ok) throw new Error(j.error || 'unpin fail');
+    PIN_ID = null; 
+    return j;
   }
-  
-  async function apiDelete(id){ 
-    try{ 
-      const r=await fetch(EP.DEL,{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':(localStorage.getItem('kathy_admin_key')||'')},body:JSON.stringify({slug:SLUG,id})}); 
-      const j=await safeJson(r); 
-      if(!j.ok) throw new Error(j.error||'delete fail'); 
-      return j; 
-    }catch(e){ 
-      setStatus('❌ '+e.message,'err'); 
-      throw e;
-    } 
+
+  async function apiDelete(id){
+    const r = await fetch(`${EP.DEL}?slug=${encodeURIComponent(SLUG)}&id=${encodeURIComponent(id)}`, {
+      method:'POST', headers: { ...adminHeader() }
+    });
+    const j = await r.json();
+    if(!r.ok || !j.ok) throw new Error(j.error || 'delete fail');
   }
   
   async function loadEmojis(){ 
@@ -1202,20 +1229,20 @@
       E.sortHeader.style.display = 'none';
     }
     
-    // pinned section
-    if(PIN_ID){
-      const pin = data.find(x=>String(x.id)===String(PIN_ID));
-      if(pin){ 
-        E.pinnedWrap.style.display='block'; 
-        E.pinnedBox.innerHTML = itemHTML(pin); 
+    // pinned section (FIX: render sebagai tree agar children ikut)
+    if (PIN_ID) {
+      const pin = data.find(x => String(x.id) === String(PIN_ID));
+      if (pin) {
+        const treePin = buildTree([pin]);           // <— ini kuncinya
+        E.pinnedWrap.style.display = 'block';
+        E.pinnedBox.innerHTML = treePin.map(itemHTML).join('');
+      } else {
+        E.pinnedWrap.style.display = 'none';
+        E.pinnedBox.innerHTML = '';
       }
-      else { 
-        E.pinnedWrap.style.display='none'; 
-        E.pinnedBox.innerHTML=''; 
-      }
-    } else { 
-      E.pinnedWrap.style.display='none'; 
-      E.pinnedBox.innerHTML=''; 
+    } else {
+      E.pinnedWrap.style.display = 'none';
+      E.pinnedBox.innerHTML = '';
     }
     
     // normal list (exclude pinned root from top level, replies tetap)
@@ -1322,9 +1349,8 @@
   }
 
   /* ====== INIT & EVENTS ====== */
+  const savedName = localStorage.getItem('kathy_comment_name') || '';
   E.name.value = savedName;
-  E.badgeLabel.textContent = isAdmin() ? ADMIN_BADGE : 'visitor';
-  if(!adminKey){ E.badgeLabel.textContent='visitor'; }
   loadAll(); 
   loadEmojis();
 
@@ -1362,19 +1388,10 @@
   });
 
   // admin toggle
-  E.adminBtn.addEventListener('click',()=>{
-    if(isAdmin()){ 
-      localStorage.removeItem('kathy_admin_key'); 
-      E.badgeLabel.textContent='visitor'; 
-      setStatus('Admin off','warn'); 
-      return; 
-    }
-    const k=prompt('Masukkan ADMIN_KEY:'); 
-    if(k){ 
-      localStorage.setItem('kathy_admin_key', k); 
-      E.badgeLabel.textContent=ADMIN_BADGE; 
-      setStatus('Admin on','ok'); 
-    }
+  E.adminBtn.addEventListener('click', async ()=>{
+    const key = prompt('Masukkan ADMIN_KEY');
+    if (key === null) return;
+    await verifyAdmin(key.trim());
   });
 
   // submit & reload
@@ -1410,8 +1427,8 @@
     });
   });
 
-  // list delegation
-  E.list.addEventListener('click',async e=>{
+  // event handler delegation
+  const handlerDelegation = async e=>{
     const t=e.target.closest('[data-act]'); 
     if(!t) return;
     const act=t.dataset.act, id=t.dataset.id, key=t.dataset.key;
@@ -1459,27 +1476,27 @@
         console.error('React error');
       }
     } else if(act==='pin'){
-  try{
-    await apiPin(id);
-    // sinkron dari server, jangan hanya set lokal
-    const items = await apiGet();
-    data = items;
-    render();
-    setStatus('📌 Dipin','ok');
-  }catch(e){
-    console.error('Pin error:', e);
-  }
-} else if(act==='unpin'){
-  try{
-    await apiUnpin();
-    const items = await apiGet();
-    data = items;
-    render();
-    setStatus('✅ Unpin','ok');
-  }catch(e){
-    console.error('Unpin error:', e);
-  }
-} else if(act==='delete'){
+      try{
+        await apiPin(id);
+        // sinkron dari server, jangan hanya set lokal
+        const items = await apiGet();
+        data = items;
+        render();
+        setStatus('📌 Dipin','ok');
+      }catch(e){
+        console.error('Pin error:', e);
+      }
+    } else if(act==='unpin'){
+      try{
+        await apiUnpin();
+        const items = await apiGet();
+        data = items;
+        render();
+        setStatus('✅ Unpin','ok');
+      }catch(e){
+        console.error('Unpin error:', e);
+      }
+    } else if(act==='delete'){
       if(!confirm('Hapus komentar ini (termasuk balasannya)?')) return;
       try{ 
         await apiDelete(id); 
@@ -1500,6 +1517,11 @@
         ? `💬 Lihat ${box.children.length} balasan`
         : '🔽 Sembunyikan balasan';
     }
+  };
+
+  // attach event delegation to both list and pinnedBox
+  ['list','pinnedBox'].forEach(idEl=>{
+    document.getElementById(idEl).addEventListener('click', handlerDelegation);
   });
 
   // Close emoji picker when clicking outside
