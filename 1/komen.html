@@ -465,6 +465,7 @@
     display: grid;
     gap: 12px;
     margin-top: 16px;
+    transition: var(--transition);
   }
 
   .replybox {
@@ -473,6 +474,36 @@
     border-radius: 12px;
     padding: 16px;
     background: rgba(15, 17, 48, 0.5);
+  }
+
+  /* ====== TOGGLE REPLIES ====== */
+  .child-toggle {
+    margin-top: 12px;
+  }
+
+  .toggle-replies {
+    background: #1a1c3a;
+    border: 1px solid #333a7a;
+    color: #cbd5ff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+  }
+
+  .toggle-replies:hover {
+    background: #232861;
+    transform: translateY(-2px);
+  }
+
+  .hidden {
+    display: none;
   }
 
   /* ====== EMOJI PICKER ====== */
@@ -749,6 +780,26 @@
     border: 1px solid #34d399;
     color: #34d399;
   }
+
+  /* ====== OFFLINE INDICATOR ====== */
+  .offline-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--warning);
+    color: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 100;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
 </style>
 </head>
 <body>
@@ -838,6 +889,21 @@
   const ADMIN_BADGE='katheryne';
   const SLUG = (new URL(location.href)).searchParams.get('slug') || location.pathname || '/';
 
+  /* ====== PATCH: util merge dan cache ====== */
+  function arrToMap(arr){ 
+    const m=new Map(); 
+    for(const x of arr||[]) m.set(String(x.id), x); 
+    return m; 
+  }
+  
+  function mergeById(oldArr, newArr){
+    const m = arrToMap(oldArr);
+    for(const it of (newArr||[])) m.set(String(it.id), it);
+    return Array.from(m.values());
+  }
+  
+  const CACHE_KEY = 'kathy_comments_cache:' + (location.pathname || '/');
+
   /* ====== ELEMENTS ====== */
   const $=s=>document.querySelector(s);
   const E={
@@ -868,23 +934,16 @@
   const setStatus=(m,t='')=>{ E.status.textContent=m||''; E.status.className='status '+t; };
   const sum = a=>a.reduce((x,y)=>x+Number(y||0),0);
   const score = it => Number(it.likes||0)+sum(Object.values(it.reactions||{}));
-  const safeJson=async(res)=>{ const ct=res.headers.get('content-type')||''; if(!ct.includes('application/json')){ const text=await res.text(); throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`);} return res.json(); };
+  const safeJson=async(res)=>{ 
+    const ct=res.headers.get('content-type')||''; 
+    if(!ct.includes('application/json')){ 
+      const text=await res.text(); 
+      throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`); 
+    } 
+    return res.json(); 
+  };
 
   /* ====== API ====== */
-  async function apiGet(){ 
-    try {
-      setStatus('<span class="spinner"></span> Memuat komentar...');
-      const r=await fetch(EP.GET(SLUG),{cache:'no-store'}); 
-      const j=await safeJson(r); 
-      if(!j.ok) throw new Error(j.error||'Gagal memuat'); 
-      PIN_ID = j.pinId || null; 
-      return (j.items||[]).map(it=>({...it,parentId:it.parentId??null,likes:it.likes??0,reactions:it.reactions??{},role:it.role??'visitor'})); 
-    } catch (error) {
-      setStatus('❌ '+(error.message||error),'err');
-      throw error;
-    }
-  }
-  
   async function apiPost(p){ 
     try {
       setStatus('<span class="spinner"></span> Mengirim komentar...');
@@ -995,6 +1054,30 @@
     } 
   }
 
+  /* ====== PATCH: apiGet dengan limit besar & safe JSON ====== */
+  async function apiGet(){
+    const url = EP.GET(SLUG) + (EP.GET(SLUG).includes('?') ? '&' : '?') + 'limit=500';
+    const r = await fetch(url, { cache:'no-store' });
+    const ct = r.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) {
+      // fallback: jangan hancurkan state
+      throw new Error('Bukan JSON dari server');
+    }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || 'Gagal memuat');
+    const items = (j.items||[]).map(it=>({
+      ...it,
+      parentId: it.parentId ?? null,
+      likes: it.likes ?? 0,
+      reactions: it.reactions ?? {},
+      role: it.role ?? 'visitor'
+    }));
+    // simpan cache agar reload aman
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({items, pinId: j.pinId||null})); } catch{}
+    PIN_ID = j.pinId || null;
+    return items;
+  }
+
   /* ====== RENDER ====== */
   function buildTree(items){
     const byId=new Map(items.map(x=>[x.id,x])); 
@@ -1055,7 +1138,20 @@
     const img = it.imageUrl?`<div class="imgwrap"><img src="${esc(it.imageUrl)}" alt=""></div>`:'';
     const replyTo = it.parentName ? `<span class="replyto">balas → @${esc(it.parentName)}</span>` : '';
     const reacts = COMMENT_REACTIONS.map(r=>`<span class="reaction" data-act="react" data-id="${it.id}" data-key="${r.key}"><img src="${r.icon}" alt=""> ${esc(r.label)}<b>${reactLocal(it,r.key)}</b></span>`).join('');
-    
+
+    // Jika ada anak, sembunyikan default dan tampilkan tombol lihat balasan
+    const hasChildren = it.children?.length > 0;
+    const childHTML = hasChildren
+      ? `<div class="child-toggle" data-id="${it.id}">
+           <button type="button" class="toggle-replies" data-act="toggle" data-id="${it.id}">
+             💬 Lihat ${it.children.length} balasan
+           </button>
+         </div>
+         <div class="children hidden" id="children-${it.id}">
+           ${it.children.map(itemHTML).join('')}
+         </div>`
+      : '';
+
     return `<div class="item ${isPopular ? 'popular' : ''}" id="item-${it.id}">
       ${isPopular ? `<div class="popular-badge">🔥 Populer</div>` : ''}
       ${currentSort === 'top' ? `<div class="score-display">Score: ${itemScore}</div>` : ''}
@@ -1081,7 +1177,7 @@
         </div>
         <button type="button" data-act="send-reply" data-id="${it.id}">Kirim Balasan</button>
       </div>
-      ${it.children?.length?`<div class="children">${it.children.map(itemHTML).join('')}</div>`:''}
+      ${childHTML}
     </div>`;
   }
   
@@ -1138,17 +1234,39 @@
     }
   }
 
-  /* ====== LOAD & SUBMIT ====== */
-  async function loadAll(){ 
-    try{ 
-      data = await apiGet(); 
-      setStatus(''); 
-      render(); 
-    } catch(e){ 
-      console.error('Load error:', e);
-    } 
+  /* ====== PATCH: loadAll pakai cache bila fetch gagal ====== */
+  async function loadAll(){
+    try{
+      setStatus('<span class="spinner"></span> Memuat komentar...');
+      const items = await apiGet();
+      data = items;
+      setStatus('');
+      render();
+    }catch(e){
+      // gunakan cache agar UI tidak kosong
+      try{
+        const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}');
+        if (Array.isArray(c.items) && c.items.length) {
+          PIN_ID = c.pinId || null;
+          data = c.items;
+          render();
+          setStatus('⚠️ Mode offline (pakai cache)','warn');
+          
+          // Tambahkan indikator offline
+          const indicator = document.createElement('div');
+          indicator.className = 'offline-indicator';
+          indicator.textContent = '📡 Mode Offline';
+          document.body.appendChild(indicator);
+          setTimeout(() => indicator.remove(), 3000);
+          
+          return;
+        }
+      }catch{}
+      setStatus('❌ '+(e.message||e),'err');
+    }
   }
 
+  /* ====== PATCH: setelah submit – jangan replace dengan hasil kosong ====== */
   async function submit(parentId=null, file=null){
     const role=isAdmin()?'admin':'visitor';
     const name=(parentId?($('#r-name-'+parentId)||{}).value:E.name.value)||'';
@@ -1165,6 +1283,7 @@
     }
     
     try{
+      setStatus('<span class="spinner"></span> Mengirim...');
       const item = await apiPost({ 
         slug:SLUG, 
         name:name.trim(), 
@@ -1173,11 +1292,12 @@
         parentId:parentId||null, 
         role 
       });
-      
+
+      // Optimistic add
       const parentName = parentId ? (data.find(x=>x.id===parentId)?.name || null) : null;
       data.push({ ...item, likes:0, reactions:{}, parentName });
       render();
-      
+
       if(!parentId){ 
         E.msg.value=''; 
         E.imageUrlInput.value=''; 
@@ -1186,10 +1306,15 @@
       
       setStatus('✅ Terkirim','ok');
       localStorage.setItem('kathy_comment_name', name.trim());
-      
-      // Refresh data from server to get latest state
-      apiGet().then(items=>{ data=items; render(); }).catch(()=>{});
-      
+
+      // Sync → MERGE, bukan replace. Abaikan jika kosong/error.
+      apiGet().then(items=>{
+        if (Array.isArray(items) && items.length) {
+          data = mergeById(data, items);
+          render();
+        } // kalau kosong, biarkan data existing
+      }).catch(()=>{ /* keep optimistic state */ });
+
       setTimeout(()=>setStatus(''),2000);
     }catch(e){ 
       console.error('Submit error:', e);
@@ -1362,6 +1487,15 @@
       catch(e){ 
         console.error('Delete error:', e);
       }
+    } else if(act==='toggle'){
+      const id = t.dataset.id;
+      const box = document.getElementById(`children-${id}`);
+      if(!box) return;
+      const btn = t;
+      const isHidden = box.classList.toggle('hidden');
+      btn.textContent = isHidden
+        ? `💬 Lihat ${box.children.length} balasan`
+        : '🔽 Sembunyikan balasan';
     }
   });
 
@@ -1371,6 +1505,18 @@
       E.emojiPicker.style.display = 'none';
     }
   });
+
+  // Auto-sync every 30 seconds
+  setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      apiGet().then(items => {
+        if (Array.isArray(items) && items.length) {
+          data = mergeById(data, items);
+          render();
+        }
+      }).catch(() => {});
+    }
+  }, 30000);
 })();
 </script>
 </body>
