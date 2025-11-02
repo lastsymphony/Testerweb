@@ -1,202 +1,442 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Komentar — Test (GitHub Pages × Vercel)</title>
-  <style>
-    :root { --bg:#0b1020; --card:#121a33; --muted:#9aa4bf; --acc:#5b7fff; --ok:#22c55e; --err:#ef4444; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background: radial-gradient(1200px 600px at 10% -10%, #1b2550 0%, transparent), var(--bg); color:#e8eefc; }
-    main { max-width: 760px; margin: 40px auto; padding: 0 16px; }
-    h1 { font-size: 24px; margin: 0 0 8px; }
-    p.hint { color: var(--muted); margin: 0 0 24px; }
-    .card { background: color-mix(in oklab, var(--card) 85%, black); border: 1px solid #1c2648; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .row { display: grid; gap: 10px; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    label { font-weight: 600; font-size: 13px; color:#c9d6ff; }
-    input, textarea, button, select {
-      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #213166; background: #0f1630; color: #e8eefc;
-    }
-    input::placeholder, textarea::placeholder { color:#7f8bb1; }
-    textarea { min-height: 110px; resize: vertical; }
-    button { cursor: pointer; background: linear-gradient(135deg, #4f67ff, #5b7fff); border: none; font-weight: 700; letter-spacing:.2px; }
-    button:hover { filter: brightness(1.08); }
-    .muted { color: var(--muted); font-size: 13px; }
-    .status { font-size: 13px; margin-top: 8px; }
-    .status.ok { color: var(--ok); }
-    .status.err { color: var(--err); }
-    .comment { border: 1px solid #22346a; border-radius: 12px; padding: 12px; background: #0d142b; }
-    .comment .head { display:flex; gap:8px; align-items: baseline; margin-bottom: 4px; }
-    .comment .name { font-weight: 700; }
-    .comment .time { color: var(--muted); font-size: 12px; }
-    .empty { color: var(--muted); font-style: italic; }
-    .debug { margin-top: 16px; color:#9fb3ff; font-size:12px; word-break: break-all; }
-    .kbd { padding:2px 6px; border:1px solid #2a3b73; border-radius:6px; background:#0b1330; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Komentar Berulir — Demo (GitHub Pages × Vercel)</title>
+<style>
+  :root{
+    --bg:#0a0f1f; --fg:#e8eefc; --muted:#9aa4bf; --card:#111936; --line:#1b2650;
+    --pri:#5468ff; --pri2:#6a7aff; --ok:#22c55e; --err:#ef4444; --warn:#f59e0b;
+    --chip:#0e1533;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Inter,Roboto,sans-serif;background:radial-gradient(1200px 600px at 10% -10%,#1b2550 0%,transparent),var(--bg);color:var(--fg)}
+  main{max-width:900px;margin:36px auto;padding:0 16px}
+  h1{margin:0 0 6px}
+  p.hint{color:var(--muted);margin:0 0 16px}
+  .card{background:color-mix(in oklab, var(--card) 85%, black);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 12px 36px rgba(0,0,0,.28)}
+  label{display:block;font-size:13px;font-weight:600;color:#c9d6ff;margin-bottom:6px}
+  input,textarea,button{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #213166;background:#0f1630;color:var(--fg);font-size:14px}
+  input::placeholder,textarea::placeholder{color:#7f8bb1}
+  textarea{min-height:110px;resize:vertical}
+  .row{display:grid;gap:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  button{cursor:pointer;background:linear-gradient(135deg,var(--pri),var(--pri2));border:none;font-weight:700}
+  button:hover{filter:brightness(1.08)}
+  .muted{color:var(--muted);font-size:13px}
+  .status{font-size:13px;margin-top:6px}
+  .status.ok{color:var(--ok)} .status.err{color:var(--err)} .status.warn{color:var(--warn)}
+  .list{margin-top:18px}
+  .item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0d142b}
+  .head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .name{font-weight:800}
+  .badge{font-size:11px;border:1px solid #2a3b73;background:var(--chip);padding:3px 8px;border-radius:999px;text-transform:capitalize}
+  .badge.admin{border-color:#7c9bff;background:#132159}
+  .time{color:var(--muted);font-size:12px}
+  .body{white-space:pre-wrap;margin-top:6px}
+  .imgwrap{margin-top:8px}
+  .imgwrap img{max-width:100%;border-radius:8px;border:1px solid #25366f}
+  .actions{display:flex;gap:10px;align-items:center;margin-top:10px;color:#b8c3ff}
+  .action{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid #24336a;border-radius:999px;background:#0b1330;cursor:pointer;font-size:13px}
+  .action:hover{filter:brightness(1.1)}
+  .reactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .reaction{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border:1px solid #2b3c76;border-radius:999px;background:#0a1333;cursor:pointer;font-size:12px}
+  .reaction img{width:16px;height:16px;vertical-align:middle}
+  .children{margin-left:20px;border-left:2px dashed #233468;padding-left:12px;margin-top:10px;display:grid;gap:10px}
+  .replybox{margin-top:10px;border:1px dashed #344789;border-radius:10px;padding:10px}
+  .small{font-size:12px}
+  .kbd{padding:2px 6px;border:1px solid #2a3b73;border-radius:6px;background:#0b1330}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .pill{border:1px solid #2a3b73;background:#0b1330;padding:6px 10px;border-radius:999px;font-size:12px}
+  .file-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+  .sep{height:10px}
+</style>
 </head>
 <body>
 <main>
-  <h1>💬 Komentar — Demo</h1>
-  <p class="hint">Satu file HTML, bisa di-host di GitHub Pages / domain apa pun. Backend: <code class="kbd">Vercel</code> → simpan ke <code class="kbd">GitHub</code>.</p>
+  <h1>💬 Komentar Berulir</h1>
+  <p class="hint">Satu file HTML, bisa di-host di GitHub Pages/domain apa pun. Backend: <span class="kbd">Vercel</span> → simpan ke <span class="kbd">GitHub</span>.</p>
 
-  <section class="card" id="comments" data-slug="">
-    <div class="row">
-      <div class="grid2">
-        <div>
-          <label>Slug Halaman</label>
-          <input id="c-slug" placeholder="/tester" />
-        </div>
-        <div>
-          <label>Nama</label>
-          <input id="c-name" placeholder="Nama kamu" maxlength="60" />
-        </div>
+  <!-- ====== FORM UTAMA ====== -->
+  <section class="card row" id="rootForm">
+    <div class="grid2">
+      <div>
+        <label>Slug Halaman</label>
+        <input id="slug" placeholder="/artikel-ku" />
       </div>
       <div>
-        <label>Komentar</label>
-        <textarea id="c-message" placeholder="Tulis komentar…" maxlength="2000"></textarea>
+        <label>Nama</label>
+        <input id="name" placeholder="Nama kamu" maxlength="60" />
       </div>
-      <!-- Honeypot (biar bot nyangkut) -->
-      <input type="text" id="c-website" name="website" style="display:none" autocomplete="off" />
-      <div class="grid2">
-        <button id="btn-send">Kirim</button>
-        <button id="btn-reload" type="button" style="background:#283a7c">Muat Ulang</button>
+    </div>
+    <div>
+      <label>Komentar</label>
+      <textarea id="message" placeholder="Tulis komentar… (Shift+Enter = baris baru)" maxlength="2000"></textarea>
+    </div>
+    <div class="grid2">
+      <div>
+        <label>Gambar (opsional) — URL</label>
+        <input id="imageUrl" placeholder="https://…" />
       </div>
-      <div id="c-status" class="status"></div>
+      <div class="file-row">
+        <div><label class="small">atau upload file (eksperimental)</label></div>
+        <button id="pickFile" type="button" style="background:#283a7c">Pilih File…</button>
+      </div>
+      <input id="fileInput" type="file" accept="image/*" style="display:none">
     </div>
 
-    <div style="height:16px"></div>
-    <div id="comments-list" class="row"></div>
-
-    <div class="debug">
-      <div><b>API GET:</b> <span id="dbg-get"></span></div>
-      <div><b>API POST:</b> <span id="dbg-post"></span></div>
-      <div><b>Info:</b> Slug default pakai <code class="kbd">location.pathname</code>, bisa override via query <code class="kbd">?slug=/apa-aja</code>.</div>
+    <div class="tools">
+      <span class="pill">Badge: <b id="badgeLabel">visitor</b></span>
+      <button id="toggleAdmin" type="button" class="pill" style="cursor:pointer">Mode Admin</button>
+      <span class="muted small">Admin posts ditandai badge <b>katheryne</b>.</span>
     </div>
+
+    <div class="grid2">
+      <button id="send">Kirim</button>
+      <button id="reload" type="button" style="background:#33417e">Muat Ulang</button>
+    </div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ====== LIST KOMENTAR ====== -->
+  <section class="card">
+    <div class="muted small">Reaksi tersedia:</div>
+    <div id="reactionLegend" class="reactions"></div>
+
+    <div class="sep"></div>
+    <div id="list" class="list"></div>
   </section>
 </main>
 
 <script>
 (function(){
-  // ====== KONFIGURASI BACKEND (Vercel) ======
-  // Kamu sudah sediakan: https://telestick.vercel.app/api/
-  const API_BASE = 'https://telestick.vercel.app/api';
-  const ENDPOINT_GET  = (slug) => `${API_BASE}/comments-get?slug=${encodeURIComponent(slug)}`;
-  const ENDPOINT_POST = `${API_BASE}/comments-post`;
+  // ================= CONFIG =================
+  const API_BASE = 'https://telestick.vercel.app/api'; // ganti kalau perlu
+  const ENDPOINT = {
+    GET:   (slug)=> `${API_BASE}/comments-get?slug=${encodeURIComponent(slug)}`,
+    POST:  `${API_BASE}/comments-post`,
+    LIKE:  `${API_BASE}/comments-like`,      // tambahkan di server (opsional)
+    REACT: `${API_BASE}/comments-react`,     // tambahkan di server (opsional)
+    UPLOAD:`${API_BASE}/comments-upload`     // tambahkan di server (opsional)
+  };
 
-  // ====== Elemen ======
-  const elSlug = document.getElementById('c-slug');
-  const elName = document.getElementById('c-name');
-  const elMsg  = document.getElementById('c-message');
-  const elHp   = document.getElementById('c-website'); // honeypot
-  const elList = document.getElementById('comments-list');
-  const elSend = document.getElementById('btn-send');
-  const elReload = document.getElementById('btn-reload');
-  const elStatus = document.getElementById('c-status');
-  const elDbgGet = document.getElementById('dbg-get');
-  const elDbgPost= document.getElementById('dbg-post');
+  // Kustom emoji reaction (icon boleh link ke file kamu):
+  const REACTIONS = [
+    { key:'like',  label:'Like',   icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f44d.svg' },
+    { key:'heart', label:'Love',   icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/2764.svg' },
+    { key:'wow',   label:'Wow',    icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f62e.svg' },
+    { key:'joy',   label:'Haha',   icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f602.svg' },
+  ];
 
-  // ====== Utils ======
-  const qs = new URLSearchParams(location.search);
-  const initialSlug = qs.get('slug') || location.pathname || '/';
+  // Admin mode: sederhana via secret di localStorage
+  const ADMIN_KEY = 'kathy-admin';
+  const ADMIN_PROMPT = 'Masukkan Admin Key';
+  const ADMIN_BADGE = 'katheryne';
+
+  // =============== ELEMENTS ===============
+  const qs = (x)=>document.querySelector(x);
+  const el = {
+    slug: qs('#slug'),
+    name: qs('#name'),
+    msg:  qs('#message'),
+    img:  qs('#imageUrl'),
+    pick: qs('#pickFile'),
+    file: qs('#fileInput'),
+    send: qs('#send'),
+    reload: qs('#reload'),
+    status: qs('#status'),
+    list: qs('#list'),
+    badgeLabel: qs('#badgeLabel'),
+    toggleAdmin: qs('#toggleAdmin'),
+    legend: qs('#reactionLegend'),
+  };
+
+  // =============== STATE ===============
+  const url = new URL(location.href);
+  const initialSlug = url.searchParams.get('slug') || location.pathname || '/';
   const savedName = localStorage.getItem('kathy_comment_name') || '';
+  const isAdmin = ()=> localStorage.getItem('kathy_is_admin') === '1';
+  let uploadedDataUrl = null; // image picked -> dataURL (fallback kalau server support upload)
 
-  function setStatus(msg, type=''){
-    elStatus.textContent = msg || '';
-    elStatus.className = `status ${type}`;
+  // =============== UTILS ===============
+  const escapeHTML = (s)=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  const toTime = (s)=>{ const d=new Date(s); return isNaN(d)?s:d.toLocaleString(); };
+  const setStatus=(msg,type='')=>{ el.status.textContent=msg||''; el.status.className=`status ${type}`; };
+  const safeJson=async(res)=>{ const ct=res.headers.get('content-type')||''; if(!ct.includes('application/json')){ const t=await res.text(); throw new Error(`Bukan JSON (status ${res.status}): ${t.slice(0,120)}…`);} return res.json(); };
+  const byId = (arr,id)=>arr.find(x=>x.id===id);
+
+  function adminBadge(role){ return role==='admin'? `<span class="badge admin">${ADMIN_BADGE}</span>` : `<span class="badge">visitor</span>`; }
+
+  function renderLegend(){
+    el.legend.innerHTML = REACTIONS.map(r=>`<span class="reaction" title="${escapeHTML(r.label)}"><img src="${r.icon}" alt=""> ${escapeHTML(r.label)}</span>`).join('');
   }
-  function escapeHTML(s){
-    return (s??'').toString().replace(/[&<>"']/g, m=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[m]));
+
+  // =============== API HELPERS ===============
+  async function apiGet(slug){
+    const r = await fetch(ENDPOINT.GET(slug), {cache:'no-store'});
+    const j = await safeJson(r);
+    if(!j.ok) throw new Error(j.error||'Gagal memuat');
+    // Normalisasi default fields
+    for(const it of j.items||[]){
+      it.parentId = it.parentId ?? null;
+      it.likes    = it.likes ?? 0;
+      it.reactions= it.reactions ?? {}; // { key: count }
+      it.role     = it.role ?? 'visitor';
+    }
+    return j.items||[];
   }
-  function toTime(s){
-    const d = new Date(s);
-    if (isNaN(d)) return s;
-    return d.toLocaleString();
+
+  async function apiPost({slug,name,message,parentId,imageUrl,role}){
+    const payload = { slug,name,message, parentId: parentId||null, imageUrl: imageUrl||null, role: role||'visitor' };
+    const r = await fetch(ENDPOINT.POST,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j = await safeJson(r);
+    if(!j.ok) throw new Error(j.error||`HTTP ${r.status}`);
+    return j.item||null;
   }
-  function rowHTML(it){
-    return `<div class="comment">
+
+  async function apiLike(id,slug,delta=1){
+    try{
+      const r = await fetch(ENDPOINT.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug,delta})});
+      if(r.status===404) throw new Error('no-like'); // fallback to local
+      const j = await safeJson(r);
+      if(!j.ok) throw new Error(j.error||'like fail');
+      return j;
+    }catch(e){
+      // fallback: localStorage counter per id
+      const key = 'kathy_like_'+id;
+      const v = Number(localStorage.getItem(key)||0) + (delta>0?1:-1);
+      localStorage.setItem(key, Math.max(0,v));
+      return { ok:true, local:true };
+    }
+  }
+
+  async function apiReact(id,slug,key,delta=1){
+    try{
+      const r = await fetch(ENDPOINT.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug,key,delta})});
+      if(r.status===404) throw new Error('no-react');
+      const j = await safeJson(r);
+      if(!j.ok) throw new Error(j.error||'react fail');
+      return j;
+    }catch(e){
+      // fallback: local client
+      const lkey='kathy_react_'+id+'_'+key;
+      const v = Number(localStorage.getItem(lkey)||0) + (delta>0?1:-1);
+      localStorage.setItem(lkey, Math.max(0,v));
+      return { ok:true, local:true };
+    }
+  }
+
+  async function apiUpload(file){
+    try{
+      const buf = await file.arrayBuffer();
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const r = await fetch(ENDPOINT.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        filename: file.name, contentType: file.type, dataBase64: b64
+      })});
+      if(r.status===404) throw new Error('no-upload');
+      const j = await safeJson(r);
+      if(!j.ok) throw new Error(j.error||'upload fail');
+      return j.url; // server should return raw URL in repo (GitHub cdn)
+    }catch(e){
+      // fallback: simpan dataURL sementara (kurang ideal untuk persist)
+      return uploadedDataUrl;
+    }
+  }
+
+  // =============== RENDER THREAD ===============
+  function buildTree(items){
+    const map=new Map(items.map(x=>[x.id,x])); for(const it of items){ it.children=[]; }
+    const roots=[];
+    for(const it of items){
+      if(it.parentId && map.has(it.parentId)) map.get(it.parentId).children.push(it);
+      else roots.push(it);
+    }
+    const sortFn=(a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''));
+    const walk=(arr)=>{arr.sort(sortFn); arr.forEach(x=>walk(x.children));}; walk(roots);
+    return roots;
+  }
+
+  function reactionCountDisplay(it,key){
+    const serverCount = Number((it.reactions||{})[key]||0);
+    const localKey = 'kathy_react_'+it.id+'_'+key;
+    const local = Number(localStorage.getItem(localKey)||0);
+    const total = serverCount + local;
+    return total>0 ? ` ${total}` : '';
+  }
+
+  function likeCountDisplay(it){
+    const server = Number(it.likes||0);
+    const localKey='kathy_like_'+it.id;
+    const local=Number(localStorage.getItem(localKey)||0);
+    const total=server+local;
+    return total>0 ? ` ${total}` : '';
+  }
+
+  function itemHTML(it, depth=0){
+    const img = it.imageUrl ? `<div class="imgwrap"><img src="${escapeHTML(it.imageUrl)}" alt=""></div>` : '';
+    const reacts = REACTIONS.map(r=>`<span class="reaction" data-action="react" data-id="${it.id}" data-key="${r.key}" title="${escapeHTML(r.label)}"><img src="${r.icon}" alt=""> ${escapeHTML(r.label)}<b>${reactionCountDisplay(it,r.key)}</b></span>`).join('');
+    const like = `<span class="action" data-action="like" data-id="${it.id}">👍<b>${likeCountDisplay(it)}</b></span>`;
+    const reply = `<span class="action" data-action="reply" data-id="${it.id}">↩️ Balas</span>`;
+
+    const children = it.children?.length ? `<div class="children">${it.children.map(x=>itemHTML(x, depth+1)).join('')}</div>` : '';
+    const replyBox = `<div class="replybox row" id="replybox-${it.id}" style="display:none">
+      <input placeholder="Nama" id="r-name-${it.id}" maxlength="60">
+      <textarea placeholder="Balas…" id="r-msg-${it.id}" maxlength="2000"></textarea>
+      <div class="grid2">
+        <input placeholder="URL gambar (opsional)" id="r-img-${it.id}">
+        <button type="button" class="small" data-action="pick-child" data-id="${it.id}" style="background:#283a7c">Pilih File…</button>
+      </div>
+      <button type="button" data-action="send-reply" data-id="${it.id}">Kirim Balasan</button>
+      <div class="muted small">Gunakan reaksi untuk cepat menandai.</div>
+    </div>`;
+
+    return `<div class="item" id="item-${it.id}">
       <div class="head">
         <div class="name">${escapeHTML(it.name)}</div>
+        ${adminBadge(it.role)}
         <div class="time">${escapeHTML(toTime(it.createdAt))}</div>
       </div>
-      <div>${escapeHTML(it.message)}</div>
+      <div class="body">${escapeHTML(it.message)}</div>
+      ${img}
+      <div class="actions">${like}${reply}</div>
+      <div class="reactions">${reacts}</div>
+      ${replyBox}
+      ${children}
     </div>`;
   }
 
-  async function safeJson(res){
-    const ct = res.headers.get('content-type') || '';
-    if (!ct.includes('application/json')) {
-      const txt = await res.text();
-      throw new Error(`Bukan JSON (status ${res.status}): ${txt.slice(0,120)}…`);
-    }
-    return res.json();
+  function renderList(items){
+    const tree = buildTree(items);
+    el.list.innerHTML = tree.length ? tree.map(it=>itemHTML(it)).join('') : '<div class="muted">Belum ada komentar.</div>';
   }
 
-  async function loadComments(){
-    const slug = (elSlug.value || '').trim() || '/';
-    elDbgGet.textContent  = ENDPOINT_GET(slug);
-    elDbgPost.textContent = ENDPOINT_POST;
-
-    elList.innerHTML = '<div class="muted">Memuat…</div>';
-    try {
-      const r = await fetch(ENDPOINT_GET(slug), { cache:'no-store' });
-      const j = await safeJson(r);
-      if (!j.ok) throw new Error(j.error || 'Gagal memuat');
-      elList.innerHTML = j.items?.length
-        ? j.items.map(rowHTML).join('')
-        : '<div class="empty">Belum ada komentar.</div>';
-      setStatus('');
-    } catch(e){
-      elList.innerHTML = `<div class="status err">❌ ${escapeHTML(e.message || e)}</div>`;
+  // =============== LOAD & SEND ===============
+  async function loadAll(){
+    const slug = (el.slug.value||'/').trim();
+    try{
+      el.list.innerHTML = '<div class="muted">Memuat…</div>';
+      const items = await apiGet(slug);
+      renderList(items);
+    }catch(e){
+      el.list.innerHTML = `<div class="status err">❌ ${escapeHTML(e.message||e)}</div>`;
     }
   }
 
-  async function sendComment(){
-    const slug = (elSlug.value || '').trim() || '/';
-    const name = (elName.value || '').trim();
-    const message = (elMsg.value || '').trim();
-    const website = elHp.value || ''; // honeypot
+  async function submitComment(parentId=null, payloadOverride={}){
+    const slug = (el.slug.value||'/').trim();
+    const role = isAdmin()? 'admin':'visitor';
 
-    if (!name || !message) {
-      setStatus('Nama & komentar wajib diisi.', 'err');
-      return;
+    let name, message, imageUrl;
+    if(!parentId){
+      name = (el.name.value||'').trim();
+      message = (el.msg.value||'').trim();
+      imageUrl = (el.img.value||'').trim();
+    } else {
+      name = (qs('#r-name-'+parentId)?.value||'').trim();
+      message = (qs('#r-msg-'+parentId)?.value||'').trim();
+      imageUrl = (qs('#r-img-'+parentId)?.value||'').trim();
     }
+    if(!name || !message){ setStatus('Nama & komentar wajib diisi.', 'err'); return; }
+
     setStatus('Mengirim…');
 
-    try {
-      const r = await fetch(ENDPOINT_POST, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ slug, name, message, website })
-      });
-      const j = await safeJson(r);
-      if (!j.ok) throw new Error(j.error || `HTTP ${r.status}`);
+    // Upload file jika ada (opsional)
+    if(payloadOverride.file){
+      try{
+        imageUrl = await apiUpload(payloadOverride.file);
+      }catch(e){
+        // fallback: pakai dataURL lokal (tidak persist di server kalau endpoint upload belum ada)
+        imageUrl = uploadedDataUrl || imageUrl;
+      }
+    }
 
-      // simpan nama
+    try{
+      const item = await apiPost({slug, name, message, parentId, imageUrl, role});
       localStorage.setItem('kathy_comment_name', name);
-      elMsg.value = '';
+      if(!parentId){ el.msg.value=''; el.img.value=''; uploadedDataUrl=null; }
       setStatus('✅ Terkirim!', 'ok');
-      await loadComments();
-      setTimeout(()=>setStatus(''), 1800);
-    } catch(e){
-      setStatus(`❌ ${e.message || e}`, 'err');
+      await loadAll();
+      setTimeout(()=>setStatus(''),1500);
+    }catch(e){
+      setStatus('❌ '+(e.message||e),'err');
     }
   }
 
-  // ====== Init ======
-  elSlug.value = initialSlug;
-  elName.value = savedName;
+  // =============== EVENTS ===============
+  // init fields
+  el.slug.value = initialSlug;
+  el.name.value = savedName;
+  el.badgeLabel.textContent = isAdmin()? ADMIN_BADGE : 'visitor';
+  renderLegend();
 
-  elSend.addEventListener('click', (e)=>{ e.preventDefault(); sendComment(); });
-  elReload.addEventListener('click', (e)=>{ e.preventDefault(); loadComments(); });
-
-  // Enter di textarea = kirim (Shift+Enter newline)
-  elMsg.addEventListener('keydown', (e)=>{
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendComment(); }
+  // pick file (utama)
+  el.pick.addEventListener('click', ()=> el.file.click());
+  el.file.addEventListener('change', async ()=>{
+    const f = el.file.files?.[0]; if(!f) return;
+    // buat dataURL sebagai fallback preview / kirim (kalau server belum ada upload)
+    const fr=new FileReader(); fr.onload=()=>{ uploadedDataUrl=fr.result; el.img.value = ''; setStatus('📷 Gambar siap (dataURL).', 'ok'); }; fr.readAsDataURL(f);
   });
 
-  // load awal
-  loadComments();
+  // toggle admin
+  el.toggleAdmin.addEventListener('click', ()=>{
+    if(isAdmin()){ localStorage.removeItem('kathy_is_admin'); el.badgeLabel.textContent='visitor'; setStatus('Mode admin dimatikan.','warn'); return; }
+    const key = prompt(ADMIN_PROMPT);
+    if(key && key===ADMIN_KEY){ localStorage.setItem('kathy_is_admin','1'); el.badgeLabel.textContent=ADMIN_BADGE; setStatus('Mode admin aktif.','ok'); }
+    else setStatus('Admin key salah.','err');
+  });
+
+  // send & reload
+  el.send.addEventListener('click', (e)=>{ e.preventDefault(); submitComment(null, { file: el.file.files?.[0]||null }); });
+  el.reload.addEventListener('click', (e)=>{ e.preventDefault(); loadAll(); });
+
+  // enter = submit, shift+enter = newline
+  el.msg.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); el.send.click(); } });
+
+  // delegated events untuk list: reply / like / react / pick-child / send-reply
+  el.list.addEventListener('click', async (e)=>{
+    const t = e.target.closest('[data-action]'); if(!t) return;
+    const action = t.dataset.action; const id=t.dataset.id;
+    if(action==='reply'){
+      const box = qs('#replybox-'+id);
+      if(box) box.style.display = (box.style.display==='none' || !box.style.display) ? 'block' : 'none';
+    } else if(action==='pick-child'){
+      // buat input file sementara untuk child
+      const inp = document.createElement('input');
+      inp.type='file'; inp.accept='image/*';
+      inp.onchange = ()=>{
+        const f = inp.files?.[0]; if(!f) return;
+        // simpan ke dataset element replybox utk dipakai saat kirim
+        const box = qs('#replybox-'+id);
+        box._file = f; qs('#r-img-'+id).value=''; // pakai upload/dataurl bukan URL
+        setStatus('📷 Gambar balasan siap.', 'ok');
+      };
+      inp.click();
+    } else if(action==='send-reply'){
+      const box = qs('#replybox-'+id);
+      await submitComment(id, { file: box?._file || null });
+      if(box){ box._file=null; box.style.display='none'; }
+    } else if(action==='like'){
+      // optimistic UI
+      const badge = t.querySelector('b');
+      badge.textContent = ' ' + (Number((badge.textContent||'').trim())+1 || 1);
+      try{
+        await apiLike(id, (el.slug.value||'/').trim(), +1);
+      }catch(_){}
+    } else if(action==='react'){
+      const key=t.dataset.key;
+      const b=t.querySelector('b');
+      b.textContent = ' ' + (Number((b.textContent||'').trim())+1 || 1);
+      try{
+        await apiReact(id, (el.slug.value||'/').trim(), key, +1);
+      }catch(_){}
+    }
+  });
+
+  // initial load
+  loadAll();
 })();
 </script>
 </body>
