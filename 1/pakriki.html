@@ -225,26 +225,11 @@
             <p><strong>Catatan:</strong> Website ini memerlukan izin untuk mengakses lokasi Anda. Data lokasi hanya digunakan untuk keperluan demonstrasi dan tidak disimpan secara permanen.</p>
         </div>
     </div>
-    <!-- ======== COMMENTS WIDGET (drop-in) ======== -->
-<section id="comments" data-slug="/blog/halo">
-  <h2 style="margin:12px 0">Komentar</h2>
-  <div id="comments-list" style="display:flex;flex-direction:column;gap:12px;margin:10px 0"></div>
-  <form id="comments-form" style="display:grid;gap:8px;max-width:520px">
-    <input type="text" id="c-name" placeholder="Nama" required maxlength="60"
-           style="padding:10px;border:1px solid #d1d5db;border-radius:8px">
-    <textarea id="c-message" placeholder="Tulis komentar…" required maxlength="2000"
-              style="padding:10px;border:1px solid #d1d5db;border-radius:8px;min-height:100px"></textarea>
-    <!-- honeypot (harus hidden dari user) -->
-    <input type="text" name="website" id="c-website" style="position:absolute;left:-9999px;opacity:0">
-    <button type="submit" style="padding:10px 14px;border:0;border-radius:8px;background:#4338ca;color:#fff;cursor:pointer">
-      Kirim
-    </button>
-    <small id="c-status" style="color:#6b7280"></small>
-  </form>
-</section>
-
-<script>
+    <script>
 (function(){
+  // GANTI ini ke domain vercel app kamu:
+  const API_BASE = 'https://lastsymphony.github.io/Testerweb/1/pakriki';
+
   const wrap = document.getElementById('comments');
   const slug = wrap?.dataset?.slug || location.pathname;
   const list = document.getElementById('comments-list');
@@ -262,14 +247,19 @@
         <div style="font-weight:600">${escape(it.name)}</div>
         <div style="color:#6b7280;font-size:12px;margin-bottom:6px">${date}</div>
         <div style="white-space:pre-wrap">${escape(it.message)}</div>
-      </div>
-    `;
+      </div>`;
   }
 
   async function load(){
     list.innerHTML = 'Memuat…';
     try{
-      const r = await fetch(`/api/comments-get?slug=${encodeURIComponent(slug)}`, { cache:'no-store' });
+      const r = await fetch(`${API_BASE}/api/comments-get?slug=${encodeURIComponent(slug)}`, { cache:'no-store' });
+      // Jika server tak mengembalikan JSON, ini akan meledak → kita guard dulu:
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await r.text();
+        throw new Error(`Bukan JSON (status ${r.status}): ${text.slice(0,120)}...`);
+      }
       const j = await r.json();
       if(!j.ok) throw new Error(j.error || 'Gagal memuat');
       list.innerHTML = j.items.length ? j.items.map(itemHtml).join('') : '<i>Belum ada komentar.</i>';
@@ -283,13 +273,18 @@
     status.textContent = 'Mengirim…';
     try{
       const payload = { slug, name: elName.value.trim(), message: elMsg.value.trim(), website: elHp.value || '' };
-      const r = await fetch('/api/comments-post', {
+      const r = await fetch(`${API_BASE}/api/comments-post`, {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
         body:JSON.stringify(payload)
       });
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await r.text();
+        throw new Error(`Bukan JSON (status ${r.status}): ${text.slice(0,120)}...`);
+      }
       const j = await r.json();
-      if(!r.ok || !j.ok){ throw new Error(j.error || `HTTP ${r.status}`); }
+      if(!j.ok) throw new Error(j.error || `HTTP ${r.status}`);
       elMsg.value = '';
       status.textContent = 'Terkirim!'; setTimeout(()=>status.textContent='',2000);
       load();
@@ -301,8 +296,6 @@
   load();
 })();
 </script>
-<!-- ======== /COMMENTS WIDGET ======== -->
-
     <footer>
         <p>Website Pelacak Klik Tautan &copy; 2023</p>
     </footer>
