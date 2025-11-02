@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Komentar — Test (GitHub Pages × Vercel)</title>
+  <style>
+    :root { --bg:#0b1020; --card:#121a33; --muted:#9aa4bf; --acc:#5b7fff; --ok:#22c55e; --err:#ef4444; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background: radial-gradient(1200px 600px at 10% -10%, #1b2550 0%, transparent), var(--bg); color:#e8eefc; }
+    main { max-width: 760px; margin: 40px auto; padding: 0 16px; }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    p.hint { color: var(--muted); margin: 0 0 24px; }
+    .card { background: color-mix(in oklab, var(--card) 85%, black); border: 1px solid #1c2648; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .row { display: grid; gap: 10px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { font-weight: 600; font-size: 13px; color:#c9d6ff; }
+    input, textarea, button, select {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #213166; background: #0f1630; color: #e8eefc;
+    }
+    input::placeholder, textarea::placeholder { color:#7f8bb1; }
+    textarea { min-height: 110px; resize: vertical; }
+    button { cursor: pointer; background: linear-gradient(135deg, #4f67ff, #5b7fff); border: none; font-weight: 700; letter-spacing:.2px; }
+    button:hover { filter: brightness(1.08); }
+    .muted { color: var(--muted); font-size: 13px; }
+    .status { font-size: 13px; margin-top: 8px; }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+    .comment { border: 1px solid #22346a; border-radius: 12px; padding: 12px; background: #0d142b; }
+    .comment .head { display:flex; gap:8px; align-items: baseline; margin-bottom: 4px; }
+    .comment .name { font-weight: 700; }
+    .comment .time { color: var(--muted); font-size: 12px; }
+    .empty { color: var(--muted); font-style: italic; }
+    .debug { margin-top: 16px; color:#9fb3ff; font-size:12px; word-break: break-all; }
+    .kbd { padding:2px 6px; border:1px solid #2a3b73; border-radius:6px; background:#0b1330; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>💬 Komentar — Demo</h1>
+  <p class="hint">Satu file HTML, bisa di-host di GitHub Pages / domain apa pun. Backend: <code class="kbd">Vercel</code> → simpan ke <code class="kbd">GitHub</code>.</p>
+
+  <section class="card" id="comments" data-slug="">
+    <div class="row">
+      <div class="grid2">
+        <div>
+          <label>Slug Halaman</label>
+          <input id="c-slug" placeholder="/tester" />
+        </div>
+        <div>
+          <label>Nama</label>
+          <input id="c-name" placeholder="Nama kamu" maxlength="60" />
+        </div>
+      </div>
+      <div>
+        <label>Komentar</label>
+        <textarea id="c-message" placeholder="Tulis komentar…" maxlength="2000"></textarea>
+      </div>
+      <!-- Honeypot (biar bot nyangkut) -->
+      <input type="text" id="c-website" name="website" style="display:none" autocomplete="off" />
+      <div class="grid2">
+        <button id="btn-send">Kirim</button>
+        <button id="btn-reload" type="button" style="background:#283a7c">Muat Ulang</button>
+      </div>
+      <div id="c-status" class="status"></div>
+    </div>
+
+    <div style="height:16px"></div>
+    <div id="comments-list" class="row"></div>
+
+    <div class="debug">
+      <div><b>API GET:</b> <span id="dbg-get"></span></div>
+      <div><b>API POST:</b> <span id="dbg-post"></span></div>
+      <div><b>Info:</b> Slug default pakai <code class="kbd">location.pathname</code>, bisa override via query <code class="kbd">?slug=/apa-aja</code>.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  // ====== KONFIGURASI BACKEND (Vercel) ======
+  // Kamu sudah sediakan: https://telestick.vercel.app/api/
+  const API_BASE = 'https://telestick.vercel.app/api';
+  const ENDPOINT_GET  = (slug) => `${API_BASE}/comments-get?slug=${encodeURIComponent(slug)}`;
+  const ENDPOINT_POST = `${API_BASE}/comments-post`;
+
+  // ====== Elemen ======
+  const elSlug = document.getElementById('c-slug');
+  const elName = document.getElementById('c-name');
+  const elMsg  = document.getElementById('c-message');
+  const elHp   = document.getElementById('c-website'); // honeypot
+  const elList = document.getElementById('comments-list');
+  const elSend = document.getElementById('btn-send');
+  const elReload = document.getElementById('btn-reload');
+  const elStatus = document.getElementById('c-status');
+  const elDbgGet = document.getElementById('dbg-get');
+  const elDbgPost= document.getElementById('dbg-post');
+
+  // ====== Utils ======
+  const qs = new URLSearchParams(location.search);
+  const initialSlug = qs.get('slug') || location.pathname || '/';
+  const savedName = localStorage.getItem('kathy_comment_name') || '';
+
+  function setStatus(msg, type=''){
+    elStatus.textContent = msg || '';
+    elStatus.className = `status ${type}`;
+  }
+  function escapeHTML(s){
+    return (s??'').toString().replace(/[&<>"']/g, m=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[m]));
+  }
+  function toTime(s){
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    return d.toLocaleString();
+  }
+  function rowHTML(it){
+    return `<div class="comment">
+      <div class="head">
+        <div class="name">${escapeHTML(it.name)}</div>
+        <div class="time">${escapeHTML(toTime(it.createdAt))}</div>
+      </div>
+      <div>${escapeHTML(it.message)}</div>
+    </div>`;
+  }
+
+  async function safeJson(res){
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) {
+      const txt = await res.text();
+      throw new Error(`Bukan JSON (status ${res.status}): ${txt.slice(0,120)}…`);
+    }
+    return res.json();
+  }
+
+  async function loadComments(){
+    const slug = (elSlug.value || '').trim() || '/';
+    elDbgGet.textContent  = ENDPOINT_GET(slug);
+    elDbgPost.textContent = ENDPOINT_POST;
+
+    elList.innerHTML = '<div class="muted">Memuat…</div>';
+    try {
+      const r = await fetch(ENDPOINT_GET(slug), { cache:'no-store' });
+      const j = await safeJson(r);
+      if (!j.ok) throw new Error(j.error || 'Gagal memuat');
+      elList.innerHTML = j.items?.length
+        ? j.items.map(rowHTML).join('')
+        : '<div class="empty">Belum ada komentar.</div>';
+      setStatus('');
+    } catch(e){
+      elList.innerHTML = `<div class="status err">❌ ${escapeHTML(e.message || e)}</div>`;
+    }
+  }
+
+  async function sendComment(){
+    const slug = (elSlug.value || '').trim() || '/';
+    const name = (elName.value || '').trim();
+    const message = (elMsg.value || '').trim();
+    const website = elHp.value || ''; // honeypot
+
+    if (!name || !message) {
+      setStatus('Nama & komentar wajib diisi.', 'err');
+      return;
+    }
+    setStatus('Mengirim…');
+
+    try {
+      const r = await fetch(ENDPOINT_POST, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ slug, name, message, website })
+      });
+      const j = await safeJson(r);
+      if (!j.ok) throw new Error(j.error || `HTTP ${r.status}`);
+
+      // simpan nama
+      localStorage.setItem('kathy_comment_name', name);
+      elMsg.value = '';
+      setStatus('✅ Terkirim!', 'ok');
+      await loadComments();
+      setTimeout(()=>setStatus(''), 1800);
+    } catch(e){
+      setStatus(`❌ ${e.message || e}`, 'err');
+    }
+  }
+
+  // ====== Init ======
+  elSlug.value = initialSlug;
+  elName.value = savedName;
+
+  elSend.addEventListener('click', (e)=>{ e.preventDefault(); sendComment(); });
+  elReload.addEventListener('click', (e)=>{ e.preventDefault(); loadComments(); });
+
+  // Enter di textarea = kirim (Shift+Enter newline)
+  elMsg.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendComment(); }
+  });
+
+  // load awal
+  loadComments();
+})();
+</script>
+</body>
+</html>
