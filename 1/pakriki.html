@@ -202,6 +202,7 @@
                 </div>
             </div>
         </div>
+        
 
         <div class="card">
             <h2>Data Klik Terakhir</h2>
@@ -224,6 +225,83 @@
             <p><strong>Catatan:</strong> Website ini memerlukan izin untuk mengakses lokasi Anda. Data lokasi hanya digunakan untuk keperluan demonstrasi dan tidak disimpan secara permanen.</p>
         </div>
     </div>
+    <!-- ======== COMMENTS WIDGET (drop-in) ======== -->
+<section id="comments" data-slug="/blog/halo">
+  <h2 style="margin:12px 0">Komentar</h2>
+  <div id="comments-list" style="display:flex;flex-direction:column;gap:12px;margin:10px 0"></div>
+  <form id="comments-form" style="display:grid;gap:8px;max-width:520px">
+    <input type="text" id="c-name" placeholder="Nama" required maxlength="60"
+           style="padding:10px;border:1px solid #d1d5db;border-radius:8px">
+    <textarea id="c-message" placeholder="Tulis komentar…" required maxlength="2000"
+              style="padding:10px;border:1px solid #d1d5db;border-radius:8px;min-height:100px"></textarea>
+    <!-- honeypot (harus hidden dari user) -->
+    <input type="text" name="website" id="c-website" style="position:absolute;left:-9999px;opacity:0">
+    <button type="submit" style="padding:10px 14px;border:0;border-radius:8px;background:#4338ca;color:#fff;cursor:pointer">
+      Kirim
+    </button>
+    <small id="c-status" style="color:#6b7280"></small>
+  </form>
+</section>
+
+<script>
+(function(){
+  const wrap = document.getElementById('comments');
+  const slug = wrap?.dataset?.slug || location.pathname;
+  const list = document.getElementById('comments-list');
+  const form = document.getElementById('comments-form');
+  const elName = document.getElementById('c-name');
+  const elMsg  = document.getElementById('c-message');
+  const elHp   = document.getElementById('c-website');
+  const status = document.getElementById('c-status');
+
+  function escape(s){ return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])) }
+  function itemHtml(it){
+    const date = new Date(it.createdAt).toLocaleString();
+    return `
+      <div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fff">
+        <div style="font-weight:600">${escape(it.name)}</div>
+        <div style="color:#6b7280;font-size:12px;margin-bottom:6px">${date}</div>
+        <div style="white-space:pre-wrap">${escape(it.message)}</div>
+      </div>
+    `;
+  }
+
+  async function load(){
+    list.innerHTML = 'Memuat…';
+    try{
+      const r = await fetch(`/api/comments-get?slug=${encodeURIComponent(slug)}`, { cache:'no-store' });
+      const j = await r.json();
+      if(!j.ok) throw new Error(j.error || 'Gagal memuat');
+      list.innerHTML = j.items.length ? j.items.map(itemHtml).join('') : '<i>Belum ada komentar.</i>';
+    }catch(e){
+      list.innerHTML = `<span style="color:#ef4444">Gagal memuat: ${escape(String(e.message||e))}</span>`;
+    }
+  }
+
+  form.addEventListener('submit', async (ev)=>{
+    ev.preventDefault();
+    status.textContent = 'Mengirim…';
+    try{
+      const payload = { slug, name: elName.value.trim(), message: elMsg.value.trim(), website: elHp.value || '' };
+      const r = await fetch('/api/comments-post', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify(payload)
+      });
+      const j = await r.json();
+      if(!r.ok || !j.ok){ throw new Error(j.error || `HTTP ${r.status}`); }
+      elMsg.value = '';
+      status.textContent = 'Terkirim!'; setTimeout(()=>status.textContent='',2000);
+      load();
+    }catch(e){
+      status.textContent = `Gagal: ${String(e.message||e)}`;
+    }
+  });
+
+  load();
+})();
+</script>
+<!-- ======== /COMMENTS WIDGET ======== -->
 
     <footer>
         <p>Website Pelacak Klik Tautan &copy; 2023</p>
