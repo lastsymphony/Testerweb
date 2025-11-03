@@ -819,6 +819,7 @@
       <span class="tool" id="imageUrlBtn">🖼️ URL</span>
       <span class="tool" id="uploadBtn">⬆️ Upload</span>
       <span class="tool" id="adminBtn">Badge: <b id="badgeLabel">visitor</b></span>
+      <span class="tool" id="adminLogoutBtn" style="display:none">Logout Admin</span>
       <input type="text" id="imageUrlInput" placeholder="https://…" style="display:none;min-width:260px">
       <input type="file" id="fileInput" accept="image/*" style="display:none">
       <div id="emojiPicker"></div>
@@ -912,6 +913,7 @@
     imageUrlBtn:$('#imageUrlBtn'), imageUrlInput:$('#imageUrlInput'),
     uploadBtn:$('#uploadBtn'), fileInput:$('#fileInput'),
     adminBtn:$('#adminBtn'), badgeLabel:$('#badgeLabel'),
+    adminLogoutBtn:$('#adminLogoutBtn'),
     send:$('#send'), reload:$('#reload'), status:$('#status'),
     list:$('#list'), count:$('#countComments'),
     pinnedWrap:$('#pinnedWrap'), pinnedBox:$('#pinnedBox'),
@@ -939,15 +941,18 @@
       if (ADMIN_OK) {
         localStorage.setItem('kathy_admin_key', key);
         E.badgeLabel.textContent = 'katheryne';
+        E.adminLogoutBtn.style.display = 'inline-block';
         setStatus('🔑 Admin on','ok');
       } else {
         localStorage.removeItem('kathy_admin_key');
         E.badgeLabel.textContent = 'visitor';
+        E.adminLogoutBtn.style.display = 'none';
         setStatus('Admin off','warn');
       }
     } catch {
       ADMIN_OK = false;
       E.badgeLabel.textContent = 'visitor';
+      E.adminLogoutBtn.style.display = 'none';
     }
   }
 
@@ -1060,10 +1065,12 @@
   }
 
   async function apiDelete(id){
-    const r = await fetch(`${EP.DEL}?slug=${encodeURIComponent(SLUG)}&id=${encodeURIComponent(id)}`, {
-      method:'POST', headers: { ...adminHeader() }
+    const r = await fetch(EP.DEL, {
+      method:'POST',
+      headers: { 'Content-Type':'application/json', ...adminHeader() },
+      body: JSON.stringify({ slug: SLUG, id })
     });
-    const j = await r.json();
+    const j = await r.json().catch(()=>({ok:false,error:'Bad JSON'}));
     if(!r.ok || !j.ok) throw new Error(j.error || 'delete fail');
   }
   
@@ -1394,6 +1401,16 @@
     await verifyAdmin(key.trim());
   });
 
+  // admin logout
+  E.adminLogoutBtn.addEventListener('click', ()=>{
+    localStorage.removeItem('kathy_admin_key');
+    ADMIN_OK = false;
+    E.badgeLabel.textContent = 'visitor';
+    E.adminLogoutBtn.style.display = 'none';
+    setStatus('🚪 Keluar dari mode admin','ok');
+    render(); // sembunyikan tombol pin/hapus
+  });
+
   // submit & reload
   E.send.addEventListener('click',e=>{ 
     e.preventDefault(); 
@@ -1498,14 +1515,16 @@
       }
     } else if(act==='delete'){
       if(!confirm('Hapus komentar ini (termasuk balasannya)?')) return;
-      try{ 
-        await apiDelete(id); 
-        data = data.filter(x=>String(x.id)!==String(id) && String(x.parentId)!==String(id)); 
-        render(); 
-        setStatus('🗑️ Dihapus','ok'); 
-      }
-      catch(e){ 
-        console.error('Delete error:', e);
+      try{
+        await apiDelete(id);
+        // jika yang dihapus sedang dipin → kosongkan pin
+        if (String(PIN_ID||'') === String(id)) PIN_ID = null;
+        // buang item & semua anaknya dari memori
+        data = data.filter(x => String(x.id)!==String(id) && String(x.parentId)!==String(id));
+        render();
+        setStatus('🗑️ Dihapus','ok');
+      } catch(e){
+        setStatus('❌ '+(e.message||e),'err');
       }
     } else if(act==='toggle'){
       const id = t.dataset.id;
