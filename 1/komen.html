@@ -539,33 +539,20 @@
   }
 
   /* ====== EMOJI PICKER ====== */
-  #emojiPicker {
-    display: none;
-    position: absolute;
-    top: 46px;
-    left: 0;
-    background: #0e1030;
-    border: 1px solid #2a2e63;
-    border-radius: 12px;
-    padding: 12px;
-    grid-template-columns: repeat(8, 34px);
-    gap: 6px;
-    z-index: 50;
-    box-shadow: var(--shadow);
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  #emojiPicker button {
-    padding: 6px;
-    border-radius: 8px;
-    border: 1px solid #2a2e63;
-    background: #151848;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-  }
+#emojiPicker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); /* tiap kolom 48px min, otomatis isi ruang */
+  gap: 6px;
+  justify-items: center;
+  align-items: center;
+}
+#emojiPicker button {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1b1d3b;
+}
 
   #emojiPicker button:hover {
     background: #1a1f4a;
