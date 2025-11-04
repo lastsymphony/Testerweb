@@ -492,6 +492,12 @@
     gap: 12px;
     margin-top: 16px;
     transition: var(--transition);
+    max-height: 1000px;
+  }
+
+  .children.hidden {
+    max-height: 0;
+    overflow: hidden;
   }
 
   .replybox {
@@ -572,11 +578,11 @@
   }
 
   .emojiimg {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     vertical-align: middle;
-    border-radius: 6px;
-    margin: 0 2px;
+    border-radius: 8px;
+    margin: 0 3px;
   }
 
   /* ====== PINNED SECTION ====== */
@@ -931,16 +937,17 @@
 <script>
 (function(){
   /* ====== CONFIG ====== */
-  const API_BASE = 'https://telestick-orpin.vercel.app/api';
+  const API_BASE = 'https://telestick.vercel.app/api/kathy';
   const EP = {
-    GET:   s => `${API_BASE}/comments-get?slug=${encodeURIComponent(s)}`,
-    POST:  `${API_BASE}/comments-post`,
-    LIKE:  `${API_BASE}/comments-like`,
-    REACT: `${API_BASE}/comments-react`,
-    UPLOAD:`${API_BASE}/comments-upload`,
-    EMOJI: `${API_BASE}/emoji-list`,
-    PIN:   `${API_BASE}/comments-pin`,
-    DEL:   `${API_BASE}/comments-delete`
+    GET:   s => `${API_BASE}?t=comments&a=get&slug=${encodeURIComponent(s)}`,
+    POST:  `${API_BASE}?t=comments&a=post`,
+    LIKE:  `${API_BASE}?t=comments&a=like`,
+    REACT: `${API_BASE}?t=comments&a=react`,
+    UPLOAD:`${API_BASE}?t=comments&a=upload`,
+    EMOJI: `${API_BASE}?t=emoji&a=list`,
+    PIN:   `${API_BASE}?t=comments&a=pin`,
+    DEL:   `${API_BASE}?t=comments&a=delete`,
+    ADMIN: `${API_BASE}?t=admin&a=verify`
   };
   const COMMENT_REACTIONS = [
     { key:'heart', label:'Love', icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/2764.svg' },
@@ -1014,7 +1021,7 @@
   /* ====== ADMIN VERIFICATION ====== */
   async function verifyAdmin(key) {
     try {
-      const r = await fetch(`${API_BASE}/admin-verify`, {
+      const r = await fetch(EP.ADMIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key })
