@@ -116,6 +116,11 @@
     overflow: hidden;
   }
 
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   button:before {
     content: '';
     position: absolute;
@@ -127,7 +132,7 @@
     transition: left 0.5s;
   }
 
-  button:hover:before {
+  button:hover:not(:disabled):before {
     left: 100%;
   }
 
@@ -136,7 +141,7 @@
     border: 1px solid #313b7a;
   }
 
-  button:hover {
+  button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
   }
@@ -373,6 +378,15 @@
     white-space: pre-wrap;
     margin-top: 12px;
     line-height: 1.6;
+    word-wrap: break-word;
+  }
+
+  .mention {
+    color: var(--pri);
+    font-weight: 700;
+    background: rgba(124, 77, 255, 0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
   }
 
   .imgwrap {
@@ -420,6 +434,12 @@
     transform: translateY(-2px);
   }
 
+  .action.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .admin-actions {
     display: flex;
     gap: 6px;
@@ -450,6 +470,12 @@
   .reaction:hover {
     background: #1a1f4a;
     transform: translateY(-2px);
+  }
+
+  .reaction.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .reaction img {
@@ -520,6 +546,8 @@
     gap: 6px;
     z-index: 50;
     box-shadow: var(--shadow);
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   #emojiPicker button {
@@ -538,19 +566,18 @@
     transform: scale(1.1);
   }
 
-  /* ====== ukuran EMOJI PICKER ====== */
-#emojiPicker img {
-  width: 36px;
-  height: 36px;
-}
+  #emojiPicker img {
+    width: 36px;
+    height: 36px;
+  }
 
-.emojiimg {
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  border-radius: 6px;
-  margin: 0 2px;
-}
+  .emojiimg {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    border-radius: 6px;
+    margin: 0 2px;
+  }
 
   /* ====== PINNED SECTION ====== */
   .pinned {
@@ -802,6 +829,37 @@
     from { transform: translateX(100%); }
     to { transform: translateX(0); }
   }
+
+  /* ====== LOAD MORE ====== */
+  .load-more {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--gradient-1);
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .load-more:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ====== DRAFT INDICATOR ====== */
+  .draft-indicator {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: var(--info);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 100;
+    animation: slideIn 0.3s ease-out;
+  }
 </style>
 </head>
 <body>
@@ -841,13 +899,13 @@
       <span class="chip"><b id="countComments">0</b> Komentar</span>
       <div class="sort-container">
         <span>Sort:</span>
-        <button class="sort-btn active" data-sort="new">
-          <span class="sort-icon">🕐</span>Terbaru
+        <button class="sort-btn active" data-sort="new" data-icon="🕒" data-label="Terbaru">
+          <span class="sort-icon">🕒</span>Terbaru
         </button>
-        <button class="sort-btn" data-sort="old">
+        <button class="sort-btn" data-sort="old" data-icon="📅" data-label="Terlama">
           <span class="sort-icon">📅</span>Terlama
         </button>
-        <button class="sort-btn popular" data-sort="top">
+        <button class="sort-btn popular" data-sort="top" data-icon="🔥" data-label="Terpopuler">
           <span class="sort-icon">🔥</span>Terpopuler
         </button>
       </div>
@@ -891,8 +949,10 @@
   ];
   const ADMIN_BADGE='katheryne';
   const SLUG = (new URL(location.href)).searchParams.get('slug') || location.pathname || '/';
+  const BATCH_SIZE = 50;
+  const RATE_LIMIT_MS = 1000;
 
-  /* ====== PATCH: util merge dan cache ====== */
+  /* ====== UTILITY FUNCTIONS ====== */
   function arrToMap(arr){ 
     const m=new Map(); 
     for(const x of arr||[]) m.set(String(x.id), x); 
@@ -906,6 +966,7 @@
   }
   
   const CACHE_KEY = 'kathy_comments_cache:' + (location.pathname || '/');
+  const DRAFT_KEY = 'kathy_draft:' + (location.pathname || '/');
 
   /* ====== ELEMENTS ====== */
   const $=s=>document.querySelector(s);
@@ -930,6 +991,25 @@
   let activeTextArea = E.msg;
   let PIN_ID = null;
   let currentSort = 'new';
+  let renderedCount = BATCH_SIZE;
+  const RATE_LIMIT = new Map();
+
+  /* ====== VALIDATION ====== */
+  function isValidUrl(url) {
+    if (!url) return true; // empty is ok
+    try {
+      const u = new URL(url);
+      return ['http:', 'https:'].includes(u.protocol);
+    } catch {
+      return false;
+    }
+  }
+
+  function sanitizeUrl(url) {
+    if (!url) return null;
+    const trimmed = url.trim();
+    return isValidUrl(trimmed) ? trimmed : null;
+  }
 
   /* ====== ADMIN VERIFICATION ====== */
   async function verifyAdmin(key) {
@@ -944,7 +1024,7 @@
         localStorage.setItem('kathy_admin_key', key);
         E.badgeLabel.textContent = 'katheryne';
         E.adminLogoutBtn.style.display = 'inline-block';
-        setStatus('🔑 Admin on','ok');
+        setStatus('🔐 Admin on','ok');
       } else {
         localStorage.removeItem('kathy_admin_key');
         E.badgeLabel.textContent = 'visitor';
@@ -965,7 +1045,6 @@
     return k ? { 'x-admin-key': k } : {};
   }
 
-  // inisialisasi awal
   verifyAdmin(storedKey);
 
   /* ====== UTILS ====== */
@@ -983,7 +1062,18 @@
     return res.json(); 
   };
 
-  /* ====== API ====== */
+  /* ====== RATE LIMITING ====== */
+  function checkRateLimit(key) {
+    const now = Date.now();
+    const last = RATE_LIMIT.get(key) || 0;
+    if (now - last < RATE_LIMIT_MS) {
+      return false;
+    }
+    RATE_LIMIT.set(key, now);
+    return true;
+  }
+
+  /* ====== API FUNCTIONS ====== */
   async function apiPost(p){ 
     try {
       setStatus('<span class="spinner"></span> Mengirim komentar...');
@@ -998,6 +1088,11 @@
   }
   
   async function apiLike(id,delta=1){ 
+    const key = 'like_' + id;
+    if (!checkRateLimit(key)) {
+      setStatus('⏳ Tunggu sebentar...', 'warn');
+      return { ok: false };
+    }
     try{ 
       const r=await fetch(EP.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,delta})}); 
       if(r.status===404) throw new Error('no-like'); 
@@ -1012,6 +1107,11 @@
   }
   
   async function apiReact(id,key,delta=1){ 
+    const rkey = 'react_' + id + '_' + key;
+    if (!checkRateLimit(rkey)) {
+      setStatus('⏳ Tunggu sebentar...', 'warn');
+      return { ok: false };
+    }
     try{ 
       const r=await fetch(EP.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,key,delta})}); 
       if(r.status===404) throw new Error('no-react'); 
@@ -1083,20 +1183,18 @@
       EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; 
       EMOJI_MAP = new Map(EMOJI_ITEMS.map(x=>[x.name,x.url])); 
       E.emojiPicker.innerHTML = EMOJI_ITEMS.length? 
-        EMOJI_ITEMS.map(e=>`<button type="button" data-name="${e.name}" title="${e.name}"><img src="${e.url}" alt="${e.name}"></button>`).join('') : 
+        EMOJI_ITEMS.map(e=>`<button type="button" data-name="${esc(e.name)}" title="${esc(e.name)}"><img src="${esc(e.url)}" alt="${esc(e.name)}"></button>`).join('') : 
         '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; 
     }catch{ 
       E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; 
     } 
   }
 
-  /* ====== PATCH: apiGet dengan limit besar & safe JSON ====== */
   async function apiGet(){
     const url = EP.GET(SLUG) + (EP.GET(SLUG).includes('?') ? '&' : '?') + 'limit=500';
     const r = await fetch(url, { cache:'no-store' });
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('application/json')) {
-      // fallback: jangan hancurkan state
       throw new Error('Bukan JSON dari server');
     }
     const j = await r.json();
@@ -1108,13 +1206,12 @@
       reactions: it.reactions ?? {},
       role: it.role ?? 'visitor'
     }));
-    // simpan cache agar reload aman
     try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({items, pinId: j.pinId||null})); } catch{}
     PIN_ID = j.pinId || null;
     return items;
   }
 
-  /* ====== RENDER ====== */
+  /* ====== RENDER FUNCTIONS ====== */
   function buildTree(items){
     const byId=new Map(items.map(x=>[x.id,x])); 
     items.forEach(x=>{x.children=[]; x.parentName=null;});
@@ -1128,7 +1225,7 @@
     
     const sortNew=(a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')); 
     const sortOld=(a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||'')); 
-    const sortTop=(a,b)=>score(b)-score(a);
+    const sortTop=(a,b)=>score(b)-score(a)||String(b.createdAt||'').localeCompare(String(a.createdAt||''));
     
     const sort = currentSort==='new'?sortNew:currentSort==='old'?sortOld:sortTop;
     const w=arr=>{ arr.sort(sort); arr.forEach(x=>w(x.children)); }; 
@@ -1152,9 +1249,10 @@
   
   function renderMessage(text){
     let s = esc(text || '');
+    s = s.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
     s = s.replace(/\[\[emoji:([\w.\-]+)\]\]/g,(m,name)=>{
       const url = EMOJI_MAP.get(name);
-      return url ? `<img src="${url}" alt="emoji" class="emojiimg">` : m;
+      return url ? `<img src="${esc(url)}" alt="emoji" class="emojiimg">` : esc(m);
     });
     return s;
   }
@@ -1171,11 +1269,11 @@
   function itemHTML(it){
     const itemScore = score(it);
     const isPopular = currentSort === 'top' && itemScore > 0;
-    const img = it.imageUrl?`<div class="imgwrap"><img src="${esc(it.imageUrl)}" alt=""></div>`:'';
+    const imgUrl = sanitizeUrl(it.imageUrl);
+    const img = imgUrl?`<div class="imgwrap"><img src="${esc(imgUrl)}" alt=""></div>`:'';
     const replyTo = it.parentName ? `<span class="replyto">balas → @${esc(it.parentName)}</span>` : '';
-    const reacts = COMMENT_REACTIONS.map(r=>`<span class="reaction" data-act="react" data-id="${it.id}" data-key="${r.key}"><img src="${r.icon}" alt=""> ${esc(r.label)}<b>${reactLocal(it,r.key)}</b></span>`).join('');
+    const reacts = COMMENT_REACTIONS.map(r=>`<span class="reaction" data-act="react" data-id="${it.id}" data-key="${r.key}"><img src="${esc(r.icon)}" alt=""> ${esc(r.label)}<b>${reactLocal(it,r.key)}</b></span>`).join('');
 
-    // Jika ada anak, sembunyikan default dan tampilkan tombol lihat balasan
     const hasChildren = it.children?.length > 0;
     const childHTML = hasChildren
       ? `<div class="child-toggle" data-id="${it.id}">
@@ -1217,11 +1315,10 @@
     </div>`;
   }
   
-  function render(){
+  function render(showAll = false){
     const tree=buildTree([...data]);
     E.count.textContent=data.length;
     
-    // Update sort header
     if (currentSort === 'top' && data.length > 0) {
       E.sortHeader.style.display = 'flex';
       E.sortHeader.className = 'sort-header popular';
@@ -1229,7 +1326,7 @@
     } else if (currentSort === 'new' && data.length > 0) {
       E.sortHeader.style.display = 'flex';
       E.sortHeader.className = 'sort-header new';
-      E.sortHeader.innerHTML = '🕐 Menampilkan komentar terbaru';
+      E.sortHeader.innerHTML = '🕒 Menampilkan komentar terbaru';
     } else if (currentSort === 'old' && data.length > 0) {
       E.sortHeader.style.display = 'flex';
       E.sortHeader.className = 'sort-header old';
@@ -1238,11 +1335,10 @@
       E.sortHeader.style.display = 'none';
     }
     
-    // pinned section (FIX: render sebagai tree agar children ikut)
     if (PIN_ID) {
       const pin = data.find(x => String(x.id) === String(PIN_ID));
       if (pin) {
-        const treePin = buildTree([pin]);           // <— ini kuncinya
+        const treePin = buildTree([pin]);
         E.pinnedWrap.style.display = 'block';
         E.pinnedBox.innerHTML = treePin.map(itemHTML).join('');
       } else {
@@ -1254,7 +1350,6 @@
       E.pinnedBox.innerHTML = '';
     }
     
-    // normal list (exclude pinned root from top level, replies tetap)
     const roots = tree.filter(x=>String(x.id)!==String(PIN_ID));
     
     if (roots.length === 0 && data.length === 0) {
@@ -1265,21 +1360,33 @@
           <div class="empty-state-subtext">Jadilah yang pertama berkomentar!</div>
         </div>
       `;
-    } else {
-      E.list.innerHTML = roots.length?roots.map(itemHTML).join(''):'';
+      return;
+    }
+    
+    const toShow = showAll ? roots : roots.slice(0, renderedCount);
+    E.list.innerHTML = toShow.map(itemHTML).join('');
+    
+    if (!showAll && roots.length > renderedCount) {
+      const btn = document.createElement('button');
+      btn.className = 'load-more';
+      btn.textContent = `📜 Muat ${roots.length - renderedCount} komentar lagi`;
+      btn.onclick = () => {
+        renderedCount = roots.length;
+        render(true);
+      };
+      E.list.appendChild(btn);
     }
   }
 
-  /* ====== PATCH: loadAll pakai cache bila fetch gagal ====== */
   async function loadAll(){
     try{
       setStatus('<span class="spinner"></span> Memuat komentar...');
       const items = await apiGet();
       data = items;
+      renderedCount = BATCH_SIZE;
       setStatus('');
       render();
     }catch(e){
-      // gunakan cache agar UI tidak kosong
       try{
         const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}');
         if (Array.isArray(c.items) && c.items.length) {
@@ -1288,7 +1395,6 @@
           render();
           setStatus('⚠️ Mode offline (pakai cache)','warn');
           
-          // Tambahkan indikator offline
           const indicator = document.createElement('div');
           indicator.className = 'offline-indicator';
           indicator.textContent = '📡 Mode Offline';
@@ -1302,7 +1408,6 @@
     }
   }
 
-  /* ====== PATCH: setelah submit – jangan replace dengan hasil kosong ====== */
   async function submit(parentId=null, file=null){
     const role=isAdmin()?'admin':'visitor';
     const name=(parentId?($('#r-name-'+parentId)||{}).value:E.name.value)||'';
@@ -1313,10 +1418,17 @@
       setStatus('Nama & komentar wajib.','err'); 
       return; 
     }
+
+    if (imageUrl && !isValidUrl(imageUrl)) {
+      setStatus('❌ URL gambar tidak valid', 'err');
+      return;
+    }
     
     if(file){ 
       imageUrl = await apiUpload(file); 
     }
+
+    E.send.disabled = true;
     
     try{
       setStatus('<span class="spinner"></span> Mengirim...');
@@ -1324,12 +1436,11 @@
         slug:SLUG, 
         name:name.trim(), 
         message:message.trim(), 
-        imageUrl:imageUrl.trim()||null, 
+        imageUrl:sanitizeUrl(imageUrl), 
         parentId:parentId||null, 
         role 
       });
 
-      // Optimistic add
       const parentName = parentId ? (data.find(x=>x.id===parentId)?.name || null) : null;
       data.push({ ...item, likes:0, reactions:{}, parentName });
       render();
@@ -1338,32 +1449,73 @@
         E.msg.value=''; 
         E.imageUrlInput.value=''; 
         E.fileInput.value=''; 
+        localStorage.removeItem(DRAFT_KEY);
       }
       
       setStatus('✅ Terkirim','ok');
       localStorage.setItem('kathy_comment_name', name.trim());
 
-      // Sync → MERGE, bukan replace. Abaikan jika kosong/error.
       apiGet().then(items=>{
         if (Array.isArray(items) && items.length) {
           data = mergeById(data, items);
           render();
-        } // kalau kosong, biarkan data existing
-      }).catch(()=>{ /* keep optimistic state */ });
+        }
+      }).catch(()=>{});
 
       setTimeout(()=>setStatus(''),2000);
     }catch(e){ 
       console.error('Submit error:', e);
+    } finally {
+      E.send.disabled = false;
     }
   }
 
-  /* ====== INIT & EVENTS ====== */
+  /* ====== DRAFT AUTO-SAVE ====== */
+  let draftTimeout;
+  function saveDraft() {
+    const draft = E.msg.value.trim();
+    if (draft) {
+      localStorage.setItem(DRAFT_KEY, draft);
+    } else {
+      localStorage.removeItem(DRAFT_KEY);
+    }
+  }
+
+  E.msg.addEventListener('input', () => {
+    clearTimeout(draftTimeout);
+    draftTimeout = setTimeout(saveDraft, 500);
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    const draft = E.msg.value.trim();
+    if (draft) {
+      saveDraft();
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  /* ====== INIT ====== */
   const savedName = localStorage.getItem('kathy_comment_name') || '';
   E.name.value = savedName;
+
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+  if (savedDraft) {
+    E.msg.value = savedDraft;
+    const indicator = document.createElement('div');
+    indicator.className = 'draft-indicator';
+    indicator.textContent = '📝 Draft dikembalikan';
+    document.body.appendChild(indicator);
+    setTimeout(() => {
+      indicator.remove();
+      localStorage.removeItem(DRAFT_KEY);
+    }, 3000);
+  }
+
   loadAll(); 
   loadEmojis();
 
-  // emoji picker
+  /* ====== EMOJI PICKER ====== */
   function insertAtCursor(el, text){
     const start = el.selectionStart ?? el.value.length;
     const end   = el.selectionEnd ?? el.value.length;
@@ -1381,9 +1533,10 @@
     if(!btn) return;
     const name = btn.getAttribute('data-name');
     insertAtCursor(activeTextArea, ` [[emoji:${name}]] `);
+    E.emojiPicker.style.display = 'none';
   });
 
-  // tools
+  /* ====== TOOLS ====== */
   E.imageUrlBtn.addEventListener('click',()=>{ 
     E.imageUrlInput.style.display = E.imageUrlInput.style.display==='none'?'inline-block':'none'; 
   });
@@ -1396,24 +1549,21 @@
     }
   });
 
-  // admin toggle
   E.adminBtn.addEventListener('click', async ()=>{
     const key = prompt('Masukkan ADMIN_KEY');
     if (key === null) return;
     await verifyAdmin(key.trim());
   });
 
-  // admin logout
   E.adminLogoutBtn.addEventListener('click', ()=>{
     localStorage.removeItem('kathy_admin_key');
     ADMIN_OK = false;
     E.badgeLabel.textContent = 'visitor';
     E.adminLogoutBtn.style.display = 'none';
     setStatus('🚪 Keluar dari mode admin','ok');
-    render(); // sembunyikan tombol pin/hapus
+    render();
   });
 
-  // submit & reload
   E.send.addEventListener('click',e=>{ 
     e.preventDefault(); 
     activeTextArea = E.msg; 
@@ -1422,6 +1572,7 @@
   
   E.reload.addEventListener('click',e=>{ 
     e.preventDefault(); 
+    renderedCount = BATCH_SIZE;
     loadAll(); 
   });
   
@@ -1432,21 +1583,19 @@
     } 
   });
 
-  // sort buttons
+  /* ====== SORT BUTTONS ====== */
   document.querySelectorAll('.sort-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentSort = btn.dataset.sort;
-      
-      // Add class to body for styling
+      renderedCount = BATCH_SIZE;
       document.body.className = currentSort === 'top' ? 'sort-popular' : '';
-      
       render();
     });
   });
 
-  // event handler delegation
+  /* ====== EVENT DELEGATION ====== */
   const handlerDelegation = async e=>{
     const t=e.target.closest('[data-act]'); 
     if(!t) return;
@@ -1479,31 +1628,26 @@
       }
       activeTextArea = E.msg;
     } else if(act==='like'){
+      if (t.classList.contains('disabled')) return;
+      const result = await apiLike(id,+1);
+      if (!result.ok) return;
       const b=t.querySelector('b'); 
       b.textContent=' '+(Number((b.textContent||'').trim())+1 || 1);
-      try{ 
-        await apiLike(id,+1); 
-      }catch{
-        console.error('Like error');
-      }
     } else if(act==='react'){
+      if (t.classList.contains('disabled')) return;
+      const result = await apiReact(id,key,+1);
+      if (!result.ok) return;
       const b=t.querySelector('b'); 
       b.textContent=' '+(Number((b.textContent||'').trim())+1 || 1);
-      try{ 
-        await apiReact(id,key,+1); 
-      }catch{
-        console.error('React error');
-      }
     } else if(act==='pin'){
       try{
         await apiPin(id);
-        // sinkron dari server, jangan hanya set lokal
         const items = await apiGet();
         data = items;
         render();
         setStatus('📌 Dipin','ok');
       }catch(e){
-        console.error('Pin error:', e);
+        setStatus('❌ '+(e.message||e),'err');
       }
     } else if(act==='unpin'){
       try{
@@ -1513,16 +1657,27 @@
         render();
         setStatus('✅ Unpin','ok');
       }catch(e){
-        console.error('Unpin error:', e);
+        setStatus('❌ '+(e.message||e),'err');
       }
     } else if(act==='delete'){
       if(!confirm('Hapus komentar ini (termasuk balasannya)?')) return;
       try{
         await apiDelete(id);
-        // jika yang dihapus sedang dipin → kosongkan pin
         if (String(PIN_ID||'') === String(id)) PIN_ID = null;
-        // buang item & semua anaknya dari memori
-        data = data.filter(x => String(x.id)!==String(id) && String(x.parentId)!==String(id));
+        
+        // Hapus item dan semua children-nya
+        const toDelete = new Set([String(id)]);
+        const findChildren = (items, parentId) => {
+          for (const item of items) {
+            if (String(item.parentId) === String(parentId)) {
+              toDelete.add(String(item.id));
+              findChildren(items, item.id);
+            }
+          }
+        };
+        findChildren(data, id);
+        
+        data = data.filter(x => !toDelete.has(String(x.id)));
         render();
         setStatus('🗑️ Dihapus','ok');
       } catch(e){
@@ -1540,7 +1695,6 @@
     }
   };
 
-  // attach event delegation to both list and pinnedBox
   ['list','pinnedBox'].forEach(idEl=>{
     document.getElementById(idEl).addEventListener('click', handlerDelegation);
   });
@@ -1563,6 +1717,16 @@
       }).catch(() => {});
     }
   }, 30000);
+
+  // Auto-clear old rate limits
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, timestamp] of RATE_LIMIT.entries()) {
+      if (now - timestamp > 60000) { // 1 minute
+        RATE_LIMIT.delete(key);
+      }
+    }
+  }, 60000);
 })();
 </script>
 </body>
