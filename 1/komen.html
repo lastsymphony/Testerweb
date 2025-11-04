@@ -540,18 +540,14 @@
 
   /* ====== EMOJI PICKER ====== */
 #emojiPicker {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); /* tiap kolom 48px min, otomatis isi ruang */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* isi ruang kanan-kiri */
   gap: 6px;
-  justify-items: center;
-  align-items: center;
 }
 #emojiPicker button {
-  width: 100%;
+  flex: 0 0 calc(20% - 6px); /* 5 kolom, bisa ubah ke 25% kalau mau 4 kolom */
   aspect-ratio: 1/1;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #1b1d3b;
 }
 
   #emojiPicker button:hover {
