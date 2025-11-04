@@ -1264,6 +1264,18 @@
     return root;
   }
   
+  // FIXED: Function to find a node in the tree by ID
+  function findInTree(list, id) {
+    const st = [...list];
+    const sid = String(id);
+    while (st.length) {
+      const n = st.pop();
+      if (String(n.id) === sid) return n;
+      if (n.children) st.push(...n.children);
+    }
+    return null;
+  }
+  
   function likeLocal(it){ 
     const s=Number(it.likes||0), l=Number(localStorage.getItem('k_like_'+it.id)||0); 
     const t=s+l; 
@@ -1360,9 +1372,10 @@
     </div>`;
   }
   
+  // FIXED: Properly render pinned comments with their children
   function render(showAll = false){
-    const tree=buildTree([...data]);
-    E.count.textContent=data.length;
+    const tree = buildTree([...data]);
+    E.count.textContent = data.length;
     
     if (currentSort === 'top' && data.length > 0) {
       E.sortHeader.style.display = 'flex';
@@ -1380,12 +1393,13 @@
       E.sortHeader.style.display = 'none';
     }
     
+    // FIXED: Find pinned node in the full tree, not create a new tree
+    let pinNode = null;
     if (PIN_ID) {
-      const pin = data.find(x => String(x.id) === String(PIN_ID));
-      if (pin) {
-        const treePin = buildTree([pin]);
+      pinNode = findInTree(tree, PIN_ID);
+      if (pinNode) {
         E.pinnedWrap.style.display = 'block';
-        E.pinnedBox.innerHTML = treePin.map(itemHTML).join('');
+        E.pinnedBox.innerHTML = itemHTML(pinNode);
       } else {
         E.pinnedWrap.style.display = 'none';
         E.pinnedBox.innerHTML = '';
@@ -1395,7 +1409,7 @@
       E.pinnedBox.innerHTML = '';
     }
     
-    const roots = tree.filter(x=>String(x.id)!==String(PIN_ID));
+    const roots = tree.filter(x => String(x.id) !== String(PIN_ID));
     
     if (roots.length === 0 && data.length === 0) {
       E.list.innerHTML = `
