@@ -1,57 +1,2328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnhMoe API Upload Demo</title>
-</head>
-<body>
-  <h1>Upload ke AnhMoe via API</h1>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Portfolio resmi Aditya Jatayu - freelance F&B worker profesional dari Soloraya. Cek layanan, kontak, dan proyek digital interaktif.">
+  <title>Aditya Jatayu - Portfolio</title>
+  <link rel="icon" type="image/x-icon" href="/media/Favicon.ico">
 
-  <!-- Form Upload -->
-  <input type="file" id="fileInput" />
-  <button id="uploadBtn">Upload</button>
-
-  <h2>Hasil:</h2>
-  <div id="result"></div>
-
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    const API_URL = "https://anh.moe/api/1/upload";
-    const API_KEY = "YOUR_API_KEY"; // ganti dengan API key kamu
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bgDeep1: '#0f172a', /* slate-900-ish */
+            bgDeep2: '#0a0f24', /* custom darker */
+            glassDark: 'rgba(15,23,42,0.6)',
+            glassBorder: 'rgba(255,255,255,0.08)'
+          },
+          boxShadow: {
+            neonPurple: '0 0 30px rgba(168,85,247,0.6)',
+            neonBlue: '0 0 30px rgba(96,165,250,0.5)'
+          }
+        }
+      }
+    }
+  </script>
 
-    document.getElementById("uploadBtn").addEventListener("click", async () => {
-      const file = document.getElementById("fileInput").files[0];
-      if (!file) {
-        alert("Pilih file dulu!");
-        return;
+  <!-- Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background-color: #0a0f24;
+    }
+
+    /* HERO BACKGROUND */
+    .hero-bg {
+      position: relative;
+      background: radial-gradient(circle at 20% 30%, rgba(91,33,182,0.4) 0%, rgba(0,0,0,0) 60%),
+                  radial-gradient(circle at 30% 60%, rgba(37,99,235,0.25) 0%, rgba(0,0,0,0) 60%),
+                  radial-gradient(circle at 80% 20%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 70%);
+      background-color: #0a0f24;
+    }
+
+    /* vertical split background feel (kaya kelihatan 2 kolom gelap beda tonenya) */
+    .hero-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to right,
+        rgba(15,23,42,0.4) 0%,
+        rgba(15,23,42,0.4) 50%,
+        rgba(0,0,0,0.15) 50%,
+        rgba(0,0,0,0.15) 100%
+      );
+      mix-blend-mode: screen;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* navbar glass low blur */
+    .nav-glass {
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* glass cards */
+    .glass-card {
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .gradient-name {
+      background: linear-gradient(90deg,#60a5fa 0%,#8b5cf6 50%,#a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-outline-neon {
+      background: rgba(15,23,42,0.3);
+      border: 2px solid rgba(147,197,253,0.6);
+      color: #cbd5e1;
+      box-shadow: 0 0 20px rgba(96,165,250,0.4);
+    }
+
+    .btn-outline-neon:active {
+      transform: scale(.98);
+    }
+
+    .btn-gradient {
+      background-image: radial-gradient(circle at 0% 0%, rgba(91,33,182,0.9) 0%, rgba(59,130,246,0.4) 60%);
+      background-color: #4f46e5;
+      background: linear-gradient(135deg,#4f46e5 0%,#9333ea 50%,#c026d3 100%);
+      color:#fff;
+      box-shadow:0 20px 60px rgba(147,51,234,.4),0 0 40px rgba(147,51,234,.6);
+    }
+
+    .btn-gradient:active {
+      transform: scale(.98);
+    }
+
+    @keyframes bounceSlow {
+      0%,100% { transform: translateY(0); opacity: .7; }
+      50% { transform: translateY(-6px); opacity:1; }
+    }
+
+    .scroll-indicator {
+      animation: bounceSlow 2s infinite;
+    }
+
+    /* mobile menu slide */
+    #mobileMenu {
+      transform: translateX(100%);
+      transition: transform .3s ease;
+    }
+    #mobileMenu.show {
+      transform: translateX(0);
+    }
+
+    /* project card hover overlay */
+    .project-card {
+      position: relative;
+      overflow:hidden;
+    }
+    .project-card img {
+      transition: transform .5s ease;
+    }
+    .project-card:hover img {
+      transform: scale(1.08);
+    }
+    .project-overlay {
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.7) 20%,transparent 60%);
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding:1rem;
+      color:#fff;
+      pointer-events:none;
+    }
+
+    /* dot indicator */
+    .dot-indicator {
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.3);
+      transition:all .2s;
+    }
+    .dot-indicator.active {
+      background:#fff;
+      box-shadow:0 0 10px rgba(255,255,255,.8);
+    }
+
+    @media (min-width:768px){
+      .hero-inner {
+        max-width:480px;
+      }
+    }
+
+    /* ====== KOMENTAR STYLES ====== */
+    /* Variabel warna komentar yang disesuaikan dengan tema website */
+    :root {
+      --comment-bg: rgba(15,23,42,0.6);
+      --comment-panel: rgba(15,23,42,0.8);
+      --comment-line: rgba(255,255,255,0.08);
+      --comment-text: #e2e8f0;
+      --comment-muted: #94a3b8;
+      --comment-primary: #8b5cf6;
+      --comment-primary-hover: #a78bfa;
+      --comment-accent: #f43f5e;
+      --comment-success: #10b981;
+      --comment-warning: #f59e0b;
+      --comment-info: #3b82f6;
+      --comment-popular: #f97316;
+      --comment-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+      --comment-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --comment-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Form komentar */
+    .comment-form {
+      background: var(--comment-panel);
+      border: 1px solid var(--comment-line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--comment-shadow);
+      backdrop-filter: blur(10px);
+      transition: var(--comment-transition);
+    }
+
+    .comment-form:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .comment-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+
+    .comment-input, .comment-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15,23,42,0.6);
+      color: var(--comment-text);
+      font-size: 14px;
+      transition: var(--comment-transition);
+    }
+
+    .comment-input:focus, .comment-textarea:focus {
+      outline: none;
+      border-color: var(--comment-primary);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+
+    .comment-textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .comment-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      position: relative;
+      margin: 16px 0;
+    }
+
+    .comment-tool {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      background: rgba(15,23,42,0.6);
+      cursor: pointer;
+      transition: var(--comment-transition);
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .comment-tool:hover {
+      background: rgba(30,41,59,0.8);
+      transform: translateY(-2px);
+    }
+
+    .comment-status {
+      font-size: 13px;
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .comment-status.ok {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--comment-success);
+    }
+
+    .comment-status.err {
+      background: rgba(244, 63, 94, 0.2);
+      color: var(--comment-accent);
+    }
+
+    .comment-status.warn {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--comment-warning);
+    }
+
+    .comment-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .comment-chip {
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15,23,42,0.6);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #cbd5e1;
+    }
+
+    .comment-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .comment-item {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      transition: var(--comment-transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .comment-item:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--comment-gradient);
+      opacity: 0;
+      transition: var(--comment-transition);
+    }
+
+    .comment-item.popular {
+      border-color: var(--comment-popular);
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(251, 146, 60, 0.05));
+    }
+
+    .comment-item.popular:before {
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      opacity: 1;
+    }
+
+    .comment-item:hover:before {
+      opacity: 1;
+    }
+
+    .comment-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .comment-popular-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .comment-score-display {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--comment-popular);
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .sort-popular .comment-score-display {
+      display: block;
+    }
+
+    .comment-header {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .comment-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: #f1f5f9;
+    }
+
+    .comment-badge {
+      font-size: 11px;
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      background: rgba(139, 92, 246, 0.2);
+      color: #ddd6fe;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .comment-badge.admin {
+      border-color: #a78bfa;
+      background: var(--comment-gradient);
+      color: white;
+    }
+
+    .comment-time {
+      color: var(--comment-muted);
+      font-size: 12px;
+      margin-left: auto;
+    }
+
+    .comment-replyto {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #ddd6fe;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.1);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .comment-body {
+      white-space: pre-wrap;
+      margin-top: 12px;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    .comment-imgwrap {
+      margin-top: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .comment-imgwrap img {
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: var(--comment-transition);
+    }
+
+    .comment-imgwrap img:hover {
+      transform: scale(1.02);
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+      color: #cbd5e1;
+      flex-wrap: wrap;
+    }
+
+    .comment-action {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 6px 12px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      background: rgba(139, 92, 246, 0.1);
+      cursor: pointer;
+      font-size: 13px;
+      transition: var(--comment-transition);
+    }
+
+    .comment-action:hover {
+      background: rgba(139, 92, 246, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .comment-admin-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .comment-reactions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .comment-reaction {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 6px 12px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      background: rgba(139, 92, 246, 0.1);
+      cursor: pointer;
+      font-size: 13px;
+      transition: var(--comment-transition);
+    }
+
+    .comment-reaction:hover {
+      background: rgba(139, 92, 246, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .comment-reaction img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .comment-children {
+      margin-left: 24px;
+      border-left: 2px dashed rgba(139, 92, 246, 0.3);
+      padding-left: 16px;
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      transition: var(--comment-transition);
+    }
+
+    .comment-replybox {
+      margin-top: 16px;
+      border: 1px dashed rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .comment-child-toggle {
+      margin-top: 12px;
+    }
+
+    .comment-toggle-replies {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 8px;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--comment-transition);
+    }
+
+    .comment-toggle-replies:hover {
+      background: rgba(51, 65, 85, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .comment-hidden {
+      display: none;
+    }
+
+    /* === Emoji picker layout yang responsif === */
+    #commentEmojiPicker {
+      display: none;
+      position: absolute;
+      top: 46px;
+      left: 0;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      z-index: 50;
+      box-shadow: var(--comment-shadow);
+      backdrop-filter: blur(10px);
+      width: min(90vw, 400px);
+      box-sizing: border-box;
+    }
+
+    #commentEmojiPicker button {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 0;
+      background: #15183a;
+      border: 1px solid #2a2e63;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #commentEmojiPicker button:hover {
+      background: #1a1f4a;
+      transform: scale(1.1);
+    }
+
+    #commentEmojiPicker img,
+    #commentEmojiPicker video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .comment-emojiimg {
+      width: 48px;
+      height: 48px;
+      vertical-align: middle;
+      border-radius: 8px;
+      margin: 0 3px;
+    }
+
+    .comment-pinned {
+      border: 1px dashed rgba(139, 92, 246, 0.5);
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .comment-pinned:before {
+      content: '📌';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      background: #0a0f24;
+      padding: 0 8px;
+      font-size: 18px;
+    }
+
+    .comment-pinlabel {
+      font-size: 13px;
+      color: #a78bfa;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .comment-sort-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-sort-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--comment-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--comment-transition);
+      position: relative;
+    }
+
+    .comment-sort-btn.active {
+      background: var(--comment-gradient);
+      color: white;
+      border-color: var(--comment-primary);
+    }
+
+    .comment-sort-btn.popular.active {
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      border-color: var(--comment-popular);
+    }
+
+    .comment-sort-btn:hover:not(.active) {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--comment-text);
+    }
+
+    .comment-sort-btn .sort-icon {
+      margin-right: 4px;
+    }
+
+    .comment-sort-header {
+      padding: 8px 16px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .comment-sort-header.popular {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(251, 146, 60, 0.1));
+      border: 1px solid var(--comment-popular);
+      color: var(--comment-popular);
+    }
+
+    .comment-sort-header.new {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.1));
+      border: 1px solid var(--comment-primary);
+      color: var(--comment-primary);
+    }
+
+    .comment-sort-header.old {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid #10b981;
+      color: #10b981;
+    }
+
+    .comment-empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--comment-muted);
+    }
+
+    .comment-empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .comment-empty-state-text {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .comment-empty-state-subtext {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .comment-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--comment-primary);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .comment-offline-indicator {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: var(--comment-warning);
+      color: #0a0f24;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 100;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    @media (max-width: 768px) {
+      .comment-form {
+        padding: 16px;
       }
 
-      const formData = new FormData();
-      formData.append("source", file);
-      formData.append("key", API_KEY);
-      formData.append("format", "json"); // biar hasilnya JSON
+      .comment-toolbar {
+        gap: 8px;
+      }
 
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          body: formData
-        });
-        const data = await res.json();
+      .comment-tool {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
 
-        if (data.status_code === 200) {
-          const url = data.image.url;
-          document.getElementById("result").innerHTML = `
-            <p><a href="${url}" target="_blank">${url}</a></p>
-            <img src="${url}" style="max-width:300px; margin-top:10px;" />
-          `;
-        } else {
-          document.getElementById("result").innerText = "Upload gagal: " + data.status_txt;
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById("result").innerText = "Error upload: " + err.message;
+      .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .comment-time {
+        margin-left: 0;
+        margin-top: 4px;
+      }
+
+      .comment-actions {
+        gap: 6px;
+      }
+
+      .comment-action {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .comment-children {
+        margin-left: 16px;
+        padding-left: 12px;
+      }
+
+      #commentEmojiPicker {
+        grid-template-columns: repeat(6, 34px);
+        width: min(90vw, 300px);
+      }
+
+      .comment-popular-badge {
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .comment-form {
+        padding: 12px;
+      }
+
+      .comment-chips {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .comment-chip {
+        width: 100%;
+        justify-content: center;
+      }
+
+      #commentEmojiPicker {
+        grid-template-columns: repeat(5, 34px);
+        left: -20px;
+        right: -20px;
+        width: auto;
+      }
+
+      .comment-sort-container {
+        flex-wrap: wrap;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-item {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+</head>
+
+<body class="text-slate-100 bg-bgDeep2 relative overflow-x-hidden dark">
+
+<!-- NAVBAR -->
+<header id="navbar" class="fixed top-0 left-0 w-full z-40 nav-glass">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+    <!-- kiri kosong (tidak ada logo) -->
+    <div class="flex-1"></div>
+
+    <!-- desktop nav -->
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-200">
+      <a href="#about" class="hover:text-indigo-400 transition-colors">About</a>
+      <a href="#services" class="hover:text-indigo-400 transition-colors">Services</a>
+      <a href="#contact" class="hover:text-indigo-400 transition-colors">Contact</a>
+      <a href="#cv" class="hover:text-indigo-400 transition-colors">CV</a>
+      <a href="#comments" class="hover:text-indigo-400 transition-colors">Comments</a>
+      <a href="/tentang.html" class="hover:text-indigo-400 transition-colors">Tentang</a>
+    </nav>
+
+    <!-- mobile button -->
+    <button id="menuButton" class="md:hidden p-2 text-slate-200">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+
+  <!-- mobile menu panel -->
+  <div id="mobileMenu" class="fixed top-0 right-0 h-screen w-4/5 max-w-[280px] bg-slate-900/90 backdrop-blur-xl border-l border-white/10 z-50 flex flex-col pt-16 px-6 space-y-4">
+    <a href="#about" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">About</a>
+    <a href="#services" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">Services</a>
+    <a href="#contact" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">Contact</a>
+    <a href="#cv" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">CV</a>
+    <a href="#comments" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">Comments</a>
+    <a href="/tentang.html" class="block text-slate-100 text-lg font-semibold py-2 border-b border-white/10">Tentang</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="relative min-h-screen flex items-center justify-center px-4 pt-20 hero-bg">
+  <div class="relative z-10 hero-inner w-full max-w-lg text-left">
+    <p class="text-base text-slate-300 mb-3">Hi, I'm</p>
+
+    <h1 class="text-4xl leading-[1.15] sm:text-5xl font-extrabold gradient-name mb-4">
+      Aditya Jatayu
+    </h1>
+
+    <p class="text-base sm:text-lg text-slate-300 mb-8">
+      I'm a freelance Food &amp; Beverage casual worker based in Soloraya.
+    </p>
+
+    <div class="flex flex-col gap-4 w-full max-w-xs">
+      <a href="cv.html"
+         class="btn-outline-neon text-center font-medium rounded-xl px-6 py-3 text-base active:scale-95 transition-all duration-200">
+        View CV
+      </a>
+
+      <a href="#contact"
+         class="btn-gradient text-center font-medium rounded-xl px-6 py-3 text-base shadow-neonPurple active:scale-95 transition-all duration-200">
+        Contact Me
+      </a>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="mt-12 flex items-center text-slate-300/70 text-sm scroll-indicator select-none w-min">
+      <i data-lucide="chevron-down" class="w-5 h-5"></i>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="relative py-20 px-4 bg-gradient-to-b from-transparent to-bgDeep1">
+  <div class="max-w-4xl mx-auto">
+    <div class="glass-card rounded-2xl p-6 md:p-8 shadow-neonBlue">
+      <h2 class="text-3xl font-bold mb-6 gradient-name">About</h2>
+      <p class="text-slate-300 text-lg leading-relaxed">
+        I am a freelance worker with hands-on experience in Food &amp; Beverage service and stewarding roles
+        at hotels and restaurants. Comfortable in fast-paced hospitality environments, I'm skilled at maintaining
+        hygiene standards, assisting kitchen operations, and delivering quality guest service.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="relative py-20 px-4 bg-bgDeep1">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-12 gradient-name">Services</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-card rounded-xl p-6 text-center shadow-neonBlue">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <i data-lucide="utensils" class="w-8 h-8 text-white"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-1">Resto Service</h3>
+        <p class="text-slate-400 text-sm">(Waiter)</p>
+      </div>
+
+      <div class="glass-card rounded-xl p-6 text-center shadow-neonBlue">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <i data-lucide="chef-hat" class="w-8 h-8 text-white"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-1">Kitchen Stewarding</h3>
+        <p class="text-slate-400 text-sm">&amp; Equipment</p>
+      </div>
+
+      <div class="glass-card rounded-xl p-6 text-center shadow-neonBlue">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <i data-lucide="calendar" class="w-8 h-8 text-white"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-1">Event Casual</h3>
+        <p class="text-slate-400 text-sm">F&amp;B Crew</p>
+      </div>
+
+      <div class="glass-card rounded-xl p-6 text-center shadow-neonBlue">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+          <i data-lucide="settings" class="w-8 h-8 text-white"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-1">Table Setup</h3>
+        <p class="text-slate-400 text-sm">&amp; Guest Service</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="relative py-20 px-4 bg-gradient-to-b from-bgDeep1 to-bgDeep2">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-12 gradient-name">Contact Me</h2>
+
+    <div class="glass-card rounded-2xl p-6 md:p-8 shadow-neonBlue">
+      <div class="space-y-6">
+        <div class="flex flex-col md:flex-row items-center p-4 rounded-lg hover:bg-white/5 transition">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mb-4 md:mb-0 md:mr-4">
+            <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+          </div>
+          <a href="mailto:jatayupaint01@gmail.com" class="text-lg text-indigo-300 hover:underline text-center md:text-left break-all">
+            jatayupaint01@gmail.com
+          </a>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center p-4 rounded-lg hover:bg-white/5 transition">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-red-500 flex items-center justify-center mb-4 md:mb-0 md:mr-4">
+            <i data-lucide="instagram" class="w-6 h-6 text-white"></i>
+          </div>
+          <a href="https://instagram.com/lastsymph" target="_blank" rel="noopener noreferrer" class="text-lg text-indigo-300 hover:underline text-center md:text-left break-all">
+            @lastsymph
+          </a>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center p-4 rounded-lg hover:bg-white/5 transition">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center mb-4 md:mb-0 md:mr-4">
+            <i data-lucide="phone" class="w-6 h-6 text-white"></i>
+          </div>
+          <a href="https://wa.me/6289670394574" target="_blank" rel="noopener noreferrer" class="text-lg text-indigo-300 hover:underline text-center md:text-left break-all">
+            +62 896-7039-4574
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CV -->
+<section id="cv" class="relative py-20 px-4 bg-bgDeep2">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl font-bold mb-6 gradient-name">CV</h2>
+    <p class="text-lg text-slate-300 mb-8">Download or view my CV here:</p>
+    <a href="cv.html"
+       class="inline-block btn-gradient text-center font-medium rounded-xl px-8 py-4 text-base shadow-neonPurple active:scale-95 transition">
+      View Full CV
+    </a>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="relative py-20 px-4 bg-gradient-to-b from-bgDeep2 to-bgDeep1">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-12 gradient-name">Projects I'm Working On</h2>
+
+    <!-- carousel -->
+    <div class="rounded-2xl overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.8),0_0_120px_rgba(147,51,234,0.4)] border border-white/10">
+      <div id="carousel" class="flex transition-transform duration-500">
+        <!-- slide 1 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://downloader-gamma-one.vercel.app/" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/ujxp6r.png" class="w-full h-64 md:h-96 object-cover" alt="Downloader Multi-Platform Screenshot">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">Downloader Multi-Platform</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                Web downloader untuk Instagram, TikTok, dan Facebook. Serbaguna, tanpa iklan dan praktis.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- slide 2 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://katheryne.biz.id/" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/0nkhvr.png" class="w-full h-64 md:h-96 object-cover" alt="Gallery Publik Screenshot">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">Gallery Publik</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                Galeri yang menyimpan berbagai format media interaktif dengan desain estetis untuk publik.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- slide 3 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://lastsymphony.github.io/Generator-json-gallery-/" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/4sfryx.jpg" class="w-full h-64 md:h-96 object-cover" alt="JSON Gallery Generator Screenshot">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">JSON Gallery Generator + Uploader</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                Generator otomatis dan uploader dengan max. Size 100Mb untuk galeri publik berbasis JSON.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- slide 4 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://www.genshinguide.biz.id/" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/uv4k51.png" class="w-full h-64 md:h-96 object-cover" alt="Genshin Impact Guide Screenshot">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">GENSHIN IMPACT GUIDE</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                Genshin Impact Guide — website buat kamu yang butuh info karakter, senjata, jadwal farming, dan update terbaru Genshin.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- slide 5 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://wa.me/6285920371893?text=menu" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/d3f8vm.jpg" class="w-full h-64 md:h-96 object-cover" alt="Dual Bot Panel Preview">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">Dual bot platform</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                WhatsApp + Telegram jalan bareng. Pesan auto forward, 1 panel kontrol semua. Stabil, aman, anti ribet.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- slide 6 -->
+        <div class="min-w-full bg-black relative project-card">
+          <a href="https://json-generator-media-uploader.vercel.app/" target="_blank" rel="noopener noreferrer">
+            <img src="https://files.catbox.moe/dcq51v.png" class="w-full h-64 md:h-96 object-cover" alt="JSON Gallery Generator v2 Screenshot">
+            <div class="project-overlay">
+              <h3 class="text-xl md:text-2xl font-bold mb-1">JSON Gallery Generator + Uploader v2</h3>
+              <p class="text-sm md:text-base text-slate-200">
+                Generator otomatis dan uploader dengan max. Size 200mb untuk galeri publik berbasis JSON.
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- dots -->
+    <div class="flex justify-center mt-8 gap-3" id="carousel-dots">
+      <button class="dot-indicator active" data-index="0" aria-label="Slide 1"></button>
+      <button class="dot-indicator" data-index="1" aria-label="Slide 2"></button>
+      <button class="dot-indicator" data-index="2" aria-label="Slide 3"></button>
+      <button class="dot-indicator" data-index="3" aria-label="Slide 4"></button>
+      <button class="dot-indicator" data-index="5" aria-label="Slide 5"></button>
+      <button class="dot-indicator" data-index="6" aria-label="Slide 6"></button>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENTS -->
+<section id="comments" class="relative py-20 px-4 bg-gradient-to-b from-bgDeep1 to-bgDeep2">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-12 gradient-name">Comments</h2>
+
+    <div class="comment-form">
+      <div>
+        <label class="comment-label">Nama</label>
+        <input id="commentName" class="comment-input" placeholder="Nama kamu" maxlength="60">
+      </div>
+      <div>
+        <label class="comment-label">Komen di mari…</label>
+        <textarea id="commentMessage" class="comment-textarea" placeholder="Tulis komentar (Shift+Enter = baris baru)" maxlength="2000"></textarea>
+      </div>
+
+      <div class="comment-toolbar">
+        <span class="comment-tool" id="commentEmojiBtn">😀 Emoji</span>
+        <span class="comment-tool" id="commentImageUrlBtn">🖼️ URL</span>
+        <span class="comment-tool" id="commentUploadBtn">⬆️ Upload</span>
+        <span class="comment-tool" id="commentAdminBtn">Badge: <b id="commentBadgeLabel">visitor</b></span>
+        <span class="comment-tool" id="commentAdminLogoutBtn" style="display:none">Logout Admin</span>
+        <input type="text" id="commentImageUrlInput" class="comment-input" placeholder="https://…" style="display:none;min-width:260px">
+        <input type="file" id="commentFileInput" accept="image/*,video/*" style="display:none">
+        <div id="commentEmojiPicker"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <button id="commentSend" class="btn-gradient">Kirim</button>
+        <button id="commentReload" class="btn-outline-neon" type="button">Muat Ulang</button>
+      </div>
+      <div id="commentStatus" class="comment-status"></div>
+    </div>
+
+    <div style="height:20px"></div>
+
+    <div class="glass-card rounded-2xl p-6 md:p-8">
+      <div class="comment-chips">
+        <span class="comment-chip"><b id="commentCount">0</b> Komentar</span>
+        <div class="comment-sort-container">
+          <span>Sort:</span>
+          <button class="comment-sort-btn active" data-sort="new">
+            <span class="sort-icon">🕐</span>Terbaru
+          </button>
+          <button class="comment-sort-btn" data-sort="old">
+            <span class="sort-icon">📅</span>Terlama
+          </button>
+          <button class="comment-sort-btn popular" data-sort="top">
+            <span class="sort-icon">🔥</span>Terpopuler
+          </button>
+        </div>
+      </div>
+
+      <div id="commentSortHeader" class="comment-sort-header" style="display:none"></div>
+
+      <div id="commentPinnedWrap" style="display:none" class="comment-pinned">
+        <div class="comment-pinlabel">Komentar disematkan</div>
+        <div id="commentPinnedBox"></div>
+      </div>
+
+      <div class="comment-list" id="commentList">
+        <div class="comment-empty-state">
+          <div class="comment-empty-state-icon">💬</div>
+          <div class="comment-empty-state-text">Belum ada komentar</div>
+          <div class="comment-empty-state-subtext">Jadilah yang pertama berkomentar!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-bgDeep1 text-slate-400 py-12 px-4 border-t border-white/10">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="mb-6 md:mb-0 text-center md:text-left">
+        <h3 class="text-white text-xl font-bold">Aditya Jatayu</h3>
+        <p class="text-slate-400 text-sm">Freelance F&amp;B Casual Worker</p>
+      </div>
+
+      <div class="flex gap-4">
+        <a href="https://instagram.com/lastsymph" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-gradient-to-r hover:from-pink-500 hover:to-red-500 transition-all duration-300">
+          <i data-lucide="instagram" class="w-6 h-6 text-white"></i>
+        </a>
+        <a href="mailto:jatayupaint01@gmail.com" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 transition-all duration-300">
+          <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+        </a>
+        <a href="https://wa.me/6289670394574" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-gradient-to-r hover:from-green-500 hover:to-teal-500 transition-all duration-300">
+          <i data-lucide="phone" class="w-6 h-6 text-white"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center text-xs text-slate-500 mt-8">
+      &copy; 2025 Aditya Jatayu. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPT -->
+<script>
+  // init icons
+  function initIcons() {
+    if (window.lucide && window.lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initIcons);
+
+  // mobile menu logic
+  let menuVisible = false;
+  const mobileMenu = document.getElementById('mobileMenu');
+  const menuButton = document.getElementById('menuButton');
+
+  function openMenu() {
+    mobileMenu.classList.add('show');
+    menuVisible = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    mobileMenu.classList.remove('show');
+    menuVisible = false;
+    document.body.style.overflow = '';
+  }
+
+  menuButton.addEventListener('click', () => {
+    if (menuVisible) closeMenu();
+    else openMenu();
+  });
+
+  // close when click outside panel
+  document.addEventListener('click', (e) => {
+    if (!menuVisible) return;
+    const clickedInside = mobileMenu.contains(e.target);
+    const clickedButton = e.target.closest('#menuButton');
+    if (!clickedInside && !clickedButton) {
+      closeMenu();
+    }
+  });
+
+  // close when click link in panel
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', closeMenu);
+  });
+
+  // smooth scroll for internal link
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({behavior:'smooth',block:'start'});
       }
     });
-  </script>
+  });
+
+  // navbar shadow on scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      navbar.classList.add('shadow-lg','shadow-black/70');
+    } else {
+      navbar.classList.remove('shadow-lg','shadow-black/70');
+    }
+  });
+
+  // carousel
+  const carousel = document.getElementById('carousel');
+  const slides = carousel ? carousel.children : [];
+  const totalSlides = slides.length;
+  const dots = document.querySelectorAll('#carousel-dots .dot-indicator');
+  let currentIndex = 0;
+  let autoTimer;
+
+  function showSlide(i) {
+    if (!carousel) return;
+    carousel.style.transform = `translateX(-${i * 100}%)`;
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === i);
+    });
+    currentIndex = i;
+  }
+
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(() => {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      showSlide(currentIndex);
+    }, 5000);
+  }
+
+  function stopAuto() {
+    if (autoTimer) clearInterval(autoTimer);
+  }
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      stopAuto();
+      showSlide(Number(dot.dataset.index));
+      startAuto();
+    });
+  });
+
+  if (totalSlides > 0) {
+    showSlide(currentIndex);
+    startAuto();
+  }
+
+  // swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  if (carousel) {
+    carousel.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    carousel.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+  }
+
+  function handleSwipe() {
+    if (touchEndX < touchStartX - 50) {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      showSlide(currentIndex);
+    } else if (touchEndX > touchStartX + 50) {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      showSlide(currentIndex);
+    }
+  }
+
+  // ====== KOMENTAR SCRIPT ====== //
+  (function(){
+    /* ====== CONFIG ====== */
+    const API_BASE = 'https://telestick.vercel.app/api/kathy';
+    const EP = {
+      GET:   s => `${API_BASE}?t=comments&a=get&slug=${encodeURIComponent(s)}`,
+      POST:  `${API_BASE}?t=comments&a=post`,
+      LIKE:  `${API_BASE}?t=comments&a=like`,
+      REACT: `${API_BASE}?t=comments&a=react`,
+      UPLOAD:`${API_BASE}?t=comments&a=upload`,
+      EMOJI: `${API_BASE}?t=emoji&a=list`,
+      PIN:   `${API_BASE}?t=comments&a=pin`,
+      DEL:   `${API_BASE}?t=comments&a=delete`,
+      ADMIN: `${API_BASE}?t=admin&a=verify`
+    };
+    const COMMENT_REACTIONS = [
+      { key:'heart', label:'Love', icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/2764.svg' },
+      { key:'joy',   label:'Haha', icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f602.svg' },
+      { key:'wow',   label:'Wow',  icon:'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f62e.svg' }
+    ];
+    const ADMIN_BADGE='katheryne';
+    const SLUG = (new URL(location.href)).searchParams.get('slug') || location.pathname || '/';
+    const BATCH_SIZE = 50;
+    const RATE_LIMIT_MS = 1000;
+
+    /* ====== PATCH: util merge dan cache ====== */
+    function arrToMap(arr){ 
+      const m=new Map(); 
+      for(const x of arr||[]) m.set(String(x.id), x); 
+      return m; 
+    }
+    
+    function mergeById(oldArr, newArr){
+      const m = arrToMap(oldArr);
+      for(const it of (newArr||[])) m.set(String(it.id), it);
+      return Array.from(m.values());
+    }
+    
+    const CACHE_KEY = 'kathy_comments_cache:' + (location.pathname || '/');
+    const DRAFT_KEY = 'kathy_draft:' + (location.pathname || '/');
+
+    /* ====== ELEMENTS ====== */
+    const $=s=>document.querySelector(s);
+    const E={
+      name:$('#commentName'), msg:$('#commentMessage'),
+      emojiBtn:$('#commentEmojiBtn'), emojiPicker:$('#commentEmojiPicker'),
+      imageUrlBtn:$('#commentImageUrlBtn'), imageUrlInput:$('#commentImageUrlInput'),
+      uploadBtn:$('#commentUploadBtn'), fileInput:$('#commentFileInput'),
+      adminBtn:$('#commentAdminBtn'), badgeLabel:$('#commentBadgeLabel'),
+      adminLogoutBtn:$('#commentAdminLogoutBtn'),
+      send:$('#commentSend'), reload:$('#commentReload'), status:$('#commentStatus'),
+      list:$('#commentList'), count:$('#commentCount'),
+      pinnedWrap:$('#commentPinnedWrap'), pinnedBox:$('#commentPinnedBox'),
+      sortHeader:$('#commentSortHeader')
+    };
+
+    /* ====== STATE ====== */
+    let ADMIN_OK = false;
+    const storedKey = localStorage.getItem('kathy_admin_key') || '';
+    let data=[]; 
+    let EMOJI_ITEMS=[], EMOJI_MAP=new Map(); 
+    let activeTextArea = E.msg;
+    let PIN_ID = null;
+    let currentSort = 'new';
+    let renderedCount = BATCH_SIZE;
+    const RATE_LIMIT = new Map();
+
+    /* ====== VALIDATION ====== */
+    function isValidUrl(url) {
+      if (!url) return true; // empty is ok
+      try {
+        const u = new URL(url);
+        return ['http:', 'https:', 'data:', 'blob:'].includes(u.protocol);
+      } catch {
+        return url.startsWith('data:') || url.startsWith('blob:'); // fallback
+      }
+    }
+
+    function sanitizeUrl(url) {
+      if (!url) return null;
+      const trimmed = url.trim();
+      return isValidUrl(trimmed) ? trimmed : null;
+    }
+
+    /* ====== ADMIN VERIFICATION ====== */
+    async function verifyAdmin(key) {
+      try {
+        const r = await fetch(EP.ADMIN, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key })
+        });
+        ADMIN_OK = r.ok;
+        if (ADMIN_OK) {
+          localStorage.setItem('kathy_admin_key', key);
+          E.badgeLabel.textContent = 'katheryne';
+          E.adminLogoutBtn.style.display = 'inline-block';
+          setStatus('🔑 Admin on','ok');
+        } else {
+          localStorage.removeItem('kathy_admin_key');
+          E.badgeLabel.textContent = 'visitor';
+          E.adminLogoutBtn.style.display = 'none';
+          setStatus('Admin off','warn');
+        }
+      } catch {
+        ADMIN_OK = false;
+        E.badgeLabel.textContent = 'visitor';
+        E.adminLogoutBtn.style.display = 'none';
+      }
+    }
+
+    const isAdmin = () => ADMIN_OK;
+
+    function adminHeader() {
+      const k = localStorage.getItem('kathy_admin_key') || '';
+      return k ? { 'x-admin-key': k } : {};
+    }
+
+    // inisialisasi awal
+    verifyAdmin(storedKey);
+
+    /* ====== UTILS ====== */
+    const esc = s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    const time = s=>{ const d=new Date(s); return isNaN(d)?s:d.toLocaleString(); };
+    const setStatus=(m,t='')=>{ E.status.textContent=m||''; E.status.className='comment-status '+t; };
+    const sum = a=>a.reduce((x,y)=>x+Number(y||0),0);
+    const score = it => Number(it.likes||0)+sum(Object.values(it.reactions||{}));
+    const safeJson=async(res=>{ 
+      const ct=res.headers.get('content-type')||''; 
+      if(!ct.includes('application/json')){ 
+        const text=await res.text(); 
+        throw new Error(`Bukan JSON (status ${res.status}): ${text.slice(0,140)}…`); 
+      } 
+      return res.json(); 
+    });
+
+    /* ====== RATE LIMITING ====== */
+    function checkRateLimit(key) {
+      const now = Date.now();
+      const last = RATE_LIMIT.get(key) || 0;
+      if (now - last < RATE_LIMIT_MS) {
+        return false;
+      }
+      RATE_LIMIT.set(key, now);
+      return true;
+    }
+
+    /* ====== API ====== */
+    async function apiPost(p){ 
+      try {
+        setStatus('<span class="comment-spinner"></span> Mengirim komentar...');
+        const r=await fetch(EP.POST,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}); 
+        const j=await safeJson(r); 
+        if(!j.ok) throw new Error(j.error||`HTTP ${r.status}`); 
+        return j.item; 
+      } catch (error) {
+        setStatus('❌ '+(error.message||error),'err');
+        throw error;
+      }
+    }
+    
+    async function apiLike(id,delta=1){ 
+      const key = 'like_' + id;
+      if (!checkRateLimit(key)) {
+        setStatus('⏳ Tunggu sebentar...', 'warn');
+        return { ok: false };
+      }
+      try{ 
+        const r=await fetch(EP.LIKE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,delta})}); 
+        if(r.status===404) throw new Error('no-like'); 
+        const j=await safeJson(r); 
+        if(!j.ok) throw new Error(j.error); 
+        return j; 
+      }catch{ 
+        const k='k_like_'+id, v=Number(localStorage.getItem(k)||0)+Number(delta||1); 
+        localStorage.setItem(k,Math.max(0,v)); 
+        return {ok:true,local:true}; 
+      } 
+    }
+    
+    async function apiReact(id,key,delta=1){ 
+      const rkey = 'react_' + id + '_' + key;
+      if (!checkRateLimit(rkey)) {
+        setStatus('⏳ Tunggu sebentar...', 'warn');
+        return { ok: false };
+      }
+      try{ 
+        const r=await fetch(EP.REACT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,slug:SLUG,key,delta})}); 
+        if(r.status===404) throw new Error('no-react'); 
+        const j=await safeJson(r); 
+        if(!j.ok) throw new Error(j.error); 
+        return j; 
+      }catch{ 
+        const k='k_react_'+id+'_'+key, v=Number(localStorage.getItem(k)||0)+Number(delta||1); 
+        localStorage.setItem(k,Math.max(0,v)); 
+        return {ok:true,local:true}; 
+      } 
+    }
+    
+    async function apiUpload(file){ 
+      try{ 
+        setStatus('<span class="comment-spinner"></span> Mengunggah media...');
+        const buf=await file.arrayBuffer(); 
+        const b64=btoa(String.fromCharCode(...new Uint8Array(buf))); 
+        const r=await fetch(EP.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,contentType:file.type,dataBase64:b64})}); 
+        if(r.status===404) throw new Error('no-upload'); 
+        const j=await safeJson(r); 
+        if(!j.ok) throw new Error(j.error); 
+        return j.url; 
+      }catch{ 
+        return new Promise(res=>{ 
+          const fr=new FileReader(); 
+          fr.onload=()=>res(fr.result); 
+          fr.readAsDataURL(file); 
+        }); 
+      } 
+    }
+    
+    async function apiPin(id){
+      const r = await fetch(EP.PIN, { method:'POST',
+        headers: { 'Content-Type':'application/json', ...adminHeader() },
+        body: JSON.stringify({ slug: SLUG, id })
+      });
+      const j = await r.json();
+      if(!r.ok || !j.ok) throw new Error(j.error || 'pin fail');
+      PIN_ID = j.pinId ?? id;
+      return j;
+    }
+
+    async function apiUnpin(){
+      const r = await fetch(EP.PIN, { method:'POST',
+        headers: { 'Content-Type':'application/json', ...adminHeader() },
+        body: JSON.stringify({ slug: SLUG, id: null })
+      });
+      const j = await r.json();
+      if(!r.ok || !j.ok) throw new Error(j.error || 'unpin fail');
+      PIN_ID = null; 
+      return j;
+    }
+
+    async function apiDelete(id){
+      const r = await fetch(EP.DEL, {
+        method:'POST',
+        headers: { 'Content-Type':'application/json', ...adminHeader() },
+        body: JSON.stringify({ slug: SLUG, id })
+      });
+      const j = await r.json().catch(()=>({ok:false,error:'Bad JSON'}));
+      if(!r.ok || !j.ok) throw new Error(j.error || 'delete fail');
+    }
+    
+    async function loadEmojis(){ 
+      try{ 
+        const r=await fetch(EP.EMOJI,{cache:'no-store'}); 
+        const j=await r.json(); 
+        EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; 
+        EMOJI_MAP = new Map(EMOJI_ITEMS.map(x=>[x.name,x.url])); 
+        
+        // FIXED: Add autoplay to video emoji in picker
+        E.emojiPicker.innerHTML = EMOJI_ITEMS.length
+          ? EMOJI_ITEMS.map(e => {
+              const isVideo = /\.webm$/i.test(e.name);
+              const media = isVideo
+                ? `<video src="${esc(e.url)}" autoplay muted loop playsinline></video>`
+                : `<img src="${esc(e.url)}" alt="${esc(e.name)}">`;
+              return `<button type="button" data-name="${esc(e.name)}" title="${esc(e.name)}">${media}</button>`;
+            }).join('')
+          : '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; 
+      }catch{ 
+        E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; 
+      } 
+    }
+
+    /* ====== PATCH: apiGet dengan limit besar & safe JSON ====== */
+    async function apiGet(){
+      const url = EP.GET(SLUG) + (EP.GET(SLUG).includes('?') ? '&' : '?') + 'limit=500';
+      const r = await fetch(url, { cache:'no-store' });
+      const ct = r.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        // fallback: jangan hancurkan state
+        throw new Error('Bukan JSON dari server');
+      }
+      const j = await r.json();
+      if(!j.ok) throw new Error(j.error || 'Gagal memuat');
+      const items = (j.items||[]).map(it=>({
+        ...it,
+        parentId: it.parentId ?? null,
+        likes: it.likes ?? 0,
+        reactions: it.reactions ?? {},
+        role: it.role ?? 'visitor'
+      }));
+      // simpan cache agar reload aman
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({items, pinId: j.pinId||null})); } catch{}
+      PIN_ID = j.pinId || null;
+      return items;
+    }
+
+    /* ====== RENDER ====== */
+    function buildTree(items){
+      const byId=new Map(items.map(x=>[x.id,x])); 
+      items.forEach(x=>{x.children=[]; x.parentName=null;});
+      const root=[];
+      for(const it of items){ 
+        if(it.parentId && byId.has(it.parentId)){ 
+          it.parentName = byId.get(it.parentId).name || null; 
+          byId.get(it.parentId).children.push(it); 
+        } else root.push(it); 
+      }
+      
+      const sortNew=(a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')); 
+      const sortOld=(a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||'')); 
+      const sortTop=(a,b)=>score(b)-score(a)||String(b.createdAt||'').localeCompare(String(a.createdAt||''));
+      
+      const sort = currentSort==='new'?sortNew:currentSort==='old'?sortOld:sortTop;
+      const w=arr=>{ arr.sort(sort); arr.forEach(x=>w(x.children)); }; 
+      w(root); 
+      return root;
+    }
+    
+    function likeLocal(it){ 
+      const s=Number(it.likes||0), l=Number(localStorage.getItem('k_like_'+it.id)||0); 
+      const t=s+l; 
+      return t?` ${t}`:''; 
+    }
+    
+    function reactLocal(it,key){ 
+      const s=Number((it.reactions||{})[key]||0), l=Number(localStorage.getItem('k_react_'+it.id+'_'+key)||0); 
+      const t=s+l; 
+      return t?` ${t}`:''; 
+    }
+    
+    const badge = role=>`<span class="comment-badge ${role==='admin'?'admin':''}">${role==='admin'?'katheryne':'visitor'}</span>`;
+    
+    // FIXED: Support video emoji in comments with more permissive regex
+    function renderMessage(text){
+      let s = esc(text || '');
+      s = s.replace(/@(\w+)/g, '<span class="comment-mention">@$1</span>');
+      s = s.replace(/\[\[emoji:([^\]]+)\]\]/g, (m, name) => {
+        const url = EMOJI_MAP.get(name);
+        if (!url) return esc(m);
+        return /\.webm$/i.test(name)
+          ? `<video src="${esc(url)}" class="comment-emojiimg" autoplay muted loop playsinline></video>`
+          : `<img src="${esc(url)}" alt="emoji" class="comment-emojiimg">`;
+      });
+      return s;
+    }
+    
+    function adminButtons(it){
+      if(!isAdmin()) return '';
+      const pinned = String(PIN_ID||'') === String(it.id);
+      return `<span class="comment-admin-actions">
+        <span class="comment-action" data-act="${pinned?'unpin':'pin'}" data-id="${it.id}">${pinned?'📌 Unpin':'📌 Pin'}</span>
+        <span class="comment-action" data-act="delete" data-id="${it.id}">🗑️ Hapus</span>
+      </span>`;
+    }
+    
+    function itemHTML(it){
+      const itemScore = score(it);
+      const isPopular = currentSort === 'top' && itemScore > 0;
+      
+      // MODIFIED: Support video media in comments
+      const mediaUrl = sanitizeUrl(it.imageUrl);
+      const isVid = mediaUrl && /\.webm$/i.test(mediaUrl);
+      const media = mediaUrl
+        ? `<div class="comment-imgwrap">${
+            isVid
+              ? `<video src="${esc(mediaUrl)}" controls playsinline></video>`
+              : `<img src="${esc(mediaUrl)}" alt="">`
+          }</div>`
+        : '';
+      
+      const replyTo = it.parentName ? `<span class="comment-replyto">balas → @${esc(it.parentName)}</span>` : '';
+      const reacts = COMMENT_REACTIONS.map(r=>`<span class="comment-reaction" data-act="react" data-id="${it.id}" data-key="${r.key}"><img src="${esc(r.icon)}" alt=""> ${esc(r.label)}<b>${reactLocal(it,r.key)}</b></span>`).join('');
+
+      // Jika ada anak, sembunyikan default dan tampilkan tombol lihat balasan
+      const hasChildren = it.children?.length > 0;
+      const childHTML = hasChildren
+        ? `<div class="comment-child-toggle" data-id="${it.id}">
+             <button type="button" class="comment-toggle-replies" data-act="toggle" data-id="${it.id}">
+               💬 Lihat ${it.children.length} balasan
+             </button>
+           </div>
+           <div class="comment-children comment-hidden" id="children-${it.id}">
+             ${it.children.map(itemHTML).join('')}
+           </div>`
+        : '';
+
+      return `<div class="comment-item ${isPopular ? 'popular' : ''}" id="item-${it.id}">
+        ${isPopular ? `<div class="comment-popular-badge">🔥 Populer</div>` : ''}
+        ${currentSort === 'top' ? `<div class="comment-score-display">Score: ${itemScore}</div>` : ''}
+        <div class="comment-header">
+          <span class="comment-name">${esc(it.name)}</span>${badge(it.role)}
+          <span class="comment-time">${esc(time(it.createdAt))}</span>
+        </div>
+        ${replyTo}
+        <div class="comment-body">${renderMessage(it.message)}</div>
+        ${media}
+        <div class="comment-actions">
+          <span class="comment-action" data-act="like" data-id="${it.id}">👍<b>${likeLocal(it)}</b></span>
+          <span class="comment-action" data-act="reply" data-id="${it.id}">↩️ Reply</span>
+          ${adminButtons(it)}
+        </div>
+        <div class="comment-reactions">${reacts}</div>
+        <div class="comment-replybox row" id="replybox-${it.id}" style="display:none">
+          <input id="r-name-${it.id}" class="comment-input" placeholder="Nama" maxlength="60">
+          <textarea id="r-msg-${it.id}" class="comment-textarea" placeholder="Balas @${esc(it.name)}…" maxlength="2000"></textarea>
+          <div class="grid grid-cols-2 gap-4">
+            <input id="r-img-${it.id}" class="comment-input" placeholder="URL gambar (opsional)">
+            <button type="button" class="btn-outline-neon" data-act="pick-child" data-id="${it.id}">Upload…</button>
+          </div>
+          <button type="button" class="btn-gradient" data-act="send-reply" data-id="${it.id}">Kirim Balasan</button>
+        </div>
+        ${childHTML}
+      </div>`;
+    }
+    
+    // FIXED: Function to find a node in the tree by ID
+    function findInTree(list, id) {
+      const st = [...list];
+      const sid = String(id);
+      while (st.length) {
+        const n = st.pop();
+        if (String(n.id) === sid) return n;
+        if (n.children) st.push(...n.children);
+      }
+      return null;
+    }
+    
+    function render(showAll = false){
+      const tree=buildTree([...data]);
+      E.count.textContent=data.length;
+      
+      // Update sort header
+      if (currentSort === 'top' && data.length > 0) {
+        E.sortHeader.style.display = 'flex';
+        E.sortHeader.className = 'comment-sort-header popular';
+        E.sortHeader.innerHTML = '🔥 Menampilkan komentar terpopuler berdasarkan like dan reaksi';
+      } else if (currentSort === 'new' && data.length > 0) {
+        E.sortHeader.style.display = 'flex';
+        E.sortHeader.className = 'comment-sort-header new';
+        E.sortHeader.innerHTML = '🕐 Menampilkan komentar terbaru';
+      } else if (currentSort === 'old' && data.length > 0) {
+        E.sortHeader.style.display = 'flex';
+        E.sortHeader.className = 'comment-sort-header old';
+        E.sortHeader.innerHTML = '📅 Menampilkan komentar terlama';
+      } else {
+        E.sortHeader.style.display = 'none';
+      }
+      
+      // pinned section (FIX: render sebagai tree agar children ikut)
+      if (PIN_ID) {
+        const pin = findInTree(tree, PIN_ID);
+        if (pin) {
+          E.pinnedWrap.style.display = 'block';
+          E.pinnedBox.innerHTML = itemHTML(pin);
+        } else {
+          E.pinnedWrap.style.display = 'none';
+          E.pinnedBox.innerHTML = '';
+        }
+      } else {
+        E.pinnedWrap.style.display = 'none';
+        E.pinnedBox.innerHTML = '';
+      }
+      
+      // normal list (exclude pinned root from top level, replies tetap)
+      const roots = tree.filter(x=>String(x.id)!==String(PIN_ID));
+      
+      if (roots.length === 0 && data.length === 0) {
+        E.list.innerHTML = `
+          <div class="comment-empty-state">
+            <div class="comment-empty-state-icon">💬</div>
+            <div class="comment-empty-state-text">Belum ada komentar</div>
+            <div class="comment-empty-state-subtext">Jadilah yang pertama berkomentar!</div>
+          </div>
+        `;
+        return;
+      }
+      
+      const toShow = showAll ? roots : roots.slice(0, renderedCount);
+      E.list.innerHTML = toShow.map(itemHTML).join('');
+      
+      if (!showAll && roots.length > renderedCount) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-outline-neon';
+        btn.style.marginTop = '16px';
+        btn.textContent = `📜 Muat ${roots.length - renderedCount} komentar lagi`;
+        btn.onclick = () => {
+          renderedCount = roots.length;
+          render(true);
+        };
+        E.list.appendChild(btn);
+      }
+    }
+
+    /* ====== PATCH: loadAll pakai cache bila fetch gagal ====== */
+    async function loadAll(){
+      try{
+        setStatus('<span class="comment-spinner"></span> Memuat komentar...');
+        const items = await apiGet();
+        data = items;
+        renderedCount = BATCH_SIZE;
+        setStatus('');
+        render();
+      }catch(e){
+        // gunakan cache agar UI tidak kosong
+        try{
+          const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || '{}');
+          if (Array.isArray(c.items) && c.items.length) {
+            PIN_ID = c.pinId || null;
+            data = c.items;
+            render();
+            setStatus('⚠️ Mode offline (pakai cache)','warn');
+            
+            // Tambahkan indikator offline
+            const indicator = document.createElement('div');
+            indicator.className = 'comment-offline-indicator';
+            indicator.textContent = '📡 Mode Offline';
+            document.body.appendChild(indicator);
+            setTimeout(() => indicator.remove(), 3000);
+            
+            return;
+          }
+        }catch{}
+        setStatus('❌ '+(e.message||e),'err');
+      }
+    }
+
+    /* ====== PATCH: setelah submit – jangan replace dengan hasil kosong ====== */
+    async function submit(parentId=null, file=null){
+      const role=isAdmin()?'admin':'visitor';
+      const name=(parentId?($('#r-name-'+parentId)||{}).value:E.name.value)||'';
+      const message=(parentId?($('#r-msg-'+parentId)||{}).value:E.msg.value)||'';
+      let imageUrl=(parentId?($('#r-img-'+parentId)||{}).value:E.imageUrlInput.value)||'';
+      
+      if(!name.trim() || !message.trim()){ 
+        setStatus('Nama & komentar wajib.','err'); 
+        return; 
+      }
+
+      if (imageUrl && !isValidUrl(imageUrl)) {
+        setStatus('❌ URL media tidak valid', 'err');
+        return;
+      }
+      
+      if(file){ 
+        imageUrl = await apiUpload(file); 
+      }
+      
+      E.send.disabled = true;
+      
+      try{
+        setStatus('<span class="comment-spinner"></span> Mengirim...');
+        const item = await apiPost({ 
+          slug:SLUG, 
+          name:name.trim(), 
+          message:message.trim(), 
+          imageUrl:sanitizeUrl(imageUrl), 
+          parentId:parentId||null, 
+          role 
+        });
+
+        // Optimistic add
+        const parentName = parentId ? (data.find(x=>x.id===parentId)?.name || null) : null;
+        data.push({ ...item, likes:0, reactions:{}, parentName });
+        render();
+
+        if(!parentId){ 
+          E.msg.value=''; 
+          E.imageUrlInput.value=''; 
+          E.fileInput.value=''; 
+          localStorage.removeItem(DRAFT_KEY);
+        }
+        
+        setStatus('✅ Terkirim','ok');
+        localStorage.setItem('kathy_comment_name', name.trim());
+
+        // Sync → MERGE, bukan replace. Abaikan jika kosong/error.
+        apiGet().then(items=>{
+          if (Array.isArray(items) && items.length) {
+            data = mergeById(data, items);
+            render();
+          } // kalau kosong, biarkan data existing
+        }).catch(()=>{ /* keep optimistic state */ });
+
+        setTimeout(()=>setStatus(''),2000);
+      }catch(e){ 
+        console.error('Submit error:', e);
+      } finally {
+        E.send.disabled = false;
+      }
+    }
+
+    /* ====== DRAFT AUTO-SAVE ====== */
+    let draftTimeout;
+    function saveDraft() {
+      const draft = E.msg.value.trim();
+      if (draft) {
+        localStorage.setItem(DRAFT_KEY, draft);
+      } else {
+        localStorage.removeItem(DRAFT_KEY);
+      }
+    }
+
+    E.msg.addEventListener('input', () => {
+      clearTimeout(draftTimeout);
+      draftTimeout = setTimeout(saveDraft, 500);
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+      const draft = E.msg.value.trim();
+      if (draft) {
+        saveDraft();
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    /* ====== INIT & EVENTS ====== */
+    const savedName = localStorage.getItem('kathy_comment_name') || '';
+    E.name.value = savedName;
+
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      E.msg.value = savedDraft;
+      const indicator = document.createElement('div');
+      indicator.className = 'comment-offline-indicator';
+      indicator.textContent = '📝 Draft dikembalikan';
+      document.body.appendChild(indicator);
+      setTimeout(() => {
+        indicator.remove();
+        localStorage.removeItem(DRAFT_KEY);
+      }, 3000);
+    }
+
+    loadAll(); 
+    loadEmojis();
+
+    // emoji picker
+    function insertAtCursor(el, text){
+      const start = el.selectionStart ?? el.value.length;
+      const end   = el.selectionEnd ?? el.value.length;
+      el.value = el.value.slice(0,start) + text + el.value.slice(end);
+      el.focus(); 
+      el.selectionStart = el.selectionEnd = start + text.length;
+    }
+    
+    E.emojiBtn.addEventListener('click',()=>{ 
+      E.emojiPicker.style.display = (E.emojiPicker.style.display==='grid'?'none':'grid'); 
+    });
+    
+    E.emojiPicker.addEventListener('click', e=>{
+      const btn = e.target.closest('button'); 
+      if(!btn) return;
+      const name = btn.getAttribute('data-name');
+      insertAtCursor(activeTextArea, ` [[emoji:${name}]] `);
+      E.emojiPicker.style.display = 'none';
+    });
+
+    // tools
+    E.imageUrlBtn.addEventListener('click',()=>{ 
+      E.imageUrlInput.style.display = E.imageUrlInput.style.display==='none'?'inline-block':'none'; 
+    });
+    
+    E.uploadBtn.addEventListener('click',()=>E.fileInput.click());
+    
+    E.fileInput.addEventListener('change',()=>{ 
+      if (E.fileInput.files[0]) {
+        const file = E.fileInput.files[0];
+        const isVideo = file.type.startsWith('video/');
+        setStatus(isVideo ? '🎥 Video siap.' : '📷 Gambar siap.', 'ok'); 
+      }
+    });
+
+    // admin toggle
+    E.adminBtn.addEventListener('click', async ()=>{
+      const key = prompt('Masukkan ADMIN_KEY');
+      if (key === null) return;
+      await verifyAdmin(key.trim());
+    });
+
+    // admin logout
+    E.commentAdminLogoutBtn?.addEventListener('click', ()=>{
+      localStorage.removeItem('kathy_admin_key');
+      ADMIN_OK = false;
+      E.badgeLabel.textContent = 'visitor';
+      E.commentAdminLogoutBtn.style.display = 'none';
+      setStatus('🚪 Keluar dari mode admin','ok');
+      render();              // penting supaya tombol pin/hapus hilang
+    });
+
+    // submit & reload
+    E.send.addEventListener('click',e=>{ 
+      e.preventDefault(); 
+      activeTextArea = E.msg; 
+      submit(null, E.fileInput.files[0]||null); 
+    });
+    
+    E.reload.addEventListener('click',e=>{ 
+      e.preventDefault(); 
+      renderedCount = BATCH_SIZE;
+      loadAll(); 
+    });
+    
+    E.msg.addEventListener('keydown',e=>{ 
+      if(e.key==='Enter' && !e.shiftKey){ 
+        e.preventDefault(); 
+        E.send.click(); 
+      } 
+    });
+
+    // sort buttons
+    document.querySelectorAll('.comment-sort-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.comment-sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
+        
+        // Add class to body for styling
+        document.body.className = currentSort === 'top' ? 'sort-popular' : '';
+        
+        renderedCount = BATCH_SIZE;
+        render();
+      });
+    });
+
+    // event handler delegation
+    const handlerDelegation = async e=>{
+      const t=e.target.closest('[data-act]'); 
+      if(!t) return;
+      const act=t.dataset.act, id=t.dataset.id, key=t.dataset.key;
+      
+      if(act==='reply'){
+        const box=$('#replybox-'+id);
+        box.style.display = box.style.display==='none'?'block':'none';
+        const ta=$('#r-msg-'+id); 
+        if(ta){ 
+          activeTextArea=ta; 
+          ta.focus(); 
+        }
+      } else if(act==='pick-child'){
+        const inp=document.createElement('input'); 
+        inp.type='file'; 
+        inp.accept='image/*,video/*';
+        inp.onchange=()=>{ 
+          const box=t.closest('.comment-replybox'); 
+          box._file = inp.files?.[0]||null; 
+          const file = inp.files?.[0];
+          const isVideo = file && file.type.startsWith('video/');
+          setStatus(isVideo ? '🎥 Video balasan siap.' : '📷 Gambar balasan siap.', 'ok'); 
+        };
+        inp.click();
+      } else if(act==='send-reply'){
+        const box=$('#replybox-'+id); 
+        await submit(id, box?._file||null); 
+        if(box){ 
+          box._file=null; 
+          box.style.display='none'; 
+        }
+        activeTextArea = E.msg;
+      } else if(act==='like'){
+        if (t.classList.contains('disabled')) return;
+        const result = await apiLike(id,+1);
+        if (!result.ok) return;
+        const b=t.querySelector('b'); 
+        b.textContent=' '+(Number((b.textContent||'').trim())+1 || 1);
+      } else if(act==='react'){
+        if (t.classList.contains('disabled')) return;
+        const result = await apiReact(id,key,+1);
+        if (!result.ok) return;
+        const b=t.querySelector('b'); 
+        b.textContent=' '+(Number((b.textContent||'').trim())+1 || 1);
+      } else if(act==='pin'){
+        try{
+          await apiPin(id);
+          // sinkron dari server, jangan hanya set lokal
+          const items = await apiGet();
+          data = items;
+          render();
+          setStatus('📌 Dipin','ok');
+        }catch(e){
+          console.error('Pin error:', e);
+        }
+      } else if(act==='unpin'){
+        try{
+          await apiUnpin();
+          const items = await apiGet();
+          data = items;
+          render();
+          setStatus('✅ Unpin','ok');
+        }catch(e){
+          console.error('Unpin error:', e);
+        }
+      } else if(act==='delete'){
+        if(!confirm('Hapus komentar ini (termasuk balasannya)?')) return;
+        try{
+          await apiDelete(id);
+          // jika yang dihapus sedang dipin → kosongkan pin
+          if (String(PIN_ID||'') === String(id)) PIN_ID = null;
+          
+          // Hapus item dan semua children-nya
+          const toDelete = new Set([String(id)]);
+          const findChildren = (items, parentId) => {
+            for (const item of items) {
+              if (String(item.parentId) === String(parentId)) {
+                toDelete.add(String(item.id));
+                findChildren(items, item.id);
+              }
+            }
+          };
+          findChildren(data, id);
+          
+          data = data.filter(x => !toDelete.has(String(x.id)));
+          render();
+          setStatus('🗑️ Dihapus','ok');
+        } catch(e){
+          setStatus('❌ '+(e.message||e),'err');
+        }
+      } else if(act==='toggle'){
+        const id = t.dataset.id;
+        const box = document.getElementById(`children-${id}`);
+        if(!box) return;
+        const btn = t;
+        const isHidden = box.classList.toggle('comment-hidden');
+        btn.textContent = isHidden
+          ? `💬 Lihat ${box.children.length} balasan`
+          : '🔽 Sembunyikan balasan';
+      }
+    };
+
+    // attach event delegation to both list and pinnedBox
+    ['commentList','commentPinnedBox'].forEach(idEl=>{
+      document.getElementById(idEl).addEventListener('click', handlerDelegation);
+    });
+
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!E.emojiBtn.contains(e.target) && !E.emojiPicker.contains(e.target)) {
+        E.emojiPicker.style.display = 'none';
+      }
+    });
+
+    // Auto-sync every 30 seconds
+    setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        apiGet().then(items => {
+          if (Array.isArray(items) && items.length) {
+            data = mergeById(data, items);
+            render();
+          }
+        }).catch(() => {});
+      }
+    }, 30000);
+
+    // Auto-clear old rate limits
+    setInterval(() => {
+      const now = Date.now();
+      for (const [key, timestamp] of RATE_LIMIT.entries()) {
+        if (now - timestamp > 60000) { // 1 minute
+          RATE_LIMIT.delete(key);
+        }
+      }
+    }, 60000);
+  })();
+</script>
+
+<!-- SEO JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://adityajatayu.my.id/#me",
+      "name": "Aditya Jatayu",
+      "jobTitle": "Freelance F&B Casual Worker",
+      "description": "Freelancer berpengalaman di bidang Food & Beverage service dan stewarding, berbasis di Soloraya.",
+      "url": "https://adityajatayu.my.id",
+      "sameAs": [
+        "https://instagram.com/lastsymph",
+        "mailto:jatayupaint01@gmail.com",
+        "https://wa.me/6289670394574"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://adityajatayu.my.id/#website",
+      "url": "https://adityajatayu.my.id",
+      "name": "Aditya Jatayu - Portfolio",
+      "description": "Portfolio personal Aditya Jatayu, seorang pekerja freelance F&B dengan berbagai proyek website kreatif dan interaktif.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "Downloader Multi-Platform",
+      "url": "https://downloader-gamma-one.vercel.app/",
+      "description": "Web downloader untuk Instagram, TikTok, dan Facebook. Serbaguna, tanpa iklan dan praktis.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "Gallery Publik",
+      "url": "https://katheryne.biz.id/",
+      "description": "Galeri media interaktif dengan desain estetis.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "JSON Gallery Generator + Uploader",
+      "url": "https://lastsymphony.github.io/Generator-json-gallery-/",
+      "description": "Generator dan uploader file max 100Mb berbasis JSON untuk galeri publik.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "GENSHIN IMPACT GUIDE",
+      "url": "https://www.genshinguide.biz.id/",
+      "description": "Website panduan karakter, senjata, dan farming jadwal untuk game Genshin Impact.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "CreativeWork",
+      "name": "Bot WhatsApp Genshin",
+      "url": "https://wa.me/6285920371893?text=menu",
+      "description": "Bot WhatsApp untuk info karakter, senjata, dan update Genshin langsung dari chat.",
+      "creator": {
+        "@id": "https://adityajatayu.my.id/#me"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Siapa Aditya Jatayu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Seorang pekerja freelance F&B di bidang layanan resto, stewarding, dan event di area Soloraya."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Apa saja proyek yang sedang dikerjakan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Downloader multi-platform, gallery publik, Genshin Guide, bot WhatsApp, dan JSON gallery generator."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </body>
 </html>
