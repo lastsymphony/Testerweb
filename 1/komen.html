@@ -538,16 +538,24 @@
     display: none;
   }
 
-  /* ====== EMOJI PICKER ====== */
-#emojiPicker {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; /* isi ruang kanan-kiri */
-  gap: 6px;
+/* === Emoji picker layout yang rapi === */
+#emojiPicker{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap:8px;
+  max-height:260px;        /* slider/scroll biar nggak memanjang */
+  overflow:auto;           /* aktifkan scroll (vertikal &/ horizontal bila perlu) */
+  padding-right:4px;
 }
-#emojiPicker button {
-  flex: 0 0 calc(20% - 6px); /* 5 kolom, bisa ubah ke 25% kalau mau 4 kolom */
-  aspect-ratio: 1/1;
+/* Tombol = kotak, tanpa padding, biar media nempel penuh */
+#emojiPicker button{
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:12px;
+  overflow:hidden;
+  padding:0;
+  background:#15183a;      /* sekadar bayangan belakang */
+  border:1px solid #2a2e63;
 }
 
   #emojiPicker button:hover {
@@ -555,18 +563,15 @@
     transform: scale(1.1);
   }
 
-  #emojiPicker img {
-    width: 36px;
-    height: 36px;
-  }
-
-  /* ====== VIDEO EMOJI SUPPORT ====== */
-  #emojiPicker video { 
-    width: 36px; 
-    height: 36px; 
-    border-radius: 8px; 
-    object-fit: cover;
-  }
+/* Media isi penuh tombol */
+#emojiPicker img,
+#emojiPicker video{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  border-radius:12px;
+}
   
   .imgwrap video { 
     max-width: 100%; 
