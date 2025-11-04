@@ -577,12 +577,27 @@
     height: 36px;
   }
 
-  .emojiimg {
-    width: 48px;
-    height: 48px;
-    vertical-align: middle;
-    border-radius: 8px;
-    margin: 0 3px;
+  /* ====== VIDEO EMOJI SUPPORT ====== */
+  #emojiPicker video { 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 8px; 
+    object-fit: cover;
+  }
+  
+  .imgwrap video { 
+    max-width: 100%; 
+    border-radius: 10px; 
+    border: 1px solid #2a2e63; 
+  }
+  
+  .emojiimg, .emojivid { 
+    width: 48px; 
+    height: 48px; 
+    vertical-align: middle; 
+    border-radius: 8px; 
+    margin: 0 3px; 
+    object-fit: cover;
   }
 
   /* ====== PINNED SECTION ====== */
@@ -887,7 +902,7 @@
       <span class="tool" id="adminBtn">Badge: <b id="badgeLabel">visitor</b></span>
       <span class="tool" id="adminLogoutBtn" style="display:none">Logout Admin</span>
       <input type="text" id="imageUrlInput" placeholder="https://…" style="display:none;min-width:260px">
-      <input type="file" id="fileInput" accept="image/*" style="display:none">
+      <input type="file" id="fileInput" accept="image/*,video/*" style="display:none">
       <div id="emojiPicker"></div>
     </div>
 
@@ -1134,7 +1149,7 @@
   
   async function apiUpload(file){ 
     try{ 
-      setStatus('<span class="spinner"></span> Mengunggah gambar...');
+      setStatus('<span class="spinner"></span> Mengunggah media...');
       const buf=await file.arrayBuffer(); 
       const b64=btoa(String.fromCharCode(...new Uint8Array(buf))); 
       const r=await fetch(EP.UPLOAD,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,contentType:file.type,dataBase64:b64})}); 
@@ -1189,9 +1204,17 @@
       const j=await r.json(); 
       EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; 
       EMOJI_MAP = new Map(EMOJI_ITEMS.map(x=>[x.name,x.url])); 
-      E.emojiPicker.innerHTML = EMOJI_ITEMS.length? 
-        EMOJI_ITEMS.map(e=>`<button type="button" data-name="${esc(e.name)}" title="${esc(e.name)}"><img src="${esc(e.url)}" alt="${esc(e.name)}"></button>`).join('') : 
-        '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; 
+      
+      // MODIFIED: Support video emoji (webm)
+      E.emojiPicker.innerHTML = EMOJI_ITEMS.length
+        ? EMOJI_ITEMS.map(e => {
+            const isVideo = /\.webm$/i.test(e.name);
+            const media = isVideo
+              ? `<video src="${esc(e.url)}" muted loop playsinline></video>`
+              : `<img src="${esc(e.url)}" alt="${esc(e.name)}">`;
+            return `<button type="button" data-name="${esc(e.name)}" title="${esc(e.name)}">${media}</button>`;
+          }).join('')
+        : '<div style="color:#9aa4bf;padding:6px">Folder <b>emoji/</b> kosong</div>'; 
     }catch{ 
       E.emojiPicker.innerHTML='<div style="color:#f6a;padding:6px">Gagal ambil emoji-list</div>'; 
     } 
@@ -1254,12 +1277,16 @@
   
   const badge = role=>`<span class="badge ${role==='admin'?'admin':''}">${role==='admin'?'katheryne':'visitor'}</span>`;
   
+  // MODIFIED: Support video emoji in comments
   function renderMessage(text){
     let s = esc(text || '');
     s = s.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-    s = s.replace(/\[\[emoji:([\w.\-]+)\]\]/g,(m,name)=>{
+    s = s.replace(/\[\[emoji:([\w.\-]+)\]\]/g, (m, name) => {
       const url = EMOJI_MAP.get(name);
-      return url ? `<img src="${esc(url)}" alt="emoji" class="emojiimg">` : esc(m);
+      if (!url) return esc(m);
+      return /\.webm$/i.test(name)
+        ? `<video src="${esc(url)}" class="emojivid" muted loop autoplay playsinline></video>`
+        : `<img src="${esc(url)}" alt="emoji" class="emojiimg">`;
     });
     return s;
   }
@@ -1276,8 +1303,18 @@
   function itemHTML(it){
     const itemScore = score(it);
     const isPopular = currentSort === 'top' && itemScore > 0;
-    const imgUrl = sanitizeUrl(it.imageUrl);
-    const img = imgUrl?`<div class="imgwrap"><img src="${esc(imgUrl)}" alt=""></div>`:'';
+    
+    // MODIFIED: Support video media in comments
+    const mediaUrl = sanitizeUrl(it.imageUrl);
+    const isVid = mediaUrl && /\.webm$/i.test(mediaUrl);
+    const media = mediaUrl
+      ? `<div class="imgwrap">${
+          isVid
+            ? `<video src="${esc(mediaUrl)}" controls playsinline></video>`
+            : `<img src="${esc(mediaUrl)}" alt="">`
+        }</div>`
+      : '';
+    
     const replyTo = it.parentName ? `<span class="replyto">balas → @${esc(it.parentName)}</span>` : '';
     const reacts = COMMENT_REACTIONS.map(r=>`<span class="reaction" data-act="react" data-id="${it.id}" data-key="${r.key}"><img src="${esc(r.icon)}" alt=""> ${esc(r.label)}<b>${reactLocal(it,r.key)}</b></span>`).join('');
 
@@ -1302,7 +1339,7 @@
       </div>
       ${replyTo}
       <div class="body">${renderMessage(it.message)}</div>
-      ${img}
+      ${media}
       <div class="actions">
         <span class="action" data-act="like" data-id="${it.id}">👍<b>${likeLocal(it)}</b></span>
         <span class="action" data-act="reply" data-id="${it.id}">↩️ Reply</span>
@@ -1427,7 +1464,7 @@
     }
 
     if (imageUrl && !isValidUrl(imageUrl)) {
-      setStatus('❌ URL gambar tidak valid', 'err');
+      setStatus('❌ URL media tidak valid', 'err');
       return;
     }
     
@@ -1552,7 +1589,9 @@
   
   E.fileInput.addEventListener('change',()=>{ 
     if (E.fileInput.files[0]) {
-      setStatus('📷 Gambar siap.','ok'); 
+      const file = E.fileInput.files[0];
+      const isVideo = file.type.startsWith('video/');
+      setStatus(isVideo ? '🎥 Video siap.' : '📷 Gambar siap.', 'ok'); 
     }
   });
 
@@ -1619,11 +1658,13 @@
     } else if(act==='pick-child'){
       const inp=document.createElement('input'); 
       inp.type='file'; 
-      inp.accept='image/*';
+      inp.accept='image/*,video/*';
       inp.onchange=()=>{ 
         const box=t.closest('.replybox'); 
         box._file = inp.files?.[0]||null; 
-        setStatus('📷 Gambar balasan siap.','ok'); 
+        const file = inp.files?.[0];
+        const isVideo = file && file.type.startsWith('video/');
+        setStatus(isVideo ? '🎥 Video balasan siap.' : '📷 Gambar balasan siap.', 'ok'); 
       };
       inp.click();
     } else if(act==='send-reply'){
