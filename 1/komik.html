@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KatheryneComic — Web Komik</title>
+  <meta name="description" content="Web pembaca komik cepat by Katheryne, powered by Sanka Vollerei Comic API">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><text y='50%' x='50%' dominant-baseline='middle' text-anchor='middle'>📚</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class'}</script>
+  <style>
+    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .scrollbar-thin{scrollbar-width:thin}
+    .glass{background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08)}
+    .skeleton{animation:pulse 1.2s ease-in-out infinite;background:linear-gradient(90deg,#222 25%,#2b2b2b 37%,#222 63%)}
+    @keyframes pulse{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
+  </style>
+</head>
+<body class="bg-neutral-950 text-neutral-100 min-h-screen selection:bg-cyan-400/30">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="text-2xl font-extrabold tracking-tight">Katheryne<span class="text-cyan-400">Comic</span></div>
+      <nav class="ml-auto flex items-center gap-2">
+        <button id="tab-terbaru" class="px-3 py-1.5 rounded-lg hover:bg-white/5 data-[active=true]:bg-cyan-500/20 data-[active=true]:text-cyan-300">Terbaru</button>
+        <button id="tab-populer" class="px-3 py-1.5 rounded-lg hover:bg-white/5">Populer</button>
+        <button id="tab-trending" class="px-3 py-1.5 rounded-lg hover:bg-white/5">Trending</button>
+        <button id="tab-fav" class="px-3 py-1.5 rounded-lg hover:bg-white/5">Favorit</button>
+      </nav>
+    </div>
+    <div class="max-w-6xl mx-auto px-4 pb-3">
+      <div class="flex gap-2">
+        <input id="q" class="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 outline-none" placeholder="Cari komik (mis. naruto, solo leveling) – Enter untuk mencari">
+        <button id="btn-search" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500">Cari</button>
+      </div>
+      <div class="mt-2 text-xs text-white/60 flex items-center gap-3">
+        <label class="inline-flex items-center gap-2">
+          <input id="use-proxy" type="checkbox" class="accent-cyan-500">
+          <span>Pakai proxy</span>
+        </label>
+        <span id="status" class="text-white/40">Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <!-- Grid List -->
+    <section id="list-view" class="grid md:grid-cols-3 lg:grid-cols-5 gap-4"></section>
+
+    <!-- Detail -->
+    <section id="detail-view" class="hidden">
+      <button id="back-home" class="mb-4 text-sm px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">← Kembali</button>
+      <div id="detail-card" class="grid md:grid-cols-3 gap-6"></div>
+      <h3 class="mt-6 mb-2 text-lg font-semibold">Daftar Chapter</h3>
+      <div id="chapters" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </section>
+
+    <!-- Reader -->
+    <section id="reader-view" class="hidden">
+      <div class="mb-4 flex items-center gap-2">
+        <button id="back-detail" class="text-sm px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">← Detail</button>
+        <div id="reader-title" class="ml-2 text-white/80"></div>
+        <div class="ml-auto flex gap-2">
+          <button id="prev-ch" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">◀ Prev</button>
+          <button id="next-ch" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">Next ▶</button>
+          <button id="dl-all" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500">Download</button>
+        </div>
+      </div>
+      <div id="reader-images" class="flex flex-col gap-4"></div>
+    </section>
+  </main>
+
+  <template id="card-tpl">
+    <article class="group glass rounded-xl overflow-hidden">
+      <div class="aspect-[2/3] bg-neutral-800 overflow-hidden">
+        <img class="w-full h-full object-cover group-hover:scale-[1.03] transition" crossorigin="anonymous">
+      </div>
+      <div class="p-3">
+        <div class="font-semibold line-clamp-2 title"></div>
+        <div class="mt-1 text-xs text-white/60 meta"></div>
+        <div class="mt-2 flex items-center gap-2">
+          <button class="px-2 py-1 text-xs rounded bg-white/5 border border-white/10 hover:bg-white/10 btn-detail">Detail</button>
+          <button class="px-2 py-1 text-xs rounded bg-cyan-600/80 hover:bg-cyan-500 btn-read">Baca</button>
+          <button class="ml-auto px-2 py-1 text-xs rounded bg-amber-600/40 hover:bg-amber-600/60 btn-fav">★</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script>
+  // ===================== CONFIG =====================
+  const BASE = 'https://www.sankavollerei.com';
+  const USE_PROXY_DEFAULT = true; // set true untuk stabil
+  const state = {
+    page: 1,
+    mode: 'terbaru', // 'terbaru' | 'populer' | 'trending' | 'search' | 'genre'
+    query: '',
+    currentSlug: null,
+    lastListScroll: 0,
+    nav: { prev:null, next:null },
+  };
+
+  const els = {
+    list: document.getElementById('list-view'),
+    detail: document.getElementById('detail-view'),
+    reader: document.getElementById('reader-view'),
+    tabs: {
+      terbaru: document.getElementById('tab-terbaru'),
+      populer: document.getElementById('tab-populer'),
+      trending: document.getElementById('tab-trending'),
+      fav: document.getElementById('tab-fav'),
+    },
+    search: document.getElementById('q'),
+    btnSearch: document.getElementById('btn-search'),
+    useProxy: document.getElementById('use-proxy'),
+    status: document.getElementById('status'),
+    backHome: document.getElementById('back-home'),
+    detailCard: document.getElementById('detail-card'),
+    chapters: document.getElementById('chapters'),
+    backDetail: document.getElementById('back-detail'),
+    readerTitle: document.getElementById('reader-title'),
+    readerImages: document.getElementById('reader-images'),
+    prevCh: document.getElementById('prev-ch'),
+    nextCh: document.getElementById('next-ch'),
+    dlAll: document.getElementById('dl-all'),
+    tpl: document.getElementById('card-tpl'),
+  };
+
+  els.useProxy.checked = (localStorage.getItem('useProxy') ?? (USE_PROXY_DEFAULT? '1':'0')) === '1';
+
+  function setStatus(s){ els.status.textContent = s; }
+
+  // Generic fetch with optional proxy
+  async function api(path){
+    const proxied = els.useProxy.checked;
+    localStorage.setItem('useProxy', proxied ? '1' : '0');
+    const url = proxied ? (`/api/proxy?url=${encodeURIComponent(BASE + path)}`) : (BASE + path);
+    const res = await fetch(url, { headers: { 'x-kath':'1' } });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  // ============ UI Helpers ============
+  function show(view){
+    for(const v of [els.list, els.detail, els.reader]) v.classList.add('hidden');
+    view.classList.remove('hidden');
+  }
+  function clearGrid(){
+    els.list.innerHTML='';
+    // skeletons
+    for(let i=0;i<12;i++){
+      const sk = document.createElement('div');
+      sk.className='rounded-xl overflow-hidden';
+      sk.innerHTML = `
+        <div class="aspect-[2/3] skeleton rounded-xl"></div>
+        <div class="mt-3 h-4 skeleton rounded w-3/4"></div>
+        <div class="mt-2 h-3 skeleton rounded w-1/2"></div>`;
+      els.list.appendChild(sk);
+    }
+  }
+  function card(item){
+    const node = els.tpl.content.firstElementChild.cloneNode(true);
+    const img = node.querySelector('img');
+    const title = node.querySelector('.title');
+    const meta = node.querySelector('.meta');
+    img.src = item.thumb || item.cover || item.image || '';
+    img.alt = item.title || item.name || '';
+    title.textContent = item.title || item.name || 'Tanpa judul';
+    const g = item.genre || item.genres || [];
+    const type = item.type || item.category || '';
+    meta.textContent = [type, Array.isArray(g)? g.slice(0,3).join(', ') : g].filter(Boolean).join(' • ');
+    // buttons
+    node.querySelector('.btn-detail').onclick = ()=> openDetail(item.slug || item.link?.split('/').pop());
+    node.querySelector('.btn-read').onclick = ()=> quickRead(item.slug || item.latest_chapter_slug || item.slug_read || item.link?.split('/').pop());
+    node.querySelector('.btn-fav').onclick = ()=> toggleFav(item);
+    return node;
+  }
+  function toggleFav(item){
+    const fav = JSON.parse(localStorage.getItem('fav')||'[]');
+    const slug = item.slug || item.link?.split('/').pop();
+    const exists = fav.find(x=>x.slug===slug);
+    let next;
+    if(exists) next = fav.filter(x=>x.slug!==slug);
+    else next = [{title:item.title, cover:item.thumb||item.cover, slug}, ...fav].slice(0,200);
+    localStorage.setItem('fav', JSON.stringify(next));
+    if(state.mode==='fav') renderFav();
+  }
+  function renderFav(){
+    els.list.innerHTML='';
+    const fav = JSON.parse(localStorage.getItem('fav')||'[]');
+    if(!fav.length){
+      els.list.innerHTML = `<div class="text-white/60">Belum ada favorit.</div>`;
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    fav.forEach(x=> frag.appendChild(card(x)));
+    els.list.appendChild(frag);
+  }
+
+  // ============ List loaders ============
+  async function loadTerbaru(page=1){
+    state.mode='terbaru'; state.page=page; clearGrid(); setStatus('Memuat terbaru...');
+    const data = await api(`/comic/terbaru?page=${page}`);
+    renderList(data.data || data.list || data.results || data.items || []);
+  }
+  async function loadPopuler(page=1){
+    state.mode='populer'; state.page=page; clearGrid(); setStatus('Memuat populer...');
+    const data = await api(`/comic/populer?page=${page}`);
+    renderList(data.data || data.list || data.results || data.items || []);
+  }
+  async function loadTrending(){
+    state.mode='trending'; state.page=1; clearGrid(); setStatus('Memuat trending...');
+    const data = await api(`/comic/trending`);
+    renderList(data.data || data.list || data.results || data.items || []);
+  }
+  async function doSearch(q){
+    state.mode='search'; state.page=1; state.query=q; clearGrid(); setStatus(`Cari: ${q} ...`);
+    const data = await api(`/comic/search?q=${encodeURIComponent(q)}`);
+    renderList(data.data || data.list || data.results || data.items || []);
+  }
+
+  function renderList(arr){
+    els.list.innerHTML='';
+    const frag = document.createDocumentFragment();
+    arr.forEach(item=> frag.appendChild(card(item)));
+    els.list.appendChild(frag);
+    setStatus(`OK • ${arr.length} item`);
+    show(els.list);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ============ Detail & Chapters ============
+  async function openDetail(slug){
+    if(!slug) return alert('Slug tidak ditemukan');
+    state.currentSlug = slug;
+    setStatus('Memuat detail...');
+    show(els.detail);
+    els.detailCard.innerHTML = `<div class="col-span-full h-40 skeleton rounded-xl"></div>`;
+
+    const data = await api(`/comic/comic/${encodeURIComponent(slug)}`);
+    const d = data.data || data.detail || data || {};
+    // Render detail card
+    els.detailCard.innerHTML = `
+      <div class="md:col-span-1">
+        <img src="${d.cover || d.thumb || ''}" class="w-full rounded-xl border border-white/10" alt="${d.title||''}">
+      </div>
+      <div class="md:col-span-2">
+        <h1 class="text-2xl font-bold">${d.title || 'Tanpa judul'}</h1>
+        <div class="mt-2 text-sm text-white/60">${(d.type||'').toUpperCase()} • ${(d.status||'').toUpperCase()}</div>
+        <div class="mt-2 text-sm">${(Array.isArray(d.genres)? d.genres.join(', ') : (d.genres||''))}</div>
+        <p class="mt-3 text-white/80">${d.synopsis || d.desc || '—'}</p>
+        <div class="mt-4 flex gap-2">
+          <button id="read-latest" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500">Baca Chapter Terbaru</button>
+          <button id="fav-toggle" class="px-3 py-1.5 rounded-lg bg-amber-600/40 hover:bg-amber-600/60">★ Favorit</button>
+        </div>
+      </div>
+    `;
+
+    // chapters
+    const chapters = d.chapters || d.chapter || d.list_chapter || [];
+    els.chapters.innerHTML='';
+    chapters.forEach(ch=>{
+      const cap = document.createElement('button');
+      const slugRead = ch.slug || ch.link?.split('/').pop() || ch.url?.split('/').pop();
+      cap.className='px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-left hover:bg-white/10';
+      cap.innerHTML = `<div class="font-semibold">${ch.title || ch.name || slugRead}</div>
+        <div class="text-xs text-white/60">${ch.release || ch.update || ''}</div>`;
+      cap.onclick = ()=> openReader(slugRead, d.title);
+      els.chapters.appendChild(cap);
+    });
+
+    document.getElementById('read-latest').onclick = ()=>{
+      const latest = chapters?.[0] || chapters?.at(-1);
+      if(!latest) return alert('Chapter belum tersedia');
+      openReader(latest.slug || latest.link?.split('/').pop(), d.title);
+    };
+    document.getElementById('fav-toggle').onclick = ()=> toggleFav({title:d.title, cover:d.cover||d.thumb, slug});
+
+    setStatus('Detail siap');
+  }
+
+  // ============ Reader ============
+  async function openReader(chapterSlug, comicTitle=''){
+    setStatus('Memuat chapter...');
+    show(els.reader);
+    els.readerTitle.textContent = `${comicTitle? comicTitle+' — ' : ''}${chapterSlug}`;
+    els.readerImages.innerHTML = `<div class="h-60 skeleton rounded-xl"></div>`;
+
+    // ambil gambar halaman
+    const data = await api(`/comic/chapter/${encodeURIComponent(chapterSlug)}`);
+    const images = data.images || data.data || data.pages || [];
+    els.readerImages.innerHTML='';
+    images.forEach((src,i)=>{
+      const img = document.createElement('img');
+      img.loading='lazy';
+      img.src = src.url || src.image || src; // fleksibel schema
+      img.alt = `${chapterSlug} #${i+1}`;
+      img.className='w-full rounded-lg border border-white/10';
+      els.readerImages.appendChild(img);
+    });
+
+    // navigation prev/next
+    try{
+      const nav = await api(`/comic/chapter/${encodeURIComponent(chapterSlug)}/navigation`);
+      state.nav = { prev:nav.prev || nav.previous || null, next:nav.next || null };
+    }catch{ state.nav={prev:null,next:null}; }
+    els.prevCh.disabled = !state.nav.prev;
+    els.nextCh.disabled = !state.nav.next;
+
+    // cache untuk offline
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.controller?.postMessage({type:'CACHE_URLS', urls: images.map(x=>x.url||x.image||x)});
+    }
+
+    setStatus(`Chapter siap • ${images.length} halaman`);
+  }
+
+  // Download satu zip sederhana (fallback: sequential new tab)
+  async function downloadAllImages(){
+    const imgs = [...els.readerImages.querySelectorAll('img')].map(i=>i.src);
+    if(!imgs.length) return;
+    // tanpa lib zip untuk versi ringan: buka satu-satu di tab (biar cepat), atau gunakan `Save all as...` via extension
+    // Kalau mau ZIP, integrasikan JSZip sesuai kebutuhan.
+    alert('Membuka semua gambar di tab baru. Untuk ZIP, integrasikan JSZip (opsional).');
+    imgs.forEach(u=> window.open(u, '_blank'));
+  }
+
+  // ============ Events ============
+  els.tabs.terbaru.onclick = ()=> loadTerbaru(1);
+  els.tabs.populer.onclick = ()=> loadPopuler(1);
+  els.tabs.trending.onclick = ()=> loadTrending();
+  els.tabs.fav.onclick = ()=> { state.mode='fav'; renderFav(); show(els.list); };
+
+  els.btnSearch.onclick = ()=> els.search.value.trim() && doSearch(els.search.value.trim());
+  els.search.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.value.trim()) doSearch(e.target.value.trim()); });
+
+  els.backHome.onclick = ()=>{ show(els.list); window.scrollTo({top: state.lastListScroll, behavior:'instant'}); };
+  els.backDetail.onclick = ()=> openDetail(state.currentSlug);
+  els.prevCh.onclick = ()=> state.nav.prev && openReader(state.nav.prev);
+  els.nextCh.onclick = ()=> state.nav.next && openReader(state.nav.next);
+  els.dlAll.onclick = downloadAllImages;
+
+  // infinite scroll (untuk terbaru/populer/search)
+  window.addEventListener('scroll', async ()=>{
+    if(state.mode==='fav' || state.mode==='trending') return;
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+    if(nearBottom){
+      try{
+        const nextPage = state.page + 1;
+        let data;
+        if(state.mode==='terbaru') data = await api(`/comic/terbaru?page=${nextPage}`);
+        else if(state.mode==='populer') data = await api(`/comic/populer?page=${nextPage}`);
+        else if(state.mode==='search') data = await api(`/comic/search?q=${encodeURIComponent(state.query)}&page=${nextPage}`);
+        else return;
+        const arr = data.data || data.list || data.results || data.items || [];
+        if(arr.length){
+          state.page = nextPage;
+          const frag = document.createDocumentFragment();
+          arr.forEach(item=> frag.appendChild(card(item)));
+          els.list.appendChild(frag);
+          setStatus(`Memuat halaman ${nextPage} (+${arr.length})`);
+        }
+      }catch(e){ /* diamkan */ }
+    }
+  });
+
+  // initial
+  (async function init(){
+    try{
+      await navigator.serviceWorker?.register('./sw.js').catch(()=>{});
+    }catch{}
+    loadTerbaru(1);
+  })();
+  </script>
+</body>
+</html>
