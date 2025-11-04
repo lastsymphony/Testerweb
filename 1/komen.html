@@ -1017,13 +1017,14 @@
   const RATE_LIMIT = new Map();
 
   /* ====== VALIDATION ====== */
+  // FIXED: Allow data: and blob: URLs for uploaded media
   function isValidUrl(url) {
     if (!url) return true; // empty is ok
     try {
       const u = new URL(url);
-      return ['http:', 'https:'].includes(u.protocol);
+      return ['http:', 'https:', 'data:', 'blob:'].includes(u.protocol);
     } catch {
-      return false;
+      return url.startsWith('data:') || url.startsWith('blob:'); // fallback
     }
   }
 
@@ -1205,12 +1206,12 @@
       EMOJI_ITEMS=(j.ok&&Array.isArray(j.items))?j.items:[]; 
       EMOJI_MAP = new Map(EMOJI_ITEMS.map(x=>[x.name,x.url])); 
       
-      // MODIFIED: Support video emoji (webm)
+      // FIXED: Add autoplay to video emoji in picker
       E.emojiPicker.innerHTML = EMOJI_ITEMS.length
         ? EMOJI_ITEMS.map(e => {
             const isVideo = /\.webm$/i.test(e.name);
             const media = isVideo
-              ? `<video src="${esc(e.url)}" muted loop playsinline></video>`
+              ? `<video src="${esc(e.url)}" autoplay muted loop playsinline></video>`
               : `<img src="${esc(e.url)}" alt="${esc(e.name)}">`;
             return `<button type="button" data-name="${esc(e.name)}" title="${esc(e.name)}">${media}</button>`;
           }).join('')
@@ -1277,15 +1278,15 @@
   
   const badge = role=>`<span class="badge ${role==='admin'?'admin':''}">${role==='admin'?'katheryne':'visitor'}</span>`;
   
-  // MODIFIED: Support video emoji in comments
+  // FIXED: Support video emoji in comments with more permissive regex
   function renderMessage(text){
     let s = esc(text || '');
     s = s.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-    s = s.replace(/\[\[emoji:([\w.\-]+)\]\]/g, (m, name) => {
+    s = s.replace(/\[\[emoji:([^\]]+)\]\]/g, (m, name) => {
       const url = EMOJI_MAP.get(name);
       if (!url) return esc(m);
       return /\.webm$/i.test(name)
-        ? `<video src="${esc(url)}" class="emojivid" muted loop autoplay playsinline></video>`
+        ? `<video src="${esc(url)}" class="emojivid" autoplay muted loop playsinline></video>`
         : `<img src="${esc(url)}" alt="emoji" class="emojiimg">`;
     });
     return s;
