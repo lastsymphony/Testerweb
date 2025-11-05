@@ -1001,8 +1001,9 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // API Configuration
-        const API_BASE_URL = 'https://www.sankavollerei.com/comic';
+        // ====== KONFIG ======
+        const BASE = 'https://www.sankavollerei.com';
+        const API_BASE_URL = BASE + '/comic';
         
         // DOM Elements
         const sections = document.querySelectorAll('.content-section');
@@ -1036,6 +1037,230 @@
         let currentOrder = 'latest';
         let genres = [];
         
+        // Convert link/href dari kartu/list/search ke endpoint detail API yang valid
+        function toDetailUrl(linkOrHref = '') {
+            if (!linkOrHref) return null;
+
+            // Normalisasi: ambil slug akhir (tanpa leading/trailing slash)
+            const clean = (s) => s.replace(/^https?:\/\/[^/]+/,'').replace(/^\/+|\/+$/g,'');
+
+            let p = clean(linkOrHref);
+
+            // /manga/xyz/ -> /comic/comic/xyz
+            if (p.startsWith('manga/')) {
+                const slug = p.replace(/^manga\/|\/$/g,'');
+                return `${BASE}/comic/comic/${slug}`;
+            }
+
+            // /detail-komik/xyz/ -> /comic/comic/xyz
+            if (p.startsWith('detail-komik/')) {
+                const slug = p.replace(/^detail-komik\/|\/$/g,'');
+                return `${BASE}/comic/comic/${slug}`;
+            }
+
+            // Sudah format /comic/comic/xyz -> pakai langsung
+            if (p.startsWith('comic/comic/')) {
+                return `${BASE}/${p}`;
+            }
+
+            // Fallback: anggap p itu slug langsung
+            return `${BASE}/comic/comic/${p.replace(/\/$/,'')}`;
+        }
+
+        // Helper fetch dgn timeout + error parsing
+        async function fetchJSON(url, {timeoutMs = 12000} = {}) {
+            const ctl = new AbortController();
+            const to = setTimeout(() => ctl.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, {
+                    signal: ctl.signal,
+                    headers: { 'accept': 'application/json' },
+                    mode: 'cors',
+                    cache: 'no-store'
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } finally {
+                clearTimeout(to);
+            }
+        }
+
+        // Tampilkan toast error user-friendly
+        function showErrorToast(msg = 'Terjadi kesalahan saat memuat detail komik') {
+            const el = document.getElementById('toast');
+            if (!el) return;
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        // Render detail + chapter list
+        async function loadComicDetail(linkOrHref, {retry = 1} = {}) {
+            const detailUrl = toDetailUrl(linkOrHref);
+            if (!detailUrl) return showErrorToast();
+
+            // UI: buka panel detail + tampilkan loader
+            const section = document.getElementById('comicDetailSection');
+            const coverEl = document.getElementById('comicDetailCover');
+            const titleEl = document.getElementById('comicDetailTitle');
+            const descEl = document.getElementById('comicDetailDescription');
+            const chapterListEl = document.getElementById('chapterList');
+
+            // Hide all sections
+            sections.forEach(s => s.style.display = 'none');
+            comicReaderSection.classList.remove('active');
+            
+            // Show comic detail
+            section.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Show loading
+            if (chapterListEl) chapterListEl.innerHTML = `
+                <div class="loading"><div class="spinner"></div></div>
+            `;
+
+            try {
+                const data = await fetchJSON(detailUrl);
+
+                // Data yang diharapkan: { title, synopsis, chapters: [{chapter, link}, ...] }
+                const title = data.title || 'Tanpa judul';
+                const synopsis = (data.synopsis || '').replace(/\n/g,'<br>');
+                const chapters = Array.isArray(data.chapters) ? data.chapters : [];
+
+                // Render meta/cover (pakai placeholder kalau API detail tidak kirim cover)
+                if (coverEl) coverEl.src = coverEl.src || 'https://via.placeholder.com/200x280?text=Cover';
+                if (titleEl) titleEl.textContent = title;
+                if (descEl) descEl.innerHTML = synopsis;
+
+                // Update comic detail meta
+                document.getElementById('comicDetailType').textContent = data.type || 'Manga';
+                document.getElementById('comicDetailGenre').textContent = data.genre || 'Action';
+
+                // Render chapters (urut terbaru -> terlama)
+                if (chapterListEl) {
+                    if (!chapters.length) {
+                        chapterListEl.innerHTML = '<div style="opacity:.7">Belum ada chapter.</div>';
+                    } else {
+                        chapterListEl.innerHTML = chapters
+                            .map((c, idx) => {
+                                const chName = c.chapter || `Chapter ${chapters.length - idx}`;
+                                const chLink = c.link || '';
+                                return `
+                                    <div class="chapter-item" data-chapter-link="${chLink}">
+                                        <span class="chapter-number">${chName}</span>
+                                        <span class="chapter-date">—</span>
+                                    </div>
+                                `;
+                            })
+                            .join('');
+                    }
+
+                    // Click chapter → load chapter
+                    chapterListEl.querySelectorAll('.chapter-item').forEach(it => {
+                        it.addEventListener('click', () => {
+                            const ch = it.getAttribute('data-chapter-link');
+                            if (ch) {
+                                loadChapter(ch);
+                            } else {
+                                showErrorToast('Link chapter tidak tersedia');
+                            }
+                        });
+                    });
+                }
+                
+                // Store current comic data
+                currentComic = data;
+                currentChapters = chapters;
+                
+                // Check if bookmarked
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+                const slug = linkOrHref.replace(/^\/+|\/+$/g, '');
+                const isBookmarked = bookmarks.some(b => b.slug === slug);
+                document.getElementById('bookmarkBtn').innerHTML = isBookmarked ? 
+                    '<i class="fas fa-bookmark"></i> Hapus Tanda' : 
+                    '<i class="fas fa-bookmark"></i> Tandai';
+            } catch (err) {
+                // Retry ringan untuk jaringan putus singkat
+                if (retry > 0) {
+                    return loadComicDetail(linkOrHref, {retry: retry - 1});
+                }
+                console.error('Detail gagal:', err);
+                showErrorToast('Terjadi kesalahan saat memuat detail komik');
+            }
+        }
+
+        // Pastikan kartu komik klik → panggil loadComicDetail
+        function attachCardOpenDetail(container) {
+            container?.querySelectorAll('.comic-card').forEach(card => {
+                const link = card.getAttribute('data-link') || card.dataset.link;
+                card.addEventListener('click', () => loadComicDetail(link));
+            });
+        }
+
+        // Load Chapter
+        async function loadChapter(chapterLink) {
+            // Hide comic detail
+            comicDetailSection.classList.remove('active');
+            
+            // Show comic reader
+            comicReaderSection.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Update reader title
+            document.getElementById('readerTitle').textContent = `${currentComic.title} - ${chapterLink}`;
+            
+            // Show loading
+            const readerContent = document.getElementById('readerContent');
+            readerContent.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            // Reset zoom
+            readerZoom = 1;
+            
+            try {
+                const data = await fetchJSON(`${API_BASE_URL}/chapter/${chapterLink}`);
+                
+                if (data.images && data.images.length > 0) {
+                    readerContent.innerHTML = '';
+                    
+                    data.images.forEach(image => {
+                        const img = document.createElement('img');
+                        img.src = image;
+                        img.className = 'reader-image';
+                        img.style.transform = `scale(${readerZoom})`;
+                        readerContent.appendChild(img);
+                    });
+                    
+                    // Update chapter navigation
+                    const currentChapterIndex = currentChapters.findIndex(c => c.link === chapterLink);
+                    document.getElementById('prevChapterBtn').disabled = currentChapterIndex === 0;
+                    document.getElementById('nextChapterBtn').disabled = currentChapterIndex === currentChapters.length - 1;
+                } else {
+                    readerContent.innerHTML = '<p>Gagal memuat chapter</p>';
+                }
+            } catch (error) {
+                console.error('Error loading chapter:', error);
+                readerContent.innerHTML = '<p>Terjadi kesalahan saat memuat chapter</p>';
+            }
+        }
+
+        // Close Reader
+        function closeReader() {
+            comicReaderSection.classList.remove('active');
+            comicDetailSection.classList.add('active');
+        }
+
+        // Update Reader Zoom
+        function updateReaderZoom() {
+            const images = document.querySelectorAll('.reader-image');
+            images.forEach(img => {
+                img.style.transform = `scale(${readerZoom})`;
+            });
+        }
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             loadHomeContent();
@@ -1105,16 +1330,16 @@
             
             // Chapter Navigation
             document.getElementById('prevChapterBtn').addEventListener('click', () => {
+                const currentChapterIndex = currentChapters.findIndex(c => c.link === currentChapter);
                 if (currentChapterIndex > 0) {
-                    currentChapterIndex--;
-                    loadChapter(chapters[currentChapterIndex]);
+                    loadChapter(currentChapters[currentChapterIndex - 1].link);
                 }
             });
             
             document.getElementById('nextChapterBtn').addEventListener('click', () => {
-                if (currentChapterIndex < chapters.length - 1) {
-                    currentChapterIndex++;
-                    loadChapter(chapters[currentChapterIndex]);
+                const currentChapterIndex = currentChapters.findIndex(c => c.link === currentChapter);
+                if (currentChapterIndex < currentChapters.length - 1) {
+                    loadChapter(currentChapters[currentChapterIndex + 1].link);
                 }
             });
             
@@ -1122,24 +1347,25 @@
             document.getElementById('bookmarkBtn').addEventListener('click', () => {
                 if (currentComic) {
                     const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-                    const exists = bookmarks.some(b => b.slug === currentComic.slug);
+                    const slug = currentComic.slug || '';
+                    const exists = bookmarks.some(b => b.slug === slug);
                     
                     if (exists) {
                         // Remove bookmark
-                        const updatedBookmarks = bookmarks.filter(b => b.slug !== currentComic.slug);
+                        const updatedBookmarks = bookmarks.filter(b => b.slug !== slug);
                         localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-                        showToast('Komik dihapus dari bookmark');
+                        showErrorToast('Komik dihapus dari bookmark');
                         document.getElementById('bookmarkBtn').innerHTML = '<i class="fas fa-bookmark"></i> Tandai';
                     } else {
                         // Add bookmark
                         bookmarks.push({
-                            slug: currentComic.slug,
+                            slug: slug,
                             title: currentComic.title,
                             cover: currentComic.cover,
                             type: currentComic.type
                         });
                         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                        showToast('Komik ditambahkan ke bookmark');
+                        showErrorToast('Komik ditambahkan ke bookmark');
                         document.getElementById('bookmarkBtn').innerHTML = '<i class="fas fa-bookmark"></i> Hapus Tanda';
                     }
                 }
@@ -1161,7 +1387,7 @@
                     dummy.select();
                     document.execCommand('copy');
                     document.body.removeChild(dummy);
-                    showToast('Link berhasil disalin!');
+                    showErrorToast('Link berhasil disalin!');
                 }
             });
         }
@@ -1230,6 +1456,7 @@
                         data.comics.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada komik terbaru</p>';
                     }
@@ -1253,6 +1480,7 @@
                         data.comics.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada komik populer</p>';
                     }
@@ -1276,6 +1504,7 @@
                         data.trending.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada komik trending</p>';
                     }
@@ -1299,6 +1528,7 @@
                         data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                         
                         // Create pagination
                         createPagination('latest', data.pagination || { current_page: page, total_pages: 5 });
@@ -1325,6 +1555,7 @@
                         data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                         
                         // Create pagination
                         createPagination('popular', data.pagination || { current_page: page, total_pages: 5 });
@@ -1351,6 +1582,7 @@
                         data.trending.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada komik trending</p>';
                     }
@@ -1435,6 +1667,7 @@
                         data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                         
                         // Create pagination
                         createPagination('browse', data.pagination || { current_page: page, total_pages: 5 });
@@ -1472,6 +1705,7 @@
                         data.data.forEach(comic => {
                             container.appendChild(createSearchComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
@@ -1490,7 +1724,7 @@
             const order = document.getElementById('filterOrder').value;
             
             if (!query) {
-                showToast('Masukkan kata kunci pencarian');
+                showErrorToast('Masukkan kata kunci pencarian');
                 return;
             }
             
@@ -1520,6 +1754,7 @@
                         data.data.forEach(comic => {
                             container.appendChild(createSearchComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
@@ -1555,6 +1790,7 @@
                         data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                         
                         // Create pagination
                         createPagination('genre', data.pagination || { current_page: page, total_pages: 5 });
@@ -1573,11 +1809,14 @@
             const card = document.createElement('div');
             card.className = 'comic-card';
             
-            // Extract slug from link
-            const slug = comic.link ? comic.link.replace(/^\/+/, '').replace(/\/+$/, '') : '';
+            // Extract link from comic data
+            const link = comic.link || '';
+            
+            // Store link in data attribute
+            card.setAttribute('data-link', link);
             
             card.innerHTML = `
-                <img src="${comic.image || 'https://picsum.photos/seed/' + slug + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
+                <img src="${comic.image || 'https://picsum.photos/seed/' + link + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
                 <div class="comic-info">
                     <h3 class="comic-title">${comic.title}</h3>
                     <div class="comic-meta">
@@ -1587,10 +1826,6 @@
                 </div>
             `;
             
-            card.addEventListener('click', () => {
-                loadComicDetail(slug);
-            });
-            
             return card;
         }
         
@@ -1599,11 +1834,14 @@
             const card = document.createElement('div');
             card.className = 'comic-card';
             
-            // Extract slug from href
-            const slug = comic.slug || comic.href ? comic.href.replace(/^\/+/, '').replace(/\/+$/, '') : '';
+            // Extract href from comic data
+            const href = comic.href || '';
+            
+            // Store href in data attribute
+            card.setAttribute('data-link', href);
             
             card.innerHTML = `
-                <img src="${comic.thumbnail || 'https://picsum.photos/seed/' + slug + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
+                <img src="${comic.thumbnail || 'https://picsum.photos/seed/' + href + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
                 <div class="comic-info">
                     <h3 class="comic-title">${comic.title}</h3>
                     <div class="comic-meta">
@@ -1613,150 +1851,7 @@
                 </div>
             `;
             
-            card.addEventListener('click', () => {
-                loadComicDetail(slug);
-            });
-            
             return card;
-        }
-        
-        // Load Comic Detail
-        function loadComicDetail(slug) {
-            // Hide all sections
-            sections.forEach(s => s.style.display = 'none');
-            comicReaderSection.classList.remove('active');
-            
-            // Show comic detail
-            comicDetailSection.classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-            
-            // Show loading
-            document.getElementById('comicDetailCover').src = 'https://picsum.photos/seed/' + slug + '/200/280.jpg';
-            document.getElementById('comicDetailTitle').textContent = 'Loading...';
-            document.getElementById('comicDetailType').textContent = '-';
-            document.getElementById('comicDetailGenre').textContent = '-';
-            document.getElementById('comicDetailDescription').textContent = 'Loading...';
-            
-            // Load chapter list
-            const chapterListContainer = document.getElementById('chapterList');
-            chapterListContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/comic/${slug}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.title) {
-                        currentComic = data;
-                        
-                        // Update comic detail
-                        document.getElementById('comicDetailCover').src = data.cover || 'https://picsum.photos/seed/' + slug + '/200/280.jpg';
-                        document.getElementById('comicDetailTitle').textContent = data.title;
-                        document.getElementById('comicDetailType').textContent = data.type || 'Manga';
-                        document.getElementById('comicDetailGenre').textContent = data.genre || 'Action';
-                        document.getElementById('comicDetailDescription').textContent = data.synopsis || 'Tidak ada deskripsi tersedia.';
-                        
-                        // Check if bookmarked
-                        const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-                        const isBookmarked = bookmarks.some(b => b.slug === slug);
-                        document.getElementById('bookmarkBtn').innerHTML = isBookmarked ? 
-                            '<i class="fas fa-bookmark"></i> Hapus Tanda' : 
-                            '<i class="fas fa-bookmark"></i> Tandai';
-                        
-                        // Load chapters
-                        if (data.chapters && data.chapters.length > 0) {
-                            chapters = data.chapters;
-                            chapterListContainer.innerHTML = '';
-                            
-                            data.chapters.forEach((chapter, index) => {
-                                const chapterItem = document.createElement('div');
-                                chapterItem.className = 'chapter-item';
-                                chapterItem.innerHTML = `
-                                    <span class="chapter-number">${chapter.chapter || `Chapter ${index + 1}`}</span>
-                                `;
-                                
-                                chapterItem.addEventListener('click', () => {
-                                    currentChapterIndex = index;
-                                    loadChapter(chapter);
-                                });
-                                
-                                chapterListContainer.appendChild(chapterItem);
-                            });
-                        } else {
-                            chapterListContainer.innerHTML = '<p>Tidak ada chapter tersedia</p>';
-                        }
-                    } else {
-                        showToast('Komik tidak ditemukan');
-                        navigateToSection('home');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading comic detail:', error);
-                    showToast('Terjadi kesalahan saat memuat detail komik');
-                    navigateToSection('home');
-                });
-        }
-        
-        // Load Chapter
-        function loadChapter(chapter) {
-            // Hide comic detail
-            comicDetailSection.classList.remove('active');
-            
-            // Show comic reader
-            comicReaderSection.classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-            
-            // Update reader title
-            document.getElementById('readerTitle').textContent = `${currentComic.title} - ${chapter.chapter || 'Chapter'}`;
-            
-            // Show loading
-            const readerContent = document.getElementById('readerContent');
-            readerContent.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            // Reset zoom
-            readerZoom = 1;
-            
-            fetch(`${API_BASE_URL}/chapter/${chapter.link}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.images && data.images.length > 0) {
-                        readerContent.innerHTML = '';
-                        
-                        data.images.forEach(image => {
-                            const img = document.createElement('img');
-                            img.src = image;
-                            img.className = 'reader-image';
-                            img.style.transform = `scale(${readerZoom})`;
-                            readerContent.appendChild(img);
-                        });
-                        
-                        // Update chapter navigation
-                        document.getElementById('prevChapterBtn').disabled = currentChapterIndex === 0;
-                        document.getElementById('nextChapterBtn').disabled = currentChapterIndex === chapters.length - 1;
-                    } else {
-                        readerContent.innerHTML = '<p>Gagal memuat chapter</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading chapter:', error);
-                    readerContent.innerHTML = '<p>Terjadi kesalahan saat memuat chapter</p>';
-                });
-        }
-        
-        // Close Reader
-        function closeReader() {
-            comicReaderSection.classList.remove('active');
-            comicDetailSection.classList.add('active');
-        }
-        
-        // Update Reader Zoom
-        function updateReaderZoom() {
-            const images = document.querySelectorAll('.reader-image');
-            images.forEach(img => {
-                img.style.transform = `scale(${readerZoom})`;
-            });
         }
         
         // Create Pagination
@@ -1852,6 +1947,7 @@
                         data.data.forEach(comic => {
                             container.appendChild(createSearchComicCard(comic));
                         });
+                        attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
@@ -1860,16 +1956,6 @@
                     console.error('Error searching comics:', error);
                     container.innerHTML = '<p>Terjadi kesalahan saat mencari komik</p>';
                 });
-        }
-        
-        // Show Toast Notification
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
         }
     </script>
 </body>
