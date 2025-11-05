@@ -251,13 +251,12 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .comic-cover {
+        /* cover di kartu */
+        .comic-cover{
             width: 100%;
             height: 250px;
-            object-fit: cover;
-            display: block;
             aspect-ratio: 9 / 12;
-            object-fit: cover;
+            object-fit: contain;     /* <— biar full, tidak terpotong */
             background: #eef1f7;
         }
 
@@ -309,13 +308,12 @@
             background: linear-gradient(to right, rgba(67, 97, 238, 0.1), rgba(247, 37, 133, 0.1));
         }
 
-        .comic-detail-cover {
+        /* cover di halaman detail */
+        .comic-detail-cover{
             width: 220px;
             height: 300px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin-right: 2rem;
+            object-fit: contain;     /* <— biar full, tidak terpotong */
+            background: #eef1f7;
         }
 
         .comic-detail-info {
@@ -982,6 +980,10 @@
         const BASE = 'https://www.sankavollerei.com';
         const API_BASE_URL = BASE + '/comic';
         
+        // ROOT path untuk GitHub Pages (selalu akhiri dengan /)
+        const ROOT_PATH = (location.pathname.endsWith('/') ? location.pathname : location.pathname + '/')
+          .replace(/(?:index\.html)?$/, '');
+        
         // DOM Elements
         const sections = document.querySelectorAll('.content-section');
         const navLinks = document.querySelectorAll('.nav-link');
@@ -1021,13 +1023,38 @@
             return t.includes('apk') || link.includes('/apk');
         }
 
-        // --- UTIL: safe image (proxy + fallback) ---
-        function safeImg(url, seed) {
+        // --- UTIL: safe image (proxy + fallback, bisa contain/cover) ---
+        function safeImg(url, seed, { contain = false, width = 0, height = 0 } = {}) {
             if (!url) return `https://picsum.photos/seed/${encodeURIComponent(seed)}/180/250.jpg`;
-            // pakai proxy agar anti hotlink/CORS
-            const encoded = encodeURIComponent(url.replace(/^https?:\/\//,''));
-            return `https://images.weserv.nl/?url=${encoded}`;
+            const clean = url.replace(/^https?:\/\//, '');
+            const params = [];
+            if (contain) params.push('fit=contain');   // <— kunci biar full
+            if (width) params.push('w=' + width);
+            if (height) params.push('h=' + height);
+            const q = params.length ? '&' + params.join('&') : '';
+            return `https://images.weserv.nl/?url=${encodeURIComponent(clean)}${q}`;
         }
+
+        // Helper untuk set route
+        function setRoute(path, state = {}) {
+            // pastikan selalu berakhiran "/"
+            let p = path.replace(/\/+$/, '') + '/';
+            const url = ROOT_PATH.replace(/\/+$/, '/') + p.replace(/^\/+/, '');
+            history.pushState(state, '', url);
+        }
+
+        window.addEventListener('popstate', (e) => {
+            // Handle back/forward
+            const st = e.state || {};
+            if (st.view === 'detail' && st.slug) {
+                loadComicDetail(st.originalLink || `/manga/${st.slug}/`, { coverFromCard: st.cover || '' });
+            } else if (st.view === 'section' && st.section) {
+                navigateToSection(st.section);
+            } else {
+                // fallback ke beranda
+                navigateToSection('home');
+            }
+        });
 
         // Convert link/href dari kartu/list/search ke endpoint detail API yang valid
         function toDetailUrl(linkOrHref = '') {
@@ -1187,9 +1214,16 @@
         // Pastikan kartu komik klik → panggil loadComicDetail
         function attachCardOpenDetail(container) {
             container?.querySelectorAll('.comic-card').forEach(card => {
-                const link = card.getAttribute('data-link') || card.dataset.link;
+                const link = card.getAttribute('data-link') || card.dataset.link || '';
                 const cover = card.getAttribute('data-cover') || '';
-                card.addEventListener('click', () => loadComicDetail(link, { coverFromCard: cover }));
+                const slug  = (link.replace(/^\/+|\/+$/g,'').split('/').pop()) || 'komik';
+
+                card.addEventListener('click', () => {
+                    // set route dengan trailing slash
+                    setRoute(`komik/${encodeURIComponent(slug)}`, { view:'detail', slug, originalLink: link, cover });
+                    // load detail
+                    loadComicDetail(link, { coverFromCard: cover });
+                });
             });
         }
 
@@ -1261,7 +1295,7 @@
             const card = document.createElement('div');
             card.className = 'comic-card';
             const link = comic.link || '';
-            const imgSrc = safeImg(comic.image, link);
+            const imgSrc = safeImg(comic.image, link, { contain: true, width: 360, height: 480 });
             card.setAttribute('data-link', link);
             card.setAttribute('data-cover', imgSrc); // <— simpan cover
 
@@ -1285,7 +1319,7 @@
             const card = document.createElement('div');
             card.className = 'comic-card';
             const href = comic.href || '';
-            const imgSrc = safeImg(comic.thumbnail, href);
+            const imgSrc = safeImg(comic.thumbnail, href, { contain: true, width: 360, height: 480 });
             card.setAttribute('data-link', href);
             card.setAttribute('data-cover', imgSrc); // <— simpan cover
 
@@ -1603,6 +1637,9 @@
                     loadBrowseComics();
                     break;
             }
+            
+            // Set route dengan trailing slash
+            setRoute(section, { view: 'section', section });
             
             window.scrollTo(0, 0);
         }
