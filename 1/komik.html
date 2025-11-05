@@ -589,6 +589,59 @@
             color: #ccc;
         }
 
+        /* Genre Filter */
+        .genre-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .genre-btn {
+            padding: 8px 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .genre-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .genre-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Type Filter */
+        .type-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-btn {
+            padding: 8px 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .type-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .type-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-content {
@@ -640,8 +693,8 @@
                         <li><a href="#" class="nav-link active" data-section="home">Beranda</a></li>
                         <li><a href="#" class="nav-link" data-section="terbaru">Terbaru</a></li>
                         <li><a href="#" class="nav-link" data-section="populer">Populer</a></li>
-                        <li><a href="#" class="nav-link" data-section="berwarna">Berwarna</a></li>
-                        <li><a href="#" class="nav-link" data-section="pustaka">Pustaka</a></li>
+                        <li><a href="#" class="nav-link" data-section="trending">Trending</a></li>
+                        <li><a href="#" class="nav-link" data-section="browse">Browse</a></li>
                     </ul>
                 </nav>
             </div>
@@ -671,34 +724,22 @@
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label for="filterStatus">Status</label>
-                        <select id="filterStatus">
-                            <option value="all">Semua</option>
-                            <option value="ongoing">Ongoing</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <div class="filter-item">
                         <label for="filterGenre">Genre</label>
                         <select id="filterGenre">
                             <option value="all">Semua</option>
                             <option value="action">Action</option>
-                            <option value="romance">Romance</option>
+                            <option value="adventure">Adventure</option>
                             <option value="comedy">Comedy</option>
                             <option value="drama">Drama</option>
                             <option value="fantasy">Fantasy</option>
                             <option value="horror">Horror</option>
+                            <option value="romance">Romance</option>
                             <option value="slice-of-life">Slice of Life</option>
                         </select>
                     </div>
                     <div class="filter-item">
-                        <label for="filterYear">Tahun</label>
-                        <input type="number" id="filterYear" placeholder="Contoh: 2023" min="2000" max="2023">
-                    </div>
-                    <div class="filter-item">
-                        <label for="filterSort">Urutkan</label>
-                        <select id="filterSort">
-                            <option value="relevance">Relevansi</option>
+                        <label for="filterOrder">Urutkan</label>
+                        <select id="filterOrder">
                             <option value="latest">Terbaru</option>
                             <option value="popular">Terpopuler</option>
                             <option value="rating">Rating Tertinggi</option>
@@ -736,11 +777,12 @@
                 </div>
             </div>
 
-            <!-- Recommendations -->
+            <!-- Trending Comics -->
             <div class="section-header">
-                <h2 class="section-title">Rekomendasi</h2>
+                <h2 class="section-title">Komik Trending</h2>
+                <a href="#" class="view-all-btn" data-section="trending">Lihat Semua</a>
             </div>
-            <div class="comic-grid" id="recommendedComics">
+            <div class="comic-grid" id="trendingComics">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
@@ -773,43 +815,45 @@
             <div class="pagination" id="popularPagination"></div>
         </section>
 
-        <!-- Colored Comics Section -->
-        <section id="berwarnaSection" class="content-section" style="display: none;">
+        <!-- Trending Comics Section -->
+        <section id="trendingSection" class="content-section" style="display: none;">
             <div class="section-header">
-                <h2 class="section-title">Komik Berwarna</h2>
+                <h2 class="section-title">Komik Trending</h2>
             </div>
-            <div class="comic-grid" id="coloredComics">
+            <div class="comic-grid" id="allTrendingComics">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
             </div>
-            <div class="pagination" id="coloredPagination"></div>
         </section>
 
-        <!-- Library Section -->
-        <section id="pustakaSection" class="content-section" style="display: none;">
+        <!-- Browse Section -->
+        <section id="browseSection" class="content-section" style="display: none;">
             <div class="section-header">
-                <h2 class="section-title">Pustaka Komik</h2>
+                <h2 class="section-title">Browse Komik</h2>
             </div>
-            <div class="comic-grid" id="libraryComics">
+            
+            <!-- Type Filter -->
+            <div class="type-filter">
+                <button class="type-btn active" data-type="all">Semua</button>
+                <button class="type-btn" data-type="manga">Manga</button>
+                <button class="type-btn" data-type="manhwa">Manhwa</button>
+                <button class="type-btn" data-type="manhua">Manhua</button>
+            </div>
+            
+            <!-- Genre Filter -->
+            <div class="genre-filter" id="genreFilter">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
             </div>
-            <div class="pagination" id="libraryPagination"></div>
-        </section>
-
-        <!-- Search Results Section -->
-        <section id="searchResultsSection" class="content-section" style="display: none;">
-            <div class="section-header">
-                <h2 class="section-title">Hasil Pencarian</h2>
-            </div>
-            <div class="comic-grid" id="searchResults">
+            
+            <div class="comic-grid" id="browseComics">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
             </div>
-            <div class="pagination" id="searchPagination"></div>
+            <div class="pagination" id="browsePagination"></div>
         </section>
 
         <!-- Genre Section -->
@@ -825,6 +869,19 @@
             <div class="pagination" id="genrePagination"></div>
         </section>
 
+        <!-- Search Results Section -->
+        <section id="searchResultsSection" class="content-section" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">Hasil Pencarian</h2>
+            </div>
+            <div class="comic-grid" id="searchResults">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            <div class="pagination" id="searchPagination"></div>
+        </section>
+
         <!-- Comic Detail Section -->
         <section id="comicDetailSection" class="comic-detail">
             <div class="comic-detail-header">
@@ -837,20 +894,8 @@
                             <span id="comicDetailType"></span>
                         </div>
                         <div class="meta-item">
-                            <span class="meta-label">Author:</span>
-                            <span id="comicDetailAuthor"></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Status:</span>
-                            <span id="comicDetailStatus"></span>
-                        </div>
-                        <div class="meta-item">
                             <span class="meta-label">Genre:</span>
                             <span id="comicDetailGenre"></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Rating:</span>
-                            <span id="comicDetailRating"></span>
                         </div>
                     </div>
                     <p class="comic-detail-description" id="comicDetailDescription"></p>
@@ -923,8 +968,8 @@
                         <li><a href="#" class="nav-link" data-section="home">Beranda</a></li>
                         <li><a href="#" class="nav-link" data-section="terbaru">Terbaru</a></li>
                         <li><a href="#" class="nav-link" data-section="populer">Populer</a></li>
-                        <li><a href="#" class="nav-link" data-section="berwarna">Berwarna</a></li>
-                        <li><a href="#" class="nav-link" data-section="pustaka">Pustaka</a></li>
+                        <li><a href="#" class="nav-link" data-section="trending">Trending</a></li>
+                        <li><a href="#" class="nav-link" data-section="browse">Browse</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -977,8 +1022,7 @@
         let currentPage = {
             terbaru: 1,
             populer: 1,
-            berwarna: 1,
-            pustaka: 1,
+            browse: 1,
             search: 1,
             genre: 1
         };
@@ -987,11 +1031,16 @@
         let currentChapterIndex = 0;
         let chapters = [];
         let readerZoom = 1;
+        let currentGenre = null;
+        let currentType = 'all';
+        let currentOrder = 'latest';
+        let genres = [];
         
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             loadHomeContent();
             setupEventListeners();
+            loadGenres();
         });
         
         // Setup Event Listeners
@@ -1148,13 +1197,13 @@
                     document.getElementById('populerSection').style.display = 'block';
                     loadPopularComics();
                     break;
-                case 'berwarna':
-                    document.getElementById('berwarnaSection').style.display = 'block';
-                    loadColoredComics();
+                case 'trending':
+                    document.getElementById('trendingSection').style.display = 'block';
+                    loadTrendingComics();
                     break;
-                case 'pustaka':
-                    document.getElementById('pustakaSection').style.display = 'block';
-                    loadLibraryComics();
+                case 'browse':
+                    document.getElementById('browseSection').style.display = 'block';
+                    loadBrowseComics();
                     break;
             }
             
@@ -1165,7 +1214,7 @@
         function loadHomeContent() {
             loadLatestComicsPreview();
             loadPopularComicsPreview();
-            loadRecommendedComics();
+            loadTrendingComicsPreview();
         }
         
         // Load Latest Comics Preview
@@ -1173,12 +1222,12 @@
             const container = document.getElementById('latestComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/terbaru?limit=6`)
+            fetch(`${API_BASE_URL}/terbaru`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                     } else {
@@ -1196,12 +1245,12 @@
             const container = document.getElementById('popularComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/populer?limit=6`)
+            fetch(`${API_BASE_URL}/populer`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                     } else {
@@ -1214,26 +1263,26 @@
                 });
         }
         
-        // Load Recommended Comics
-        function loadRecommendedComics() {
-            const container = document.getElementById('recommendedComics');
+        // Load Trending Comics Preview
+        function loadTrendingComicsPreview() {
+            const container = document.getElementById('trendingComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/recommendations?limit=6`)
+            fetch(`${API_BASE_URL}/trending`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.trending && data.trending.length > 0) {
+                        data.trending.slice(0, 6).forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                     } else {
-                        container.innerHTML = '<p>Tidak ada rekomendasi komik</p>';
+                        container.innerHTML = '<p>Tidak ada komik trending</p>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading recommended comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat rekomendasi komik</p>';
+                    console.error('Error loading trending comics:', error);
+                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik trending</p>';
                 });
         }
         
@@ -1242,12 +1291,12 @@
             const container = document.getElementById('allLatestComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/terbaru?page=${page}&limit=20`)
+            fetch(`${API_BASE_URL}/terbaru?page=${page}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                         
@@ -1268,12 +1317,12 @@
             const container = document.getElementById('allPopularComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/populer?page=${page}&limit=20`)
+            fetch(`${API_BASE_URL}/populer?page=${page}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                         
@@ -1289,55 +1338,113 @@
                 });
         }
         
-        // Load Colored Comics
-        function loadColoredComics(page = 1) {
-            const container = document.getElementById('coloredComics');
+        // Load Trending Comics
+        function loadTrendingComics() {
+            const container = document.getElementById('allTrendingComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/berwarna?page=${page}`)
+            fetch(`${API_BASE_URL}/trending`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.trending && data.trending.length > 0) {
+                        data.trending.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
-                        
-                        // Create pagination
-                        createPagination('colored', data.pagination || { current_page: page, total_pages: 5 });
                     } else {
-                        container.innerHTML = '<p>Tidak ada komik berwarna</p>';
+                        container.innerHTML = '<p>Tidak ada komik trending</p>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading colored comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik berwarna</p>';
+                    console.error('Error loading trending comics:', error);
+                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik trending</p>';
                 });
         }
         
-        // Load Library Comics
-        function loadLibraryComics(page = 1) {
-            const container = document.getElementById('libraryComics');
+        // Load Genres
+        function loadGenres() {
+            fetch(`${API_BASE_URL}/genres`)
+                .then(response => response.json())
+                .then(data => {
+                    genres = Object.values(data).filter(item => item.value && item.name);
+                    
+                    // Update genre filter in browse section
+                    const genreFilterContainer = document.getElementById('genreFilter');
+                    genreFilterContainer.innerHTML = '';
+                    
+                    // Add "All" button
+                    const allBtn = document.createElement('button');
+                    allBtn.className = 'genre-btn active';
+                    allBtn.textContent = 'Semua';
+                    allBtn.setAttribute('data-genre', 'all');
+                    allBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
+                        allBtn.classList.add('active');
+                        currentGenre = null;
+                        loadBrowseComics();
+                    });
+                    genreFilterContainer.appendChild(allBtn);
+                    
+                    // Add genre buttons
+                    genres.forEach(genre => {
+                        const genreBtn = document.createElement('button');
+                        genreBtn.className = 'genre-btn';
+                        genreBtn.textContent = genre.name;
+                        genreBtn.setAttribute('data-genre', genre.value);
+                        genreBtn.addEventListener('click', () => {
+                            document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
+                            genreBtn.classList.add('active');
+                            currentGenre = genre.value;
+                            loadBrowseComics();
+                        });
+                        genreFilterContainer.appendChild(genreBtn);
+                    });
+                    
+                    // Setup type filter buttons
+                    document.querySelectorAll('.type-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            currentType = btn.getAttribute('data-type');
+                            loadBrowseComics();
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading genres:', error);
+                });
+        }
+        
+        // Load Browse Comics
+        function loadBrowseComics(page = 1) {
+            const container = document.getElementById('browseComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/pustaka?page=${page}`)
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (currentType !== 'all') params.append('type', currentType);
+            if (currentGenre) params.append('genre', currentGenre);
+            if (currentOrder !== 'latest') params.append('order', currentOrder);
+            params.append('page', page);
+            
+            fetch(`${API_BASE_URL}/browse?${params.toString()}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                         
                         // Create pagination
-                        createPagination('library', data.pagination || { current_page: page, total_pages: 5 });
+                        createPagination('browse', data.pagination || { current_page: page, total_pages: 5 });
                     } else {
-                        container.innerHTML = '<p>Tidak ada komik di pustaka</p>';
+                        container.innerHTML = '<p>Tidak ada komik yang ditemukan</p>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading library comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik pustaka</p>';
+                    console.error('Error loading browse comics:', error);
+                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik</p>';
                 });
         }
         
@@ -1357,17 +1464,14 @@
             const container = document.getElementById('searchResults');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/search?q=${encodeURIComponent(query)}&page=1&limit=20`)
+            fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
                     if (data.data && data.data.length > 0) {
                         data.data.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
+                            container.appendChild(createSearchComicCard(comic));
                         });
-                        
-                        // Create pagination
-                        createPagination('search', data.pagination || { current_page: 1, total_pages: 5 });
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
@@ -1382,10 +1486,8 @@
         function performAdvancedSearch() {
             const query = searchInput.value.trim();
             const type = document.getElementById('filterType').value;
-            const status = document.getElementById('filterStatus').value;
             const genre = document.getElementById('filterGenre').value;
-            const year = document.getElementById('filterYear').value;
-            const sort = document.getElementById('filterSort').value;
+            const order = document.getElementById('filterOrder').value;
             
             if (!query) {
                 showToast('Masukkan kata kunci pencarian');
@@ -1407,24 +1509,17 @@
             const params = new URLSearchParams();
             params.append('q', query);
             if (type !== 'all') params.append('type', type);
-            if (status !== 'all') params.append('status', status);
             if (genre !== 'all') params.append('genre', genre);
-            if (year) params.append('year', year);
-            if (sort !== 'relevance') params.append('sort', sort);
-            params.append('page', '1');
-            params.append('limit', '20');
+            if (order !== 'latest') params.append('order', order);
             
-            fetch(`${API_BASE_URL}/comic/advanced-search?${params.toString()}`)
+            fetch(`${API_BASE_URL}/search?${params.toString()}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
                     if (data.data && data.data.length > 0) {
                         data.data.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
+                            container.appendChild(createSearchComicCard(comic));
                         });
-                        
-                        // Create pagination
-                        createPagination('search', data.pagination || { current_page: 1, total_pages: 5 });
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
@@ -1452,12 +1547,12 @@
             const container = document.getElementById('genreComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/genre/${encodeURIComponent(genre)}?page=${page}&limit=20`)
+            fetch(`${API_BASE_URL}/genre/${encodeURIComponent(genre)}?page=${page}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
+                    if (data.comics && data.comics.length > 0) {
+                        data.comics.forEach(comic => {
                             container.appendChild(createComicCard(comic));
                         });
                         
@@ -1477,8 +1572,12 @@
         function createComicCard(comic) {
             const card = document.createElement('div');
             card.className = 'comic-card';
+            
+            // Extract slug from link
+            const slug = comic.link ? comic.link.replace(/^\/+/, '').replace(/\/+$/, '') : '';
+            
             card.innerHTML = `
-                <img src="${comic.cover || 'https://picsum.photos/seed/' + comic.slug + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
+                <img src="${comic.image || 'https://picsum.photos/seed/' + slug + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
                 <div class="comic-info">
                     <h3 class="comic-title">${comic.title}</h3>
                     <div class="comic-meta">
@@ -1489,7 +1588,33 @@
             `;
             
             card.addEventListener('click', () => {
-                loadComicDetail(comic.slug);
+                loadComicDetail(slug);
+            });
+            
+            return card;
+        }
+        
+        // Create Search Comic Card
+        function createSearchComicCard(comic) {
+            const card = document.createElement('div');
+            card.className = 'comic-card';
+            
+            // Extract slug from href
+            const slug = comic.slug || comic.href ? comic.href.replace(/^\/+/, '').replace(/\/+$/, '') : '';
+            
+            card.innerHTML = `
+                <img src="${comic.thumbnail || 'https://picsum.photos/seed/' + slug + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
+                <div class="comic-info">
+                    <h3 class="comic-title">${comic.title}</h3>
+                    <div class="comic-meta">
+                        <span class="comic-type">${comic.type || 'Manga'}</span>
+                        <span>${comic.genre || 'Action'}</span>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                loadComicDetail(slug);
             });
             
             return card;
@@ -1511,51 +1636,43 @@
             document.getElementById('comicDetailCover').src = 'https://picsum.photos/seed/' + slug + '/200/280.jpg';
             document.getElementById('comicDetailTitle').textContent = 'Loading...';
             document.getElementById('comicDetailType').textContent = '-';
-            document.getElementById('comicDetailAuthor').textContent = '-';
-            document.getElementById('comicDetailStatus').textContent = '-';
             document.getElementById('comicDetailGenre').textContent = '-';
-            document.getElementById('comicDetailRating').textContent = '-';
             document.getElementById('comicDetailDescription').textContent = 'Loading...';
             
             // Load chapter list
             const chapterListContainer = document.getElementById('chapterList');
             chapterListContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/comic/${slug}`)
+            fetch(`${API_BASE_URL}/comic/${slug}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.data) {
-                        const comic = data.data;
-                        currentComic = comic;
+                    if (data.title) {
+                        currentComic = data;
                         
                         // Update comic detail
-                        document.getElementById('comicDetailCover').src = comic.cover || 'https://picsum.photos/seed/' + slug + '/200/280.jpg';
-                        document.getElementById('comicDetailTitle').textContent = comic.title;
-                        document.getElementById('comicDetailType').textContent = comic.type || 'Manga';
-                        document.getElementById('comicDetailAuthor').textContent = comic.author || 'Unknown';
-                        document.getElementById('comicDetailStatus').textContent = comic.status || 'Ongoing';
-                        document.getElementById('comicDetailGenre').textContent = (comic.genre || []).join(', ');
-                        document.getElementById('comicDetailRating').textContent = comic.rating || '0.0';
-                        document.getElementById('comicDetailDescription').textContent = comic.description || 'Tidak ada deskripsi tersedia.';
+                        document.getElementById('comicDetailCover').src = data.cover || 'https://picsum.photos/seed/' + slug + '/200/280.jpg';
+                        document.getElementById('comicDetailTitle').textContent = data.title;
+                        document.getElementById('comicDetailType').textContent = data.type || 'Manga';
+                        document.getElementById('comicDetailGenre').textContent = data.genre || 'Action';
+                        document.getElementById('comicDetailDescription').textContent = data.synopsis || 'Tidak ada deskripsi tersedia.';
                         
                         // Check if bookmarked
                         const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-                        const isBookmarked = bookmarks.some(b => b.slug === comic.slug);
+                        const isBookmarked = bookmarks.some(b => b.slug === slug);
                         document.getElementById('bookmarkBtn').innerHTML = isBookmarked ? 
                             '<i class="fas fa-bookmark"></i> Hapus Tanda' : 
                             '<i class="fas fa-bookmark"></i> Tandai';
                         
                         // Load chapters
-                        if (comic.chapters && comic.chapters.length > 0) {
-                            chapters = comic.chapters;
+                        if (data.chapters && data.chapters.length > 0) {
+                            chapters = data.chapters;
                             chapterListContainer.innerHTML = '';
                             
-                            comic.chapters.forEach((chapter, index) => {
+                            data.chapters.forEach((chapter, index) => {
                                 const chapterItem = document.createElement('div');
                                 chapterItem.className = 'chapter-item';
                                 chapterItem.innerHTML = `
-                                    <span class="chapter-number">${chapter.title || `Chapter ${index + 1}`}</span>
-                                    <span class="chapter-date">${chapter.date || 'Unknown'}</span>
+                                    <span class="chapter-number">${chapter.chapter || `Chapter ${index + 1}`}</span>
                                 `;
                                 
                                 chapterItem.addEventListener('click', () => {
@@ -1592,7 +1709,7 @@
             window.scrollTo(0, 0);
             
             // Update reader title
-            document.getElementById('readerTitle').textContent = `${currentComic.title} - ${chapter.title || 'Chapter'}`;
+            document.getElementById('readerTitle').textContent = `${currentComic.title} - ${chapter.chapter || 'Chapter'}`;
             
             // Show loading
             const readerContent = document.getElementById('readerContent');
@@ -1601,13 +1718,13 @@
             // Reset zoom
             readerZoom = 1;
             
-            fetch(`${API_BASE_URL}/comic/chapter/${chapter.segment}`)
+            fetch(`${API_BASE_URL}/chapter/${chapter.link}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.data && data.data.images) {
+                    if (data.images && data.images.length > 0) {
                         readerContent.innerHTML = '';
                         
-                        data.data.images.forEach(image => {
+                        data.images.forEach(image => {
                             const img = document.createElement('img');
                             img.src = image;
                             img.className = 'reader-image';
@@ -1704,11 +1821,8 @@
                 case 'populer':
                     loadPopularComics(page);
                     break;
-                case 'berwarna':
-                    loadColoredComics(page);
-                    break;
-                case 'pustaka':
-                    loadLibraryComics(page);
+                case 'browse':
+                    loadBrowseComics(page);
                     break;
                 case 'search':
                     performSearchWithPage(page);
@@ -1730,17 +1844,14 @@
             const container = document.getElementById('searchResults');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
-            fetch(`${API_BASE_URL}/comic/search?q=${encodeURIComponent(query)}&page=${page}&limit=20`)
+            fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}&page=${page}`)
                 .then(response => response.json())
                 .then(data => {
                     container.innerHTML = '';
                     if (data.data && data.data.length > 0) {
                         data.data.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
+                            container.appendChild(createSearchComicCard(comic));
                         });
-                        
-                        // Create pagination
-                        createPagination('search', data.pagination || { current_page: page, total_pages: 5 });
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
                     }
