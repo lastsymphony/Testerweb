@@ -245,6 +245,9 @@
             height: 250px;
             object-fit: cover;
             display: block;
+            aspect-ratio: 9 / 12;
+            object-fit: cover;
+            background: #eef1f7;
         }
 
         .comic-info {
@@ -677,6 +680,42 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* tombol "Pencarian Lanjutan" jangan numpuk input saat layar kecil */
+        @media (max-width: 640px) {
+            .search-form { 
+                flex-wrap: wrap; 
+                gap: 8px; 
+            }
+            .search-input { 
+                border-radius: 30px; 
+            }
+            .advanced-search-toggle {
+                position: static; 
+                order: 3; 
+                transform: none; 
+                width: 100%;
+                text-align: left; 
+                padding: 6px 10px; 
+                color: #3f37c9;
+            }
+            .search-btn { 
+                order: 2; 
+                border-radius: 30px; 
+            }
+        }
+
+        /* sembunyikan kolom pertama footer */
+        .footer-content .footer-section:first-child { 
+            display: none; 
+        }
+
+        /* sembunyikan tab trending jika diperlukan */
+        .nav-link[data-section="trending"],
+        #trendingSection,
+        #trendingComics { 
+            display: none !important; 
+        }
     </style>
 </head>
 <body>
@@ -1037,6 +1076,21 @@
         let currentOrder = 'latest';
         let genres = [];
         
+        // --- UTIL: hide APK entries ---
+        function isApkEntry(comic) {
+            const t = (comic?.title || '').toLowerCase();
+            const link = (comic?.link || comic?.href || '').toLowerCase();
+            return t.includes('apk') || link.includes('/apk');
+        }
+
+        // --- UTIL: safe image (proxy + fallback) ---
+        function safeImg(url, seed) {
+            if (!url) return `https://picsum.photos/seed/${encodeURIComponent(seed)}/180/250.jpg`;
+            // pakai proxy agar anti hotlink/CORS
+            const encoded = encodeURIComponent(url.replace(/^https?:\/\//,''));
+            return `https://images.weserv.nl/?url=${encoded}`;
+        }
+
         // Convert link/href dari kartu/list/search ke endpoint detail API yang valid
         function toDetailUrl(linkOrHref = '') {
             if (!linkOrHref) return null;
@@ -1261,6 +1315,169 @@
             });
         }
 
+        // OVERRIDE createComicCard agar pakai safeImg + skip APK
+        window.createComicCard = function (comic) {
+            if (isApkEntry(comic)) return document.createTextNode(''); // skip
+            const card = document.createElement('div');
+            card.className = 'comic-card';
+            const link = comic.link || '';
+            card.setAttribute('data-link', link);
+
+            const imgSrc = safeImg(comic.image, link);
+            card.innerHTML = `
+                <img src="${imgSrc}" alt="${comic.title}" class="comic-cover" loading="lazy"
+                     onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(link)}/180/250.jpg'">
+                <div class="comic-info">
+                    <h3 class="comic-title">${comic.title}</h3>
+                    <div class="comic-meta">
+                        <span class="comic-type">${comic.type || 'Manga'}</span>
+                        <span>${comic.chapter || ''}</span>
+                    </div>
+                </div>
+            `;
+            return card;
+        };
+
+        // OVERRIDE createSearchComicCard juga
+        window.createSearchComicCard = function (comic) {
+            if (isApkEntry(comic)) return document.createTextNode('');
+            const card = document.createElement('div');
+            card.className = 'comic-card';
+            const href = comic.href || '';
+            card.setAttribute('data-link', href);
+
+            const imgSrc = safeImg(comic.thumbnail, href);
+            card.innerHTML = `
+                <img src="${imgSrc}" alt="${comic.title}" class="comic-cover" loading="lazy"
+                     onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(href)}/180/250.jpg'">
+                <div class="comic-info">
+                    <h3 class="comic-title">${comic.title}</h3>
+                    <div class="comic-meta">
+                        <span class="comic-type">${comic.type || 'Manga'}</span>
+                        <span>${comic.genre || ''}</span>
+                    </div>
+                </div>
+            `;
+            return card;
+        };
+
+        // Saring data.comics / data.data di semua loader
+        function appendFiltered(container, list, isSearch = false) {
+            const maker = isSearch ? window.createSearchComicCard : window.createComicCard;
+            const filtered = (list || []).filter(c => !isApkEntry(c));
+            if (!filtered.length) {
+                container.innerHTML = '<p>Tidak ada komik</p>';
+                return;
+            }
+            filtered.forEach(c => {
+                const node = maker(c);
+                if (node && node.nodeType !== 3) container.appendChild(node);
+            });
+        }
+
+        // --- Patch kecil di loader-list: ganti forEach -> appendFiltered ---
+        // Contoh (lakukan serupa di loadX lainnya):
+        window.loadLatestComicsPreview = function () {
+            const container = document.getElementById('latestComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/terbaru`)
+                .then(r => r.json())
+                .then(data => {
+                    container.innerHTML = '';
+                    appendFiltered(container, data.comics);
+                    attachCardOpenDetail(container);
+                })
+                .catch(() => container.innerHTML = '<p>Terjadi kesalahan saat memuat komik terbaru</p>');
+        };
+
+        // Ulangi pola di fungsi berikut (cukup replace blok append):
+        window.loadPopularComicsPreview = function () {
+            const container = document.getElementById('popularComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/populer`)
+                .then(r => r.json()).then(data => {
+                    container.innerHTML = '';
+                    appendFiltered(container, data.comics);
+                    attachCardOpenDetail(container);
+                })
+                .catch(() => container.innerHTML = '<p>Terjadi kesalahan saat memuat komik populer</p>');
+        };
+
+        window.loadLatestComics = function (page=1) {
+            const container = document.getElementById('allLatestComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/terbaru?page=${page}`).then(r=>r.json()).then(data=>{
+                container.innerHTML='';
+                appendFiltered(container, data.comics);
+                attachCardOpenDetail(container);
+                createPagination('terbaru', data.pagination || { current_page: page, total_pages: 5 });
+            }).catch(()=>container.innerHTML='<p>Terjadi kesalahan saat memuat komik terbaru</p>');
+        };
+
+        window.loadPopularComics = function (page=1) {
+            const container = document.getElementById('allPopularComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/populer?page=${page}`).then(r=>r.json()).then(data=>{
+                container.innerHTML='';
+                appendFiltered(container, data.comics);
+                attachCardOpenDetail(container);
+                createPagination('popular', data.pagination || { current_page: page, total_pages: 5 });
+            }).catch(()=>container.innerHTML='<p>Terjadi kesalahan saat memuat komik populer</p>');
+        };
+
+        window.performSearch = function () {
+            const q = searchInput.value.trim();
+            if (!q) return;
+            sections.forEach(s => s.style.display = 'none');
+            comicDetailSection.classList.remove('active');
+            comicReaderSection.classList.remove('active');
+            const target = document.getElementById('searchResultsSection');
+            target.style.display = 'block';
+            const container = document.getElementById('searchResults');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(q)}`).then(r=>r.json()).then(data=>{
+                container.innerHTML='';
+                appendFiltered(container, data.data, true);
+                attachCardOpenDetail(container);
+            }).catch(()=>container.innerHTML='<p>Terjadi kesalahan saat mencari komik</p>');
+        };
+
+        // Trending fallback: jika /trending gagal, ambil dari /populer
+        window.loadTrendingComicsPreview = function () {
+            const container = document.getElementById('trendingComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/trending`).then(r=>r.json()).then(data=>{
+                container.innerHTML='';
+                const list = data.trending && data.trending.length ? data.trending : (data.comics || []);
+                appendFiltered(container, list);
+                attachCardOpenDetail(container);
+            }).catch(()=>{
+                // full fallback
+                fetch(`${API_BASE_URL}/populer`).then(r=>r.json()).then(data=>{
+                    container.innerHTML='';
+                    appendFiltered(container, data.comics);
+                    attachCardOpenDetail(container);
+                }).catch(()=>container.innerHTML='<p>Tidak ada komik trending</p>');
+            });
+        };
+
+        window.loadTrendingComics = function () {
+            const container = document.getElementById('allTrendingComics');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            fetch(`${API_BASE_URL}/trending`).then(r=>r.json()).then(data=>{
+                container.innerHTML='';
+                const list = data.trending && data.trending.length ? data.trending : (data.comics || []);
+                appendFiltered(container, list);
+                attachCardOpenDetail(container);
+            }).catch(()=>{
+                fetch(`${API_BASE_URL}/populer`).then(r=>r.json()).then(data=>{
+                    container.innerHTML='';
+                    appendFiltered(container, data.comics);
+                    attachCardOpenDetail(container);
+                }).catch(()=>container.innerHTML='<p>Tidak ada komik trending</p>');
+            });
+        };
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             loadHomeContent();
@@ -1443,156 +1660,6 @@
             loadTrendingComicsPreview();
         }
         
-        // Load Latest Comics Preview
-        function loadLatestComicsPreview() {
-            const container = document.getElementById('latestComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/terbaru`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.comics && data.comics.length > 0) {
-                        data.comics.slice(0, 6).forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik terbaru</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading latest comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik terbaru</p>';
-                });
-        }
-        
-        // Load Popular Comics Preview
-        function loadPopularComicsPreview() {
-            const container = document.getElementById('popularComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/populer`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.comics && data.comics.length > 0) {
-                        data.comics.slice(0, 6).forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik populer</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading popular comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik populer</p>';
-                });
-        }
-        
-        // Load Trending Comics Preview
-        function loadTrendingComicsPreview() {
-            const container = document.getElementById('trendingComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/trending`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.trending && data.trending.length > 0) {
-                        data.trending.slice(0, 6).forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik trending</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading trending comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik trending</p>';
-                });
-        }
-        
-        // Load Latest Comics
-        function loadLatestComics(page = 1) {
-            const container = document.getElementById('allLatestComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/terbaru?page=${page}`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.comics && data.comics.length > 0) {
-                        data.comics.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                        
-                        // Create pagination
-                        createPagination('latest', data.pagination || { current_page: page, total_pages: 5 });
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik terbaru</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading latest comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik terbaru</p>';
-                });
-        }
-        
-        // Load Popular Comics
-        function loadPopularComics(page = 1) {
-            const container = document.getElementById('allPopularComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/populer?page=${page}`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.comics && data.comics.length > 0) {
-                        data.comics.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                        
-                        // Create pagination
-                        createPagination('popular', data.pagination || { current_page: page, total_pages: 5 });
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik populer</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading popular comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik populer</p>';
-                });
-        }
-        
-        // Load Trending Comics
-        function loadTrendingComics() {
-            const container = document.getElementById('allTrendingComics');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/trending`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.trending && data.trending.length > 0) {
-                        data.trending.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                    } else {
-                        container.innerHTML = '<p>Tidak ada komik trending</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading trending comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat memuat komik trending</p>';
-                });
-        }
-        
         // Load Genres
         function loadGenres() {
             fetch(`${API_BASE_URL}/genres`)
@@ -1664,9 +1731,7 @@
                 .then(data => {
                     container.innerHTML = '';
                     if (data.comics && data.comics.length > 0) {
-                        data.comics.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
+                        appendFiltered(container, data.comics);
                         attachCardOpenDetail(container);
                         
                         // Create pagination
@@ -1678,41 +1743,6 @@
                 .catch(error => {
                     console.error('Error loading browse comics:', error);
                     container.innerHTML = '<p>Terjadi kesalahan saat memuat komik</p>';
-                });
-        }
-        
-        // Perform Search
-        function performSearch() {
-            const query = searchInput.value.trim();
-            if (!query) return;
-            
-            // Hide all sections
-            sections.forEach(s => s.style.display = 'none');
-            comicDetailSection.classList.remove('active');
-            comicReaderSection.classList.remove('active');
-            
-            // Show search results
-            document.getElementById('searchResultsSection').style.display = 'block';
-            
-            const container = document.getElementById('searchResults');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
-            fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
-                            container.appendChild(createSearchComicCard(comic));
-                        });
-                        attachCardOpenDetail(container);
-                    } else {
-                        container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error searching comics:', error);
-                    container.innerHTML = '<p>Terjadi kesalahan saat mencari komik</p>';
                 });
         }
         
@@ -1751,9 +1781,7 @@
                 .then(data => {
                     container.innerHTML = '';
                     if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
-                            container.appendChild(createSearchComicCard(comic));
-                        });
+                        appendFiltered(container, data.data, true);
                         attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
@@ -1787,9 +1815,7 @@
                 .then(data => {
                     container.innerHTML = '';
                     if (data.comics && data.comics.length > 0) {
-                        data.comics.forEach(comic => {
-                            container.appendChild(createComicCard(comic));
-                        });
+                        appendFiltered(container, data.comics);
                         attachCardOpenDetail(container);
                         
                         // Create pagination
@@ -1802,56 +1828,6 @@
                     console.error('Error loading genre comics:', error);
                     container.innerHTML = `<p>Terjadi kesalahan saat memuat komik genre ${genre}</p>`;
                 });
-        }
-        
-        // Create Comic Card
-        function createComicCard(comic) {
-            const card = document.createElement('div');
-            card.className = 'comic-card';
-            
-            // Extract link from comic data
-            const link = comic.link || '';
-            
-            // Store link in data attribute
-            card.setAttribute('data-link', link);
-            
-            card.innerHTML = `
-                <img src="${comic.image || 'https://picsum.photos/seed/' + link + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
-                <div class="comic-info">
-                    <h3 class="comic-title">${comic.title}</h3>
-                    <div class="comic-meta">
-                        <span class="comic-type">${comic.type || 'Manga'}</span>
-                        <span>${comic.chapter || 'Chapter 1'}</span>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        }
-        
-        // Create Search Comic Card
-        function createSearchComicCard(comic) {
-            const card = document.createElement('div');
-            card.className = 'comic-card';
-            
-            // Extract href from comic data
-            const href = comic.href || '';
-            
-            // Store href in data attribute
-            card.setAttribute('data-link', href);
-            
-            card.innerHTML = `
-                <img src="${comic.thumbnail || 'https://picsum.photos/seed/' + href + '/180/250.jpg'}" alt="${comic.title}" class="comic-cover">
-                <div class="comic-info">
-                    <h3 class="comic-title">${comic.title}</h3>
-                    <div class="comic-meta">
-                        <span class="comic-type">${comic.type || 'Manga'}</span>
-                        <span>${comic.genre || 'Action'}</span>
-                    </div>
-                </div>
-            `;
-            
-            return card;
         }
         
         // Create Pagination
@@ -1944,9 +1920,7 @@
                 .then(data => {
                     container.innerHTML = '';
                     if (data.data && data.data.length > 0) {
-                        data.data.forEach(comic => {
-                            container.appendChild(createSearchComicCard(comic));
-                        });
+                        appendFiltered(container, data.data, true);
                         attachCardOpenDetail(container);
                     } else {
                         container.innerHTML = '<p>Tidak ada hasil untuk pencarian ini</p>';
