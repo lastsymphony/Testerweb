@@ -8,33 +8,33 @@
   <style>
     :root{
       --primary:#4361ee; --secondary:#3f37c9; --accent:#f72585;
-      --dark:#1f2533; --light:#f5f7fb; --text:#1c2430;
+      --dark:#0b1020; --dark2:#0f1740; --card:#0a122c; --border:rgba(255,255,255,.08);
+      --text:#e8eefc; --text2:#cfe0ff;
     }
     *{box-sizing:border-box} html,body{margin:0}
-    body{font-family:system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;background:#0b1020;color:#e8eefc}
+    body{font-family:system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--dark);color:var(--text)}
 
     /* Header */
-    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0f1740,#0b1020);border-bottom:1px solid rgba(255,255,255,.08)}
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,var(--dark2),var(--dark));border-bottom:1px solid var(--border)}
     .container{max-width:1200px;margin:0 auto;padding:0 16px}
     .header-content{display:flex;align-items:center;justify-content:space-between;min-height:56px}
     .logo{display:flex;align-items:center;gap:10px;font-weight:700}
     .logo i{color:var(--accent)}
     nav ul{display:flex;list-style:none;gap:16px;margin:0;padding:0}
     nav a{color:#eaf1ff;text-decoration:none;font-weight:600;opacity:.9}
-    nav a:hover{opacity:1}
+    nav a.active, nav a:hover{opacity:1}
     .burger{display:none;background:transparent;border:0;color:#fff;font-size:1.4rem;padding:.25rem .5rem;border-radius:.5rem}
-
     @media (max-width:768px){
       .burger{display:block}
-      nav .nav-menu{display:none;position:absolute;left:0;right:0;top:56px;background:#0f1740;border-bottom:1px solid rgba(255,255,255,.08);padding:10px 16px}
+      nav .nav-menu{display:none;position:absolute;left:0;right:0;top:56px;background:var(--dark2);border-bottom:1px solid var(--border);padding:10px 16px}
       nav .nav-menu.open{display:block}
       nav .nav-menu li{margin:8px 0}
     }
 
     /* Search */
-    .search-wrap{background:#0b1020;border-bottom:1px solid rgba(255,255,255,.08)}
+    .search-wrap{background:var(--dark);border-bottom:1px solid var(--border)}
     .search-form{display:flex;gap:8px;max-width:720px;margin:0 auto;padding:12px 0}
-    .search-input{flex:1;border:1px solid rgba(255,255,255,.14);background:#0a122c;color:#eaf1ff;border-radius:999px;padding:10px 14px;outline:none}
+    .search-input{flex:1;border:1px solid rgba(255,255,255,.14);background:var(--card);color:#eaf1ff;border-radius:999px;padding:10px 14px;outline:none}
     .search-btn{border:0;background:var(--accent);color:#fff;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer}
 
     /* Sections */
@@ -49,42 +49,39 @@
     .row-scroll{display:flex;gap:14px;overflow-x:auto;padding:8px 2px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
     .row-scroll::-webkit-scrollbar{height:8px}
     .row-scroll::-webkit-scrollbar-thumb{background:#2a3a7a;border-radius:8px}
-    .comic-card{flex:0 0 160px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:transform .15s ease}
+    .comic-card{flex:0 0 160px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:transform .15s ease}
     .comic-card:hover{transform:translateY(-3px)}
-    .comic-cover{width:100%;height:220px;object-fit:contain;background:#0a122c}
+    .comic-cover{width:100%;height:220px;object-fit:contain;background:var(--card)}
     .comic-info{padding:10px}
     .comic-title{font-size:.95rem;line-height:1.2;margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .comic-meta{display:flex;justify-content:space-between;font-size:.8rem;color:#a9b7ff;opacity:.9}
     .comic-type{background:#1e2a5f;padding:2px 8px;border-radius:999px}
 
     /* Detail */
-    .comic-detail{display:none;background:#0a122c;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+    .comic-detail{display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
     .comic-detail.active{display:block}
     .comic-detail-header{display:flex;flex-wrap:wrap;gap:18px;padding:18px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(90deg,rgba(67,97,238,.1),rgba(247,37,133,.08))}
-    .comic-detail-cover{width:220px;height:300px;object-fit:contain;background:#0b1020;border-radius:10px}
+    .comic-detail-cover{width:220px;height:300px;object-fit:contain;background:var(--dark);border-radius:10px}
     .comic-detail-title{margin:0 0 8px}
-    .meta-list{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.95rem;color:#cfe0ff}
+    .meta-list{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.95rem;color:var(--text2)}
     .chapter-list{padding:16px}
     .chapter-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-    .chapter-item{background:#0f1740;border:1px solid rgba(255,255,255,.08);padding:10px 12px;border-radius:10px;display:flex;justify-content:space-between;cursor:pointer}
+    .chapter-item{background:var(--dark2);border:1px solid var(--border);padding:10px 12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
     .chapter-item:hover{background:#142060}
 
     /* Reader */
-    .comic-reader{display:none;background:#0a122c;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;margin-top:18px}
+    .comic-reader{display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:18px}
     .comic-reader.active{display:block}
-    .reader-header{padding:10px 16px;background:#0f1740;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+    .reader-header{padding:10px 16px;background:var(--dark2);border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
     .reader-title{margin:0;font-size:1rem}
     .reader-controls{display:flex;gap:8px}
     .reader-control-btn{border:0;background:transparent;color:#eaf1ff;font-size:1.2rem;cursor:pointer;padding:6px;border-radius:8px}
     .reader-control-btn:hover{background:rgba(255,255,255,.08)}
-    .reader-content{padding:14px;text-align:center}
-    .reader-image{max-width:100%;margin:6px auto;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+    .reader-content{display:block;padding:14px;text-align:center}   /* <- VERTIKAL */
+    .reader-image{max-width:100%;width:100%;height:auto;display:block;margin:6px auto;box-shadow:0 6px 16px rgba(0,0,0,.2)} /* memanjang ke bawah */
 
-    /* Toast */
-    .toast{position:fixed;bottom:16px;right:16px;background:#0f1740;border:1px solid rgba(255,255,255,.14);color:#eaf1ff;padding:10px 14px;border-radius:10px;opacity:0;transform:translateY(20px);transition:.2s;z-index:100}
+    .toast{position:fixed;bottom:16px;right:16px;background:var(--dark2);border:1px solid rgba(255,255,255,.14);color:#eaf1ff;padding:10px 14px;border-radius:10px;opacity:0;transform:translateY(20px);transition:.2s;z-index:100}
     .toast.show{opacity:1;transform:translateY(0)}
-
-    /* Loading */
     .loading{display:flex;align-items:center;justify-content:center;height:120px}
     .spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.15);border-radius:50%;border-top-color:#6ea8fe;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -133,11 +130,10 @@
       </div>
     </section>
 
-    <!-- Terbaru Section (grid penuh jika dibutuhkan) -->
+    <!-- Terbaru Section (opsional, same row) -->
     <section id="terbaruSection" class="content-section" style="display:none;">
       <div class="section-header"><h2 class="section-title">Komik Terbaru</h2></div>
       <div class="row-scroll" id="allLatestComics"><div class="loading"><div class="spinner"></div></div></div>
-      <div class="pagination" id="latestPagination"></div>
     </section>
 
     <!-- Detail -->
@@ -185,14 +181,13 @@
   /********** CONFIG **********/
   const BASE = 'https://www.sankavollerei.com';
   const API_BASE_URL = 'https://www.sankavollerei.com/comic';
-  // ROOT untuk trailing slash routing di GitHub Pages
   const ROOT_PATH = (location.pathname.endsWith('/') ? location.pathname : location.pathname + '/').replace(/(?:index\.html)?$/,'');
 
   /********** UTIL **********/
   function isApkEntry(comic){
     const t=(comic?.title||'').toLowerCase();
     const link=(comic?.link||comic?.href||'').toLowerCase();
-    return t.includes('apk') || link.includes('/apk');
+    return t.includes('apk') || link.includes('/plus/');
   }
   function imgOriginal(url, seed){
     if(!url) return `https://picsum.photos/seed/${encodeURIComponent(seed)}/180/250.jpg`;
@@ -200,30 +195,40 @@
     const noProto = noQuery.replace(/^https?:\/\//,'');
     return `https://images.weserv.nl/?url=${encodeURIComponent(noProto)}`;
   }
-  // map /manga/... atau /detail-komik/... -> /comic/comic/{slug}
   function toDetailUrl(linkOrHref=''){
     const clean = (s)=> (s||'').replace(/^https?:\/\/[^/]+/,'').replace(/^\/+|\/+$/g,'');
     let p = clean(linkOrHref);
     if(p.startsWith('manga/'))         return `${BASE}/comic/comic/${p.replace(/^manga\/|\/$/g,'')}`;
     if(p.startsWith('detail-komik/'))  return `${BASE}/comic/comic/${p.replace(/^detail-komik\/|\/$/g,'')}`;
-    if(p.startsWith('comic/comic/'))    return `${BASE}/${p}`;
+    if(p.startsWith('comic/comic/'))   return `${BASE}/${p}`;
     return `${BASE}/comic/comic/${p.replace(/\/$/,'')}`;
   }
-  async function fetchJSON(url,{timeoutMs=12000}={}){
+  function chapterSlugFrom(link=''){
+    // value dari API: "it-all-starts-with-...-chapter-156" (tanpa prefix)
+    let s=String(link).trim();
+    if(s.startsWith('http')) s=s.split('/').pop();
+    s=s.replace(/^\/+|\/+$/g,'');
+    s=s.replace(/^comic\/chapter\//,'');
+    return s;
+  }
+  async function fetchJSON(url,{timeoutMs=15000}={}){
     const ctl = new AbortController(); const to=setTimeout(()=>ctl.abort(),timeoutMs);
-    try{ const res=await fetch(url,{signal:ctl.signal,headers:{accept:'application/json'},mode:'cors',cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status); return await res.json();
+    try{
+      const res=await fetch(url,{signal:ctl.signal,headers:{accept:'application/json'},mode:'cors',cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return await res.json();
     } finally{ clearTimeout(to); }
   }
   function showToast(msg='Terjadi kesalahan'){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
 
   /********** BUILDERS **********/
-  window.createComicCard = function (comic){
+  function createComicCard(comic){
     if(isApkEntry(comic)) return document.createTextNode('');
     const link = comic.link || '';
     const cover = imgOriginal(comic.image, link);
     const card = document.createElement('div');
     card.className='comic-card';
+    card.tabIndex=0;
     card.dataset.link=link;
     card.dataset.cover=cover;
     card.innerHTML = `
@@ -234,13 +239,14 @@
         <div class="comic-meta"><span class="comic-type">${comic.type||'Manga'}</span><span>${comic.chapter||''}</span></div>
       </div>`;
     return card;
-  };
-  window.createSearchComicCard = function (comic){
+  }
+  function createSearchComicCard(comic){
     if(isApkEntry(comic)) return document.createTextNode('');
     const href = comic.href || '';
     const cover = imgOriginal(comic.thumbnail, href);
     const card = document.createElement('div');
     card.className='comic-card';
+    card.tabIndex=0;
     card.dataset.link=href;
     card.dataset.cover=cover;
     card.innerHTML = `
@@ -251,9 +257,9 @@
         <div class="comic-meta"><span class="comic-type">${comic.type||'Manga'}</span><span>${comic.genre||''}</span></div>
       </div>`;
     return card;
-  };
+  }
   function appendFiltered(container, list, isSearch=false){
-    const maker = isSearch ? window.createSearchComicCard : window.createComicCard;
+    const maker = isSearch ? createSearchComicCard : createComicCard;
     const filtered = (list||[]).filter(c=>!isApkEntry(c));
     container.innerHTML = '';
     if(!filtered.length){ container.innerHTML='<p style="opacity:.8">Tidak ada komik.</p>'; return; }
@@ -266,22 +272,26 @@
   const terbaruSection=document.getElementById('terbaruSection');
   const comicDetailSection=document.getElementById('comicDetailSection');
   const comicReaderSection=document.getElementById('comicReaderSection');
-  let currentComic=null, currentChapters=[], currentChapter=null, readerZoom=1;
+  let currentComic=null, currentChapters=[], currentChapterSlug=null, readerZoom=1;
 
   /********** NAV **********/
   function navigateToSection(section){
     sections.forEach(s=>s.style.display='none');
     comicDetailSection.classList.remove('active');
     comicReaderSection.classList.remove('active');
-    if(section==='terbaru'){ terbaruSection.style.display='block'; loadLatestComics(1); }
+    if(section==='terbaru'){ terbaruSection.style.display='block'; loadLatestComics(); }
     else { homeSection.style.display='block'; loadHomeContent(); }
     setRoute(section,{view:'section',section});
     window.scrollTo(0,0);
   }
   document.querySelectorAll('.nav-link').forEach(a=>{
-    a.addEventListener('click',e=>{ e.preventDefault(); navigateToSection(a.dataset.section); document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active')); a.classList.add('active'); const menu=document.querySelector('nav .nav-menu'); menu?.classList.remove('open'); });
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      navigateToSection(a.dataset.section);
+      document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active')); a.classList.add('active');
+      document.querySelector('nav .nav-menu')?.classList.remove('open');
+    });
   });
-  // Burger
   document.getElementById('burgerBtn').addEventListener('click',()=>{ document.querySelector('nav .nav-menu').classList.toggle('open'); });
 
   /********** ROUTER (trailing slash) **********/
@@ -293,35 +303,35 @@
   window.addEventListener('popstate',(e)=>{
     const st=e.state||{};
     if(st.view==='detail' && st.slug){ loadComicDetail(st.originalLink||(`/manga/${st.slug}/`),{coverFromCard:st.cover||''}); return; }
+    if(st.view==='chapter' && st.slug){ openChapterBySlug(st.slug); return; }
     if(st.view==='section'){ navigateToSection(st.section); return; }
     navigateToSection('home');
   });
 
   /********** HOME (Netflix Row) **********/
   function loadHomeContent(){ loadLatestComicsPreview(); }
-  window.loadLatestComicsPreview = function(){
+  function loadLatestComicsPreview(){
     const container=document.getElementById('latestComics');
     container.innerHTML='<div class="loading"><div class="spinner"></div></div>';
     fetchJSON(`${API_BASE_URL}/terbaru`)
       .then(data=>{
-        // data.comics -> daftar komik terbaru
         appendFiltered(container, data.comics);
         attachCardOpenDetail(container);
       })
       .catch(()=>container.innerHTML='<p>Terjadi kesalahan saat memuat komik terbaru</p>');
-  };
+  }
 
-  /********** LIST TERBARU (halaman khusus) **********/
-  window.loadLatestComics = function(page=1){
+  /********** LIST TERBARU **********/
+  function loadLatestComics(){
     const container=document.getElementById('allLatestComics');
     container.innerHTML='<div class="loading"><div class="spinner"></div></div>';
-    fetchJSON(`${API_BASE_URL}/terbaru?page=${page}`)
+    fetchJSON(`${API_BASE_URL}/terbaru`)
       .then(data=>{
         appendFiltered(container, data.comics);
         attachCardOpenDetail(container);
       })
       .catch(()=>container.innerHTML='<p>Terjadi kesalahan saat memuat komik terbaru</p>');
-  };
+  }
 
   /********** SEARCH **********/
   const searchForm=document.getElementById('searchForm');
@@ -329,14 +339,12 @@
   searchForm.addEventListener('submit',(e)=>{
     e.preventDefault();
     const q=searchInput.value.trim(); if(!q) return;
-    // tampilkan home (baris) dengan hasil search sementara di ganti kontennya
     sections.forEach(s=>s.style.display='none');
     homeSection.style.display='block';
     const container=document.getElementById('latestComics');
     container.innerHTML='<div class="loading"><div class="spinner"></div></div>';
     fetchJSON(`${API_BASE_URL}/search?q=${encodeURIComponent(q)}`)
       .then(data=>{
-        // data.data -> hasil search
         appendFiltered(container, data.data, true);
         attachCardOpenDetail(container);
       })
@@ -349,10 +357,11 @@
       const link = card.dataset.link||'';
       const cover = card.dataset.cover||'';
       const slug = (link.replace(/^\/+|\/+$/g,'').split('/').pop()) || 'komik';
-      card.addEventListener('click',()=>{
+      card.addEventListener('click',(ev)=>{
+        ev.preventDefault(); ev.stopPropagation();
         setRoute(`komik/${encodeURIComponent(slug)}`,{view:'detail',slug,originalLink:link,cover});
         loadComicDetail(link,{coverFromCard:cover});
-      });
+      }, {passive:false});
     });
   }
   async function loadComicDetail(linkOrHref,{retry=1,coverFromCard=''}={}){
@@ -369,7 +378,6 @@
     comicDetailSection.classList.add('active');
     window.scrollTo(0,0);
 
-    // set cover langsung dari kartu
     if(coverEl && coverFromCard) coverEl.src = coverFromCard;
     chapterListEl.innerHTML='<div class="loading"><div class="spinner"></div></div>';
 
@@ -387,15 +395,15 @@
       else{
         chapterListEl.innerHTML = currentChapters.map((c,idx)=>{
           const name = c.chapter || `Chapter ${currentChapters.length-idx}`;
-          const link = c.link || '';
-          return `<div class="chapter-item" data-ch="${encodeURIComponent(link)}"><span>${name}</span><span>→</span></div>`;
+          const slug = chapterSlugFrom(c.link || '');
+          return `<button class="chapter-item" data-slug="${slug}" type="button"><span>${name}</span><span>→</span></button>`;
         }).join('');
         chapterListEl.querySelectorAll('.chapter-item').forEach(it=>{
-          it.addEventListener('click',()=>{
-            const ch = decodeURIComponent(it.getAttribute('data-ch')||'');
-            currentChapter = ch;
-            loadChapter(ch);
-          });
+          it.addEventListener('click',(ev)=>{
+            ev.preventDefault(); ev.stopPropagation();
+            const slug = it.getAttribute('data-slug');
+            openChapterBySlug(slug);
+          },{passive:false});
         });
       }
     }catch(e){
@@ -405,28 +413,32 @@
   }
 
   /********** READER / CHAPTER **********/
-  async function loadChapter(chapterLink){
+  async function openChapterBySlug(slug){
+    if(!slug) return;
+    currentChapterSlug = slug;
+    setRoute(`chapter/${encodeURIComponent(slug)}`,{view:'chapter',slug});
+
     const readerContent=document.getElementById('readerContent');
     const titleEl=document.getElementById('readerTitle');
     readerZoom=1;
     readerContent.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+
+    sections.forEach(s=>s.style.display='none');
     comicReaderSection.classList.add('active');
     window.scrollTo(0,0);
 
     try{
-      const absolute = chapterLink.startsWith('http') ? chapterLink : `${BASE}${chapterLink.startsWith('/')?'':'/'}${chapterLink}`;
-      const data = await fetchJSON(`${API_BASE_URL}/chapter?url=${encodeURIComponent(absolute)}`);
-      // data.images = array URL gambar halaman
+      const data = await fetchJSON(`${API_BASE_URL}/chapter/${encodeURIComponent(slug)}`);
       if(Array.isArray(data.images) && data.images.length){
-        titleEl.textContent = `${currentComic?.title || 'Chapter'} • ${chapterLink.split('/').pop()}`;
+        titleEl.textContent = `${currentComic?.title || 'Chapter'} • ${data.chapter_title || slug}`;
         readerContent.innerHTML='';
         data.images.forEach(src=>{
           const img=document.createElement('img');
-          img.src=src; img.className='reader-image'; img.style.transform=`scale(${readerZoom})`;
+          img.src=src; img.className='reader-image';
           readerContent.appendChild(img);
         });
-        // prev/next
-        const idx = currentChapters.findIndex(c=>c.link===chapterLink);
+        // prev/next berdasar daftar currentChapters
+        const idx = currentChapters.findIndex(c=>chapterSlugFrom(c.link)===slug);
         document.getElementById('prevChapterBtn').disabled = idx<=0;
         document.getElementById('nextChapterBtn').disabled = idx<0 || idx>=currentChapters.length-1;
       }else{
@@ -437,22 +449,23 @@
       readerContent.innerHTML='<p>Terjadi kesalahan saat memuat chapter</p>';
     }
   }
+
   document.getElementById('prevChapterBtn').addEventListener('click',()=>{
-    if(!currentChapters.length || !currentChapter) return;
-    const idx=currentChapters.findIndex(c=>c.link===currentChapter);
-    if(idx>0){ currentChapter=currentChapters[idx-1].link; loadChapter(currentChapter); }
+    if(!currentChapters.length || !currentChapterSlug) return;
+    const idx=currentChapters.findIndex(c=>chapterSlugFrom(c.link)===currentChapterSlug);
+    if(idx>0){ openChapterBySlug(chapterSlugFrom(currentChapters[idx-1].link)); }
   });
   document.getElementById('nextChapterBtn').addEventListener('click',()=>{
-    if(!currentChapters.length || !currentChapter) return;
-    const idx=currentChapters.findIndex(c=>c.link===currentChapter);
-    if(idx>=0 && idx<currentChapters.length-1){ currentChapter=currentChapters[idx+1].link; loadChapter(currentChapter); }
+    if(!currentChapters.length || !currentChapterSlug) return;
+    const idx=currentChapters.findIndex(c=>chapterSlugFrom(c.link)===currentChapterSlug);
+    if(idx>=0 && idx<currentChapters.length-1){ openChapterBySlug(chapterSlugFrom(currentChapters[idx+1].link)); }
   });
 
   // Reader controls
   document.getElementById('zoomInBtn').addEventListener('click',()=>{ readerZoom=Math.min(2.5, readerZoom+0.1); document.querySelectorAll('.reader-image').forEach(i=>i.style.transform=`scale(${readerZoom})`); });
   document.getElementById('zoomOutBtn').addEventListener('click',()=>{ readerZoom=Math.max(0.5, readerZoom-0.1); document.querySelectorAll('.reader-image').forEach(i=>i.style.transform=`scale(${readerZoom})`); });
   document.getElementById('fullscreenBtn').addEventListener('click',()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
-  document.getElementById('closeReaderBtn').addEventListener('click',()=>{ comicReaderSection.classList.remove('active'); });
+  document.getElementById('closeReaderBtn').addEventListener('click',()=>{ comicReaderSection.classList.remove('active'); navigateToSection('home'); });
 
   /********** AUTO SCROLL (Netflix Row) **********/
   let autoTimer=null, autoPlaying=false;
@@ -477,8 +490,7 @@
 
   /********** INIT **********/
   document.addEventListener('DOMContentLoaded',()=>{
-    // Hilangkan footer (sesuai request)
-    document.querySelectorAll('footer').forEach(f=>f.remove());
+    document.querySelectorAll('footer').forEach(f=>f.remove()); // no footer
     loadHomeContent();
   });
   </script>
