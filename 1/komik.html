@@ -251,13 +251,12 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* cover di kartu */
-        .comic-cover{
-            width: 100%;
-            height: 250px;
-            aspect-ratio: 9 / 12;
-            object-fit: contain;     /* <— biar full, tidak terpotong */
-            background: #eef1f7;
+        /* Cover full (tanpa crop), tetap rapi */
+        .comic-cover{ 
+            width:100%; 
+            height:220px; 
+            object-fit:contain; 
+            background:#eef1f7; 
         }
 
         .comic-info {
@@ -692,6 +691,49 @@
         footer { 
             display: none !important; 
         }
+
+        /* Hide Populer/Trending (home + sections + nav) */
+        #popularComics, #trendingComics,
+        #populerSection, #trendingSection,
+        .nav-link[data-section="populer"],
+        .nav-link[data-section="trending"],
+        .section-header:has(+ #popularComics),
+        .section-header:has(+ #trendingComics) { 
+            display:none !important; 
+        }
+
+        /* Netflix-like row */
+        .row-scroll {
+            display:flex; 
+            gap:16px; 
+            overflow-x:auto; 
+            padding:6px 2px 14px;
+            scroll-snap-type:x mandatory; 
+            -webkit-overflow-scrolling:touch;
+        }
+        .row-scroll::-webkit-scrollbar{height:8px}
+        .row-scroll::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+
+        /* Cards in row: fixed width so it slides like Netflix */
+        .row-scroll .comic-card{ 
+            flex:0 0 160px; 
+            scroll-snap-align:start 
+        }
+
+        /* Controls */
+        .row-controls{ 
+            display:flex; 
+            align-items:center; 
+            gap:10px; 
+            margin:8px 0 18px 
+        }
+        .row-controls .btn{ 
+            padding:8px 14px; 
+            border-radius:999px 
+        }
+        #autoSpeed{ 
+            width:200px 
+        }
     </style>
 </head>
 <body>
@@ -773,12 +815,16 @@
     <main class="container">
         <!-- Home Section -->
         <section id="homeSection" class="content-section">
-            <!-- Latest Comics -->
+            <!-- Komik Terbaru (Netflix style) -->
             <div class="section-header">
                 <h2 class="section-title">Komik Terbaru</h2>
-                <a href="#" class="view-all-btn" data-section="terbaru">Lihat Semua</a>
+                <div class="row-controls">
+                    <button class="btn btn-secondary" id="autoPlayBtn">▶ Putar</button>
+                    <label for="autoSpeed">Kecepatan</label>
+                    <input type="range" id="autoSpeed" min="1" max="10" value="4">
+                </div>
             </div>
-            <div class="comic-grid" id="latestComics">
+            <div class="row-scroll" id="latestComics">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
@@ -1289,51 +1335,55 @@
             });
         }
 
-        // OVERRIDE createComicCard agar pakai safeImg + skip APK
+        // ======= 1) Gambar cover asli (tanpa ?resize, tanpa fit/w/h) =======
+        function imgOriginal(url, seed) {
+            if (!url) return `https://picsum.photos/seed/${encodeURIComponent(seed)}/180/250.jpg`;
+            const noProto = url.split('?')[0].replace(/^https?:\/\//,''); // buang query
+            return `https://images.weserv.nl/?url=${encodeURIComponent(noProto)}`;
+        }
+
+        // Override card builders agar simpan cover asli
         window.createComicCard = function (comic) {
-            if (isApkEntry(comic)) return document.createTextNode(''); // skip
+            if (isApkEntry(comic)) return document.createTextNode('');
             const card = document.createElement('div');
             card.className = 'comic-card';
             const link = comic.link || '';
-            const imgSrc = safeImg(comic.image, link, { contain: true, width: 360, height: 480 });
+            const imgSrc = imgOriginal(comic.image, link);
             card.setAttribute('data-link', link);
-            card.setAttribute('data-cover', imgSrc); // <— simpan cover
+            card.setAttribute('data-cover', imgSrc);
 
             card.innerHTML = `
-                <img src="${imgSrc}" alt="${comic.title}" class="comic-cover" loading="lazy"
-                     onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(link)}/180/250.jpg'">
+                <img class="comic-cover" alt="${comic.title||''}" src="${imgSrc}"
+                     loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(link)}/180/250.jpg'">
                 <div class="comic-info">
-                    <h3 class="comic-title">${comic.title}</h3>
+                    <h3 class="comic-title">${comic.title||''}</h3>
                     <div class="comic-meta">
-                        <span class="comic-type">${comic.type || 'Manga'}</span>
-                        <span>${comic.chapter || ''}</span>
+                        <span class="comic-type">${comic.type||'Manga'}</span>
+                        <span>${comic.chapter||''}</span>
                     </div>
-                </div>
-            `;
+                </div>`;
             return card;
         };
 
-        // OVERRIDE createSearchComicCard juga
         window.createSearchComicCard = function (comic) {
             if (isApkEntry(comic)) return document.createTextNode('');
             const card = document.createElement('div');
             card.className = 'comic-card';
             const href = comic.href || '';
-            const imgSrc = safeImg(comic.thumbnail, href, { contain: true, width: 360, height: 480 });
+            const imgSrc = imgOriginal(comic.thumbnail, href);
             card.setAttribute('data-link', href);
-            card.setAttribute('data-cover', imgSrc); // <— simpan cover
+            card.setAttribute('data-cover', imgSrc);
 
             card.innerHTML = `
-                <img src="${imgSrc}" alt="${comic.title}" class="comic-cover" loading="lazy"
-                     onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(href)}/180/250.jpg'">
+                <img class="comic-cover" alt="${comic.title||''}" src="${imgSrc}"
+                     loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(href)}/180/250.jpg'">
                 <div class="comic-info">
-                    <h3 class="comic-title">${comic.title}</h3>
+                    <h3 class="comic-title">${comic.title||''}</h3>
                     <div class="comic-meta">
-                        <span class="comic-type">${comic.type || 'Manga'}</span>
-                        <span>${comic.genre || ''}</span>
+                        <span class="comic-type">${comic.type||'Manga'}</span>
+                        <span>${comic.genre||''}</span>
                     </div>
-                </div>
-            `;
+                </div>`;
             return card;
         };
 
@@ -1351,10 +1401,91 @@
             });
         }
 
-        // --- Patch kecil di loader-list: ganti forEach -> appendFiltered ---
-        // Contoh (lakukan serupa di loadX lainnya):
+        // ======= 2) Home cuma "Terbaru" + jadikan row Netflix =======
+        function ensureRowUI() {
+            const latest = document.getElementById('latestComics');
+            if (!latest) return;
+            latest.classList.add('row-scroll'); // jadikan baris
+            // Inject controls kalau belum ada
+            if (!document.getElementById('autoPlayBtn')) {
+                const header = latest.previousElementSibling; // section-header
+                if (header?.classList.contains('section-header')) {
+                    const ctl = document.createElement('div');
+                    ctl.className = 'row-controls';
+                    ctl.innerHTML = `
+                        <button class="btn btn-secondary" id="autoPlayBtn">▶ Putar</button>
+                        <label for="autoSpeed">Kecepatan</label>
+                        <input type="range" id="autoSpeed" min="1" max="10" value="4">`;
+                    header.appendChild(ctl);
+                }
+            }
+            // Sembunyikan blok populer/trending kalau masih ada
+            ['popularComics','trendingComics'].forEach(id=>{
+                const el = document.getElementById(id);
+                if (el) el.parentElement.style.display='none';
+            });
+        }
+
+        // Overwrite loader home: hanya panggil terbaru
+        window.loadHomeContent = function () {
+            ensureRowUI();
+            loadLatestComicsPreview();
+        };
+
+        // ======= 3) Auto-scroll Netflix row =======
+        let autoTimer = null, autoPlaying = false;
+
+        function startAutoScroll() {
+            stopAutoScroll();
+            const row = document.getElementById('latestComics');
+            const speed = Number(document.getElementById('autoSpeed')?.value || 4); // 1..10
+            const step = 4 + speed * 4; // pixel per tick
+            autoPlaying = true;
+            const btn = document.getElementById('autoPlayBtn');
+            if (btn) btn.textContent = '⏸ Jeda';
+
+            autoTimer = setInterval(() => {
+                if (!row) return;
+                row.scrollLeft += step;
+                // loop ke awal jika sudah mentok
+                if (row.scrollLeft + row.clientWidth >= row.scrollWidth - 2) {
+                    row.scrollLeft = 0;
+                }
+            }, 30);
+        }
+        function stopAutoScroll() {
+            autoPlaying = false;
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = null;
+            const btn = document.getElementById('autoPlayBtn');
+            if (btn) btn.textContent = '▶ Putar';
+        }
+
+        // Hook tombol/slider (setelah DOM siap)
+        document.addEventListener('click', (e)=>{
+            if (e.target && e.target.id === 'autoPlayBtn') {
+                autoPlaying ? stopAutoScroll() : startAutoScroll();
+            }
+        });
+        document.addEventListener('input', (e)=>{
+            if (e.target && e.target.id === 'autoSpeed') {
+                if (autoPlaying) startAutoScroll(); // restart dengan speed baru
+            }
+        });
+
+        // Pause saat user interaksi manual
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const row = document.getElementById('latestComics');
+            if (!row) return;
+            ['pointerdown','wheel','touchstart','mouseenter'].forEach(ev=>{
+                row.addEventListener(ev, ()=> autoPlaying && stopAutoScroll(), {passive:true});
+            });
+        });
+
+        // ======= 4) Loader terbaru -> append ke row + attach detail =======
         window.loadLatestComicsPreview = function () {
             const container = document.getElementById('latestComics');
+            if (!container) return;
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             fetch(`${API_BASE_URL}/terbaru`)
                 .then(r => r.json())
@@ -1362,11 +1493,13 @@
                     container.innerHTML = '';
                     appendFiltered(container, data.comics);
                     attachCardOpenDetail(container);
+                    ensureRowUI(); // pastikan kelas/controls ada
                 })
                 .catch(() => container.innerHTML = '<p>Terjadi kesalahan saat memuat komik terbaru</p>');
         };
 
-        // Ulangi pola di fungsi berikut (cukup replace blok append):
+        // --- Patch kecil di loader-list: ganti forEach -> appendFiltered ---
+        // Contoh (lakukan serupa di loadX lainnya):
         window.loadPopularComicsPreview = function () {
             const container = document.getElementById('popularComics');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
@@ -1642,13 +1775,6 @@
             setRoute(section, { view: 'section', section });
             
             window.scrollTo(0, 0);
-        }
-        
-        // Load Home Content
-        function loadHomeContent() {
-            loadLatestComicsPreview();
-            loadPopularComicsPreview();
-            loadTrendingComicsPreview();
         }
         
         // Load Genres
