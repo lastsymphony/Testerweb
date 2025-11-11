@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ouo Bypass – Lite</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ouo Bypass – Full Fix (Lite)</title>
 <style>
   *{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);margin:0;padding:20px;color:#222}
-  .wrap{max-width:880px;margin:auto}
-  .card{background:#fff;border-radius:14px;padding:18px 16px;margin:12px 0;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .wrap{max-width:920px;margin:12px auto}
+  .card{background:#fff;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.15)}
   h1{color:#fff;text-align:center;margin:6px 0 16px}
-  .tabs{display:flex;gap:8px;border-bottom:2px solid #eee}
+  .tabs{display:flex;gap:8px;border-bottom:2px solid #eee;padding-bottom:8px}
   .tab{padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent}
   .tab.active{color:#667eea;border-bottom-color:#667eea;font-weight:600}
-  .pane{display:none}.pane.active{display:block}
+  .pane{display:none;padding-top:12px}
+  .pane.active{display:block}
   label{display:block;margin:8px 0 6px;font-weight:600}
   input[type=text]{width:100%;padding:12px 14px;border:2px solid #e6e6e6;border-radius:10px;font-size:15px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .btn{border:0;border-radius:10px;padding:10px 14px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#667eea,#764ba2)}
   .btn.green{background:linear-gradient(135deg,#4CAF50,#45a049)}
   .btn.red{background:linear-gradient(135deg,#f44336,#d32f2f)}
-  .status{display:none;margin-top:10px;border-radius:10px;padding:10px}
+  .status{display:none;margin-top:12px;border-radius:10px;padding:10px}
   .status.active{display:block}
   .status.info{background:#d1ecf1;color:#0c5460}.status.ok{background:#d4edda;color:#155724}.status.warn{background:#fff3cd;color:#856404}.status.err{background:#f8d7da;color:#721c24}
   .bar{height:8px;background:#eee;border-radius:99px;overflow:hidden;margin-top:8px}
   .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#667eea,#764ba2);transition:width .3s}
-  .flow{display:flex;gap:10px;align-items:center;margin:8px 0}
+  .flow{display:flex;gap:10px;align-items:center;margin:12px 0}
   .step{flex:1;text-align:center;border:2px solid #ddd;border-radius:10px;padding:10px;background:#fafafa}
   .step.active{border-color:#667eea;background:#eef2ff}.step.done{border-color:#4CAF50;background:#e8f5e9}
-  .arrow{height:2px;background:#ddd;flex:0 0 28px}.arrow.done{background:#4CAF50}
-  .code{background:#f6f6f7;border:1px solid #e6e6e6;border-radius:10px;padding:10px;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace;overflow:auto;max-height:220px;white-space:pre-wrap;word-break:break-all}
+  .arrow{height:2px;background:#ddd;flex:0 0 28px;border-radius:2px}.arrow.done{background:#4CAF50}
+  .code{background:#f6f6f7;border:1px solid #e6e6e6;border-radius:10px;padding:10px;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace;overflow:auto;max-height:260px;white-space:pre-wrap;word-break:break-all}
   small.mono{font-family:ui-monospace,Consolas,monospace;color:#666}
+  a.bookmarklet{display:inline-block;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ff8e53);color:#fff;text-decoration:none}
+  .hint{margin-top:8px;color:#666;font-size:13px}
+  @media (max-width:480px){.tabs{overflow:auto}}
 </style>
 </head>
 <body>
-  <h1>🎯 Ouo Bypass – Lite</h1>
+  <h1>🎯 Ouo Bypass – Full Fix (Lite)</h1>
   <div class="wrap">
 
     <div class="card">
@@ -47,8 +51,8 @@
       <!-- QUICK -->
       <div id="quick" class="pane active">
         <label for="u">Link Ouo:</label>
-        <input id="u" type="text" placeholder="https://ouo.press/xxxxx"/>
-        <div class="flow">
+        <input id="u" type="text" placeholder="https://ouo.press/xxxxx" value="">
+        <div class="flow" aria-hidden="true">
           <div id="s1" class="step active">1. Captcha</div>
           <div id="a1" class="arrow"></div>
           <div id="s2" class="step">2. Countdown</div>
@@ -60,159 +64,224 @@
           <button class="btn green" onclick="openAlt()">🔗 Coba Link Alternatif</button>
           <button class="btn red" onclick="resetFlow()">♻️ Reset</button>
         </div>
-        <div id="st" class="status"><div id="stm"></div><div class="bar"><i id="prog"></i></div></div>
-        <p style="margin-top:8px"><small class="mono">Tip: Setelah tab OUO terbuka, jalankan <b>Bookmarklet</b> atau aktifkan <b>Userscript</b> agar proses otomatis.</small></p>
+
+        <div id="st" class="status info">
+          <div id="stm">Ready</div>
+          <div class="bar"><i id="prog"></i></div>
+        </div>
+
+        <p class="hint">
+          Tip: jika tab tidak terbuka karena pop-up, aktifkan pop-up untuk situs ini. Setelah tab OUO terbuka, klik Bookmarklet (tab Bookmarklet) atau pakai Userscript (Tampermonkey) di tab OUO.
+        </p>
       </div>
 
       <!-- BOOKMARKLET -->
       <div id="bookmark" class="pane">
-        <p>Tarik tombol ini ke bookmark bar, lalu klik saat berada di halaman OUO:</p>
-        <p style="margin:10px 0">
-          <a class="btn" draggable="true"
-             href="javascript:(()=>{const log=s=>console.log('[OUO]',s);const id=x=>document.getElementById(x);const wait=(sel,ok,txt)=>{const t=()=>{const el=document.querySelector(sel);if(el){ok(el)}else{log(txt||'wait '+sel);setTimeout(t,900)}};t()};let step=1;const flow=n=>{step=n;log('step '+n)};if(!/ouo\.(io|press)/.test(location.host)){alert('Bukan halaman OUO');return}flow(1);wait('#x-token',()=>{flow(2);wait('#btn-main:not(.disabled)',btn=>{btn.click();flow(3)},'counting...')},'captcha...')})();">
-            ⚡ Ouo Quick
-          </a>
-        </p>
-        <div class="code">Bookmarklet di atas bekerja <i>di halaman OUO</i> (origin yang sama). Tidak ada injeksi lintas-origin.</div>
+        <p>Seret tombol ini ke bookmark bar, lalu klik bookmark tersebut saat berada di halaman OUO yang ingin dilewati (bookmarklet berjalan <b>di halaman OUO</b>):</p>
+        <p><a class="bookmarklet" id="bmLink" href="#">⚡ Ouo Quick</a></p>
+        <div class="code" style="margin-top:10px">
+/* Bookmarklet (klik di halaman OUO setelah kamu menyelesaikan captcha) */
+javascript:(()=>{const log=s=>console.log('[OUO]',s);const token=()=>document.querySelector('#x-token,textarea[name=\"g-recaptcha-response\"],#g-recaptcha-response,[name=\"cf-turnstile-response\"]')?.value?.trim();const wait=(pred,cb,ms=700)=>{const t=setInterval(()=>{try{if(pred()){clearInterval(t);cb()}}catch(e){console.error(e)}},ms)};if(!/ouo\.(io|press)/i.test(location.host)){alert('Buka bookmarklet ini di halaman ouo.io / ouo.press');return}log('waiting captcha...');wait(()=>!!token(),()=>{log('captcha token present');wait(()=>{const b=document.querySelector('#btn-main:not(.disabled),button#btn-main:not([disabled]),button.btn-get-link');if(b){try{b.click();log('clicked main button')}catch(e){console.error(e)}return true}return false},()=>{log('btn clicked')},500);setTimeout(()=>{document.getElementById('form-captcha')?.submit?.();document.getElementById('form-go')?.submit?.();},700);setTimeout(()=>{document.querySelector('a[href*=\"/fbc/\"]')?.click()},1200);})();</div>
+        <p class="hint">Bookmarklet tidak menyelesaikan captcha; pengguna tetap harus memilih gambar/opsi. Setelah token ada, bookmarklet akan lanjut klik tombol otomatis.</p>
       </div>
 
       <!-- USERSCRIPT -->
       <div id="userscript" class="pane">
-        <p>Pasang di Tampermonkey → New script → paste kode ini:</p>
+        <p>Userscript untuk Tampermonkey/Violentmonkey. Paste kode ini ke Tampermonkey → New Script → Simpan. Script hanya membantu melanjutkan proses setelah kamu selesai verifikasi (tidak mem-bypass captcha otomatis).</p>
         <div id="us" class="code">
 // ==UserScript==
-// @name        OUO Auto (Lite)
+// @name        OUO Auto (Full-Fix Lite)
 // @namespace   ouo-lite
 // @match       https://ouo.io/*
 // @match       https://ouo.press/*
 // @run-at      document-end
 // @grant       none
 // ==/UserScript==
-(function(){
+(function () {
   'use strict';
-  const log = (...a)=>console.log('[OUO]',...a);
-  const wait = (sel, cb, note) => {
-    const t = () => { const el = document.querySelector(sel);
-      if (el) cb(el); else { note&&log(note); setTimeout(t, 800); } };
-    t();
+  const L = (...a)=>console.log('[OUO]',...a);
+
+  // helper: cek token untuk Turnstile / reCAPTCHA
+  const getToken = () => {
+    const turn = document.querySelector('#x-token')?.value?.trim();
+    const rec1 = document.querySelector('#g-recaptcha-response')?.value?.trim();
+    const rec2 = document.querySelector('textarea[name=\"g-recaptcha-response\"]')?.value?.trim();
+    const cf = document.querySelector('[name=\"cf-turnstile-response\"]')?.value?.trim();
+    return turn || rec1 || rec2 || cf || '';
   };
-  // Step 1: tunggu token (Turnstile sukses)
-  wait('#x-token', () => {
-    log('captcha ok');
-    // Step 2: tunggu tombol aktif, lalu klik (human/get link)
-    wait('#btn-main:not(.disabled)', btn => { btn.click(); log('btn clicked'); }, 'countdown...');
-  }, 'waiting captcha...');
-  // Opsional: auto-submit form kalau ada
-  setInterval(() => {
-    const f = document.getElementById('form-captcha') || document.getElementById('form-go');
-    if (f) try { f.submit(); } catch {}
-  }, 1800);
+
+  const waitUntil = (pred, ms=700) => new Promise(res=>{
+    const t = setInterval(()=>{ try{ if(pred()){ clearInterval(t); res(true);} } catch(e){} }, ms);
+  });
+
+  (async () => {
+    L('OUO userscript started');
+    // tunggu token (user interaksi)
+    L('waiting for captcha token...');
+    await waitUntil(()=>!!getToken());
+    L('captcha token detected');
+
+    // tunggu tombol aktif lalu klik
+    await waitUntil(()=> {
+      const sel = '#btn-main:not(.disabled), button#btn-main:not([disabled]), button.btn-get-link, button[name=\"submit\"]';
+      const b = document.querySelector(sel);
+      if (b) { try { b.click(); L('main button clicked'); } catch(e){L('click err',e);} return true; }
+      return false;
+    }, 500);
+
+    // try submit forms
+    setTimeout(()=> {
+      const f = document.getElementById('form-captcha') || document.getElementById('form-go');
+      try { f?.submit?.(); L('form submitted (if present)'); } catch(e){L('submit err',e);}
+    }, 600);
+
+    // fallback: click /fbc link if present
+    setTimeout(()=> {
+      const a = document.querySelector('a[href*=\"/fbc/\"]');
+      if (a) { try{ a.click(); L('clicked fallback /fbc'); } catch(e){L('fallback err',e);} }
+    }, 1400);
+  })();
 })();
         </div>
-        <div class="row"><button class="btn" onclick="copyUS()">📋 Copy Userscript</button></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" onclick="copyUS()">📋 Copy Userscript</button>
+          <button class="btn green" onclick="showExample()">ℹ️ Cara pakai</button>
+        </div>
       </div>
 
       <!-- ADVANCED -->
       <div id="adv" class="pane">
-        <p>Best-effort via proxy publik (bisa gagal karena anti-scrape/CORS).</p>
-        <div class="row">
+        <p>Advanced: best-effort ekstraksi link alternatif via proxy publik (bisa gagal jika page dilindungi ketat).</p>
+        <div class="row" style="margin-top:8px">
           <button class="btn" onclick="extractAlt()">🔍 Extract /fbc via Proxy</button>
         </div>
-        <div id="advout" class="card" style="margin-top:10px;padding:10px"></div>
+        <div id="advout" class="card" style="margin-top:10px;padding:12px"></div>
       </div>
-    </div>
 
+    </div>
   </div>
 
 <script>
-  /* ====== UTIL UI ====== */
-  const el = id => document.getElementById(id);
-  function tab(name, tEl){
-    document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-    document.getElementById(name).classList.add('active');
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    if (tEl) tEl.classList.add('active');
-  }
-  function status(msg,type='info',p=0){
-    const box = el('st'); box.className = 'status active '+({info:'info',ok:'ok',warn:'warn',err:'err'}[type]||'info');
-    el('stm').textContent = msg; el('prog').style.width = (p|0)+'%';
-  }
-  function setFlow(step){
-    for(let i=1;i<=3;i++){
-      const s = el('s'+i); s.className = 'step'+(i<step?' done':i===step?' active':'');
-      const arrowId = i===1?'a1':i===2?'a2':null;
-      if (arrowId){ const a = el(arrowId); a.className = 'arrow'+(i<step?' done':''); }
+/* ======= UI & UTILS ======= */
+const el = id => document.getElementById(id);
+function tab(name, tEl){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  if(tEl) tEl.classList.add('active');
+}
+function status(msg,type='info',p=0){
+  const box = el('st'); box.className = 'status active ' + (type||'info');
+  el('stm').textContent = msg; el('prog').style.width = (p|0) + '%';
+}
+function setFlow(step){
+  for(let i=1;i<=3;i++){
+    const s = el('s'+i);
+    s.className = 'step' + (i<step? ' done' : i===step ? ' active' : '');
+    const arrowId = i===1?'a1':i===2?'a2':null;
+    if(arrowId){
+      const a = el(arrowId); a.className = 'arrow' + (i<step? ' done':'');
     }
   }
-  function valid(url){ return /^https?:\/\/(ouo\.io|ouo\.press)\//i.test(url||''); }
+}
+function valid(url){ return /^https?:\/\/(ouo\.io|ouo\.press)\//i.test(url||''); }
 
-  /* ====== QUICK ====== */
-  function openOuo(){
-    const url = el('u').value.trim();
-    if(!url){return status('⚠️ Masukkan link OUO','warn')}
-    if(!valid(url)){return status('❌ Link harus ouo.io / ouo.press','err')}
-    status('🚀 Membuka tab OUO...','info',30); setFlow(1);
-    const w = window.open(url,'_blank','noopener');
-    if(!w) return status('❌ Pop-up diblokir. Izinkan pop-up.','err');
-    status('ℹ️ Di tab OUO, jalankan Bookmarklet / aktifkan Userscript.','info',80);
-  }
+/* ======= QUICK ======= */
+function openOuo(){
+  const url = el('u').value.trim();
+  if(!url) return status('⚠️ Masukkan link OUO','warn');
+  if(!valid(url)) return status('❌ Link harus ouo.io / ouo.press','err');
 
-  function openAlt(){
-    const url = el('u').value.trim();
-    if(!url){return status('⚠️ Masukkan link OUO','warn')}
-    if(!valid(url)){return status('❌ Link harus ouo.io / ouo.press','err')}
-    const id = url.split('/').pop();
-    const alts = [
-      `https://ouo.press/fbc/${id}`,
-      `https://ouo.io/fbc/${id}`,
-      `https://ouo.press/go/${id}`,
-      `https://ouo.io/go/${id}`
-    ];
-    status('🔗 Mencoba alternatif...','info',40);
-    alts.forEach((u,i)=>setTimeout(()=>window.open(u,'_blank','noopener'), i*400));
-    status('✅ Alternatif dibuka di tab baru.','ok',100); setFlow(2);
-  }
+  // create <a> and click to avoid popup blocked in many mobile browsers
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 
-  function resetFlow(){
-    setFlow(1); status('↺ Reset.','info',0); el('u').focus();
-  }
+  status('ℹ️ Tab OUO dibuka. Selesaikan captcha lalu bookmarklet/userscript akan melanjutkan.','info',80);
   setFlow(1);
+  // show extra hint if tab likely blocked (we can't reliably detect on mobile)
+  setTimeout(()=> {
+    // not reliable to detect pop-up block; keep message
+  },600);
+}
 
-  /* ====== USERSCRIPT COPY ====== */
-  function copyUS(){
-    const t = el('us')?.textContent || '';
-    if(!t) return alert('Gagal menemukan kode.');
-    navigator.clipboard.writeText(t).then(()=>alert('✅ Disalin!')).catch(()=>alert('❌ Gagal menyalin.'));
-  }
+function openAlt(){
+  const url = el('u').value.trim();
+  if(!url) return status('⚠️ Masukkan link OUO','warn');
+  if(!valid(url)) return status('❌ Link harus ouo.io / ouo.press','err');
+  const id = url.split('/').filter(Boolean).pop();
+  const alts = [
+    `https://ouo.press/fbc/${id}`,
+    `https://ouo.io/fbc/${id}`,
+    `https://ouo.press/go/${id}`,
+    `https://ouo.io/go/${id}`
+  ];
+  status('🔗 Mencoba alternatif (tab baru)...','info',40);
+  alts.forEach((u,i)=>setTimeout(()=>{ const a=document.createElement('a'); a.href=u; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); }, i*400));
+  setTimeout(()=>status('✅ Alternatif dibuka di tab baru. Periksa tab yang terbuka.','ok',100), 900);
+  setFlow(2);
+}
 
-  /* ====== ADVANCED (best-effort proxy) ====== */
-  async function extractAlt(){
-    const url = el('u').value.trim();
-    const out = el('advout');
-    if(!url){ out.innerHTML = '<div class="status warn active">⚠️ Masukkan link OUO dulu.</div>'; return; }
-    if(!valid(url)){ out.innerHTML = '<div class="status err active">❌ Link harus ouo.io / ouo.press.</div>'; return; }
-    out.innerHTML = '<div class="status info active">⏳ Fetch via proxy publik...</div>';
-    try{
-      const api = 'https://api.allorigins.win/get?url='+encodeURIComponent(url);
-      const r = await fetch(api);
-      if(!r.ok) throw new Error('proxy error');
-      const j = await r.json();
-      const div = document.createElement('div'); div.innerHTML = j.contents || '';
-      const a = div.querySelector('a[href*="/fbc/"]');
-      if(a){
-        const href = a.getAttribute('href') || '';
-        const full = href.startsWith('http') ? href : ('https://ouo.press'+href);
-        out.innerHTML = `<div class="status ok active">✅ Ditemukan alternatif:</div>
-          <div class="code">${full}</div>
-          <button class="btn" onclick="window.open('${full}','_blank','noopener')">🔗 Buka</button>`;
-        setFlow(3);
-      }else{
-        out.innerHTML = '<div class="status warn active">⚠️ Tidak ditemukan /fbc. Gunakan Bookmarklet/Userscript.</div>';
-      }
-    }catch(e){
-      out.innerHTML = '<div class="status err active">❌ Proxy/CORS diblok. Coba lagi atau pakai Userscript.</div>';
+function resetFlow(){ setFlow(1); status('↺ Reset','info',0); el('u').focus(); }
+
+/* ======= USERSCRIPT COPY & HELP ======= */
+function copyUS(){
+  const t = el('us')?.textContent || '';
+  if(!t) return alert('Gagal menemukan kode userscript.');
+  navigator.clipboard.writeText(t).then(()=>alert('✅ Userscript disalin ke clipboard!')).catch(()=>alert('❌ Gagal menyalin. Salin manual.'));
+}
+function showExample(){
+  alert('Cara: Install Tampermonkey → New Script → paste kode Userscript → Save. Buka link ouo.io/.. lalu lakukan captcha, script akan melanjutkan klik otomatis jika token terdeteksi.');
+}
+
+/* ======= BOOKMARKLET: set href with properly encoded single-line code ======= */
+(function setBookmarklet(){
+  const code = `javascript:(()=>{const log=s=>console.log('[OUO]',s);const token=()=>document.querySelector('#x-token,textarea[name=\"g-recaptcha-response\"],#g-recaptcha-response,[name=\"cf-turnstile-response\"]')?.value?.trim();const wait=(pred,cb,ms=700)=>{const t=setInterval(()=>{try{if(pred()){clearInterval(t);cb()}}catch(e){}},ms)};if(!/ouo\\.(io|press)/i.test(location.host)){alert('Buka bookmarklet ini di halaman ouo.io / ouo.press');return}log('waiting captcha...');wait(()=>!!token(),()=>{log('captcha token present');wait(()=>{const b=document.querySelector('#btn-main:not(.disabled),button#btn-main:not([disabled]),button.btn-get-link');if(b){try{b.click();log('clicked main button')}catch(e){console.error(e)}return true}return false},()=>{log('clicked')},500);setTimeout(()=>{document.getElementById('form-captcha')?.submit?.();document.getElementById('form-go')?.submit?.();},700);setTimeout(()=>{document.querySelector('a[href*=\"/fbc/\"]')?.click()},1200);})();`;
+  const link = el('bmLink');
+  link.setAttribute('href', code);
+  link.addEventListener('click', ()=>{ /* nothing extra */ });
+})();
+
+/* ======= ADVANCED: extract via proxy (best-effort) ======= */
+async function extractAlt(){
+  const url = el('u').value.trim();
+  const out = el('advout');
+  out.innerHTML = '';
+  if(!url) return out.innerHTML = '<div class="status warn active">⚠️ Masukkan link OUO dulu.</div>';
+  if(!valid(url)) return out.innerHTML = '<div class="status err active">❌ Link harus ouo.io / ouo.press.</div>';
+
+  out.innerHTML = '<div class="status info active">⏳ Mengambil halaman via proxy publik (best-effort)...</div>';
+  try{
+    const api = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const r = await fetch(api);
+    if(!r.ok) throw new Error('proxy error');
+    const j = await r.json();
+    const tmp = document.createElement('div'); tmp.innerHTML = j.contents || '';
+    const a = tmp.querySelector('a[href*="/fbc/"]');
+    if(a){
+      const href = a.getAttribute('href') || '';
+      const full = href.startsWith('http') ? href : ('https://ouo.press' + href);
+      out.innerHTML = `<div class="status ok active">✅ Ditemukan alternatif:</div>
+        <div class="code">${full}</div>
+        <div style="margin-top:8px"><button class="btn" onclick="window.open('${full}','_blank','noopener')">🔗 Buka</button></div>`;
+      setFlow(3);
+    } else {
+      out.innerHTML = '<div class="status warn active">⚠️ Tidak ditemukan link /fbc. Situs mungkin dilindungi atau struktur berbeda. Gunakan Bookmarklet/Userscript di tab OUO.</div>';
     }
+  }catch(e){
+    out.innerHTML = '<div class="status err active">❌ Proxy/CORS diblok atau error. Gunakan Userscript/Bookmarklet.</div>';
   }
+}
+
+/* Init */
+setFlow(1);
+status('Ready','info',0);
+
 </script>
 </body>
 </html>
