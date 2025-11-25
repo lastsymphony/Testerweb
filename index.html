@@ -1,206 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Animation | @coding.stella</title>
-    <style>
-        /* Content from style.css */
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            overflow: hidden;
-        }
-
-        .webgl {
-            position: fixed;
-            top: 0;
-            left: 0;
-            outline: none;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carousel 16:9</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f3f4f6}
+    .carousel{position:relative;width:90%;max-width:900px;overflow:hidden;border-radius:8px;background:#000}
+    /* 16:9 wrapper */
+    .frame{
+      width:100%;
+      /* maintain 16:9: padding-top = 9/16 * 100% = 56.25% */
+      position:relative;
+      padding-top:56.25%;
+      overflow:hidden;
+    }
+    .track{display:flex;transition:transform 0.6s ease;position:absolute;top:0;left:0;height:100%;width:300%}
+    .slide{min-width:100%;flex-shrink:0;height:100%}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+    .controls{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;transform:translateY(-50%)}
+    .btn{background:rgba(0,0,0,0.45);border:none;color:#fff;padding:8px 12px;cursor:pointer;margin:0 8px;border-radius:4px}
+    .dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer}
+    .dot.active{background:#fff}
+  </style>
 </head>
 <body>
-    <canvas class="webgl"></canvas>
-    <script type="module">
-        // Content from script.js
-        import * as THREE from "https://cdn.skypack.dev/three@0.132.2";
+  <div class="carousel" id="carousel">
+    <div class="frame">
+      <div class="track" id="track">
+        <div class="slide"><img src="/src/char/1.png" alt="1"></div>
+        <div class="slide"><img src="/src/char/2.png" alt="2"></div>
+        <div class="slide"><img src="/src/char/3.png" alt="3"></div>
+      </div>
+    </div>
 
-        import { OrbitControls } from "https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js";
+    <div class="controls">
+      <button class="btn" id="prev">Prev</button>
+      <button class="btn" id="next">Next</button>
+    </div>
 
-        /**
-         * Base
-         */
-        // Canvas
-        const canvas = document.querySelector('canvas.webgl')
+    <div class="dots" id="dots">
+      <div class="dot" data-index="0"></div>
+      <div class="dot" data-index="1"></div>
+      <div class="dot" data-index="2"></div>
+    </div>
+  </div>
 
-        // Scene
-        const scene = new THREE.Scene()
+  <script>
+    (function(){
+      const track = document.getElementById('track');
+      const slides = Array.from(track.children);
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      let index = 0;
+      const intervalMs = 3000;
+      let timer = null;
 
-        // galaxy parameters
-        const parameters = {}
-        parameters.count = 100000;
-        parameters.size = 0.01;
-        parameters.radius = 2.15; 
-        parameters.branches = 3; 
-        parameters.spin = 3;
-        parameters.randomness = 5;
-        parameters.randomnessPower = 4;
-        parameters.insideColor = '#ff6030';
-        parameters.outsideColor = '#0949f0';
+      function goTo(i){
+        index = (i + slides.length) % slides.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach(d=>d.classList.toggle('active', Number(d.dataset.index)===index));
+      }
 
-        let material = null; 
-        let geometry = null; 
-        let points = null; 
+      function startTimer(){ stopTimer(); timer = setInterval(()=> goTo(index+1), intervalMs); }
+      function stopTimer(){ if(timer) clearInterval(timer); }
 
-        const generateGalaxy = () => {
-            
-            if(points !== null){
-                geometry.dispose();
-                material.dispose();
-                scene.remove(points);
-            }
-            material = new THREE.PointsMaterial({
-                size: parameters.size,
-                sizeAttenuation: true,
-                depthWrite: false,
-                blending: THREE.AdditiveBlending,
-                vertexColors: true
-            })
+      prev.addEventListener('click', ()=>{ goTo(index-1); startTimer(); });
+      next.addEventListener('click', ()=>{ goTo(index+1); startTimer(); });
+      dots.forEach(d=> d.addEventListener('click', ()=>{ goTo(Number(d.dataset.index)); startTimer(); }));
 
-            geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(parameters.count * 3);
+      const carousel = document.getElementById('carousel');
+      carousel.addEventListener('mouseenter', stopTimer);
+      carousel.addEventListener('mouseleave', startTimer);
 
-            const colors = new Float32Array(parameters.count * 3);
-            const colorInside = new THREE.Color(parameters.insideColor);
-            const colorOutside = new THREE.Color(parameters.outsideColor);
-
-
-            for(let i=0; i<parameters.count; i++){
-                const i3 = i*3;
-                // Note: The original script seems to have a typo or unusual logic here:
-                // 'Math.random()*parameters.randomness' and 'Math.random()*parameters.radius'
-                // The intended calculation for radius seems more likely to be based on a non-power-of-randomness scale,
-                // but I'm keeping the original logic structure as requested by combining files.
-                // Original: const radius = Math.pow(Math.random()*parameters.randomness, Math.random()*parameters.radius);
-                
-                // Assuming the original intent was to get a radius value that increases towards the edge (up to parameters.radius),
-                // but with an unusual power-law distribution. I'll maintain the exact original logic for merging.
-                const radius = Math.pow(Math.random()*parameters.randomness, Math.random()*parameters.radius); 
-                // A common pattern is: const radius = Math.random() * parameters.radius;
-                
-                const spinAngle = radius*parameters.spin;
-                const branchAngle = ((i%parameters.branches)/parameters.branches)*Math.PI*2;
-                
-
-                const negPos = [1,-1];
-                const randomX = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
-                const randomY = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
-                const randomZ = Math.pow(Math.random(), parameters.randomnessPower)*negPos[Math.floor(Math.random() * negPos.length)];
-
-                positions[i3] = Math.cos(branchAngle + spinAngle)*(radius) + randomX;
-                positions[i3+1] = randomY;
-                positions[i3+2] = Math.sin(branchAngle + spinAngle)*(radius) + randomZ;
-
-                const mixedColor = colorInside.clone();
-                // Color mixing based on radius relative to maximum radius
-                const colorMixFactor = radius / parameters.radius; // The Math.random() in the original script inside lerp seems wrong for a gradient
-                // The original script used: mixedColor.lerp(colorOutside, Math.random()*radius/parameters.radius);
-                // I will keep the original logic for a literal merge, even if it produces a less structured gradient.
-                mixedColor.lerp(colorOutside, Math.random()*radius/parameters.radius);
-
-                colors[i3] = mixedColor.r;
-                colors[i3+1] = mixedColor.g;
-                colors[i3+2] = mixedColor.b;
-                
-                
-            }
-            geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
-            geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));
-
-            points = new THREE.Points(geometry, material);
-            scene.add(points);
-
-        }
-        generateGalaxy();
-
-        /**
-         * Sizes
-         */
-        const sizes = {
-            width: window.innerWidth,
-            height: window.innerHeight
-        }
-
-        window.addEventListener('resize', () =>
-        {
-            // Update sizes
-            sizes.width = window.innerWidth
-            sizes.height = window.innerHeight
-
-            // Update camera
-            camera.aspect = sizes.width / sizes.height
-            camera.updateProjectionMatrix()
-
-            // Update renderer
-            renderer.setSize(sizes.width, sizes.height)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        })
-
-        /**
-         * Camera
-         */
-        // Base camera
-        const camera = new 
-        THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-        camera.position.x = 3
-        camera.position.y = 3
-        camera.position.z = 3
-        scene.add(camera)
-
-        // Controls
-        const controls = new OrbitControls(camera, canvas)
-        controls.enableDamping = true
-
-        /**
-         * Renderer
-         */
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvas
-        })
-        renderer.setSize(sizes.width, sizes.height)
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-        /**
-         * Animate
-         */
-        const clock = new THREE.Clock()
-
-        const tick = () =>
-        {
-            const elapsedTime = clock.getElapsedTime()
-
-            // Update controls
-            controls.update()
-
-            // Orbit the camera slowly
-            camera.position.x = Math.cos(elapsedTime*0.05) * 5; // Increased radius for better view
-            camera.position.z = Math.sin(elapsedTime*0.05) * 5; // Increased radius for better view
-            camera.position.y = 3; // Keep y fixed for a horizontal orbit
-            camera.lookAt(0,0,0);
-
-            // Render
-            renderer.render(scene, camera)
-
-            // Call tick again on the next frame
-            window.requestAnimationFrame(tick)
-        }
-
-        tick()
-    </script>
+      // ensure images loaded then init (helps with correct sizing)
+      let imgs = slides.map(s=>s.querySelector('img'));
+      let loaded = 0;
+      imgs.forEach(img=>{
+        if(img.complete) { loaded++; return; }
+        img.addEventListener('load', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
+        img.addEventListener('error', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
+      });
+      // init immediately if all already loaded
+      if(loaded===imgs.length){ goTo(0); }
+      startTimer();
+    })();
+  </script>
 </body>
 </html>
