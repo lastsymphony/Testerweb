@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carousel 16:9</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f3f4f6}
+    .carousel{position:relative;width:90%;max-width:900px;overflow:hidden;border-radius:8px;background:#000}
+    /* 16:9 wrapper */
+    .frame{
+      width:100%;
+      /* maintain 16:9: padding-top = 9/16 * 100% = 56.25% */
+      position:relative;
+      padding-top:56.25%;
+      overflow:hidden;
+    }
+    .track{display:flex;transition:transform 0.6s ease;position:absolute;top:0;left:0;height:100%;width:300%}
+    .slide{min-width:100%;flex-shrink:0;height:100%}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+    .controls{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;transform:translateY(-50%)}
+    .btn{background:rgba(0,0,0,0.45);border:none;color:#fff;padding:8px 12px;cursor:pointer;margin:0 8px;border-radius:4px}
+    .dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer}
+    .dot.active{background:#fff}
+  </style>
+</head>
+<body>
+  <div class="carousel" id="carousel">
+    <div class="frame">
+      <div class="track" id="track">
+        <div class="slide"><img src="/src/char/1.png" alt="1"></div>
+        <div class="slide"><img src="/src/char/2.png" alt="2"></div>
+        <div class="slide"><img src="/src/char/3.png" alt="3"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prev">Prev</button>
+      <button class="btn" id="next">Next</button>
+    </div>
+
+    <div class="dots" id="dots">
+      <div class="dot" data-index="0"></div>
+      <div class="dot" data-index="1"></div>
+      <div class="dot" data-index="2"></div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const track = document.getElementById('track');
+      const slides = Array.from(track.children);
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      let index = 0;
+      const intervalMs = 3000;
+      let timer = null;
+
+      function goTo(i){
+        index = (i + slides.length) % slides.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach(d=>d.classList.toggle('active', Number(d.dataset.index)===index));
+      }
+
+      function startTimer(){ stopTimer(); timer = setInterval(()=> goTo(index+1), intervalMs); }
+      function stopTimer(){ if(timer) clearInterval(timer); }
+
+      prev.addEventListener('click', ()=>{ goTo(index-1); startTimer(); });
+      next.addEventListener('click', ()=>{ goTo(index+1); startTimer(); });
+      dots.forEach(d=> d.addEventListener('click', ()=>{ goTo(Number(d.dataset.index)); startTimer(); }));
+
+      const carousel = document.getElementById('carousel');
+      carousel.addEventListener('mouseenter', stopTimer);
+      carousel.addEventListener('mouseleave', startTimer);
+
+      // ensure images loaded then init (helps with correct sizing)
+      let imgs = slides.map(s=>s.querySelector('img'));
+      let loaded = 0;
+      imgs.forEach(img=>{
+        if(img.complete) { loaded++; return; }
+        img.addEventListener('load', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
+        img.addEventListener('error', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
+      });
+      // init immediately if all already loaded
+      if(loaded===imgs.length){ goTo(0); }
+      startTimer();
+    })();
+  </script>
+</body>
+</html>
