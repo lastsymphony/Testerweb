@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Genshin Impact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #aaa;
+        }
+        
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        input::placeholder {
+            color: #aaa;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(90deg, #ff8c00, #ffd700);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+        }
+        
+        .result-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            overflow: hidden;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .achievements {
+            margin-top: 20px;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .achievement-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+        
+        .achievement-desc {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .characters {
+            margin-top: 20px;
+        }
+        
+        .characters h3 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .characters-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .character {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80px;
+        }
+        
+        .character-id {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Genshin Impact Profile</h1>
+            <p class="subtitle">Lihat profil pemain Genshin Impact berdasarkan ID</p>
+        </header>
+        
+        <section class="input-section">
+            <div class="input-group">
+                <input type="text" id="playerId" placeholder="Masukkan ID Pemain (contoh: 864418200)">
+                <button id="fetchButton">Tampilkan Profil</button>
+            </div>
+            <p>Contoh ID: 864418200</p>
+        </section>
+        
+        <section class="result-section" id="resultSection">
+            <div class="profile-header">
+                <div class="avatar">
+                    <img id="avatarImg" src="" alt="Avatar">
+                </div>
+                <div class="profile-info">
+                    <h2 id="playerName">Katheryne</h2>
+                    <p id="playerLevel">Level 58</p>
+                    <p id="playerSignature">Kenapa aku WNI</p>
+                    <p id="playerRegion">Region: ASIA</p>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="worldLevel">8</div>
+                    <div class="stat-label">World Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="achievementCount">706</div>
+                    <div class="stat-label">Achievement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="spiralAbyss">8-3</div>
+                    <div class="stat-label">Spiral Abyss</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="friendship">10</div>
+                    <div class="stat-label">Max Friendship</div>
+                </div>
+            </div>
+            
+            <div class="achievements">
+                <h3>Achievements</h3>
+                <div id="achievementsList">
+                    <!-- Achievement akan dimasukkan di sini -->
+                </div>
+            </div>
+            
+            <div class="characters">
+                <h3>Karakter yang Dimiliki</h3>
+                <div class="characters-list" id="charactersList">
+                    <!-- Karakter akan dimasukkan di sini -->
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Data profil diambil dari API Genshin Impact</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            // Untuk demo, kita akan menggunakan data statis yang Anda berikan
+            // Dalam implementasi nyata, Anda akan mengambil data dari API
+            
+            // Tampilkan bagian hasil
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Isi data profil
+            document.getElementById('playerName').textContent = 'Katheryne';
+            document.getElementById('playerLevel').textContent = 'Level 58';
+            document.getElementById('playerSignature').textContent = 'Kenapa aku WNI';
+            document.getElementById('playerRegion').textContent = 'Region: ASIA';
+            
+            // Isi statistik
+            document.getElementById('worldLevel').textContent = '8';
+            document.getElementById('achievementCount').textContent = '706';
+            document.getElementById('spiralAbyss').textContent = '8-3';
+            document.getElementById('friendship').textContent = '10';
+            
+            // Isi avatar
+            document.getElementById('avatarImg').src = 'https://enka.network/ui/UI_AvatarIcon_Feiyan.png';
+            
+            // Isi achievements
+            const achievementsList = document.getElementById('achievementsList');
+            achievementsList.innerHTML = '';
+            
+            const achievement = {
+                name: 'The grind begins',
+                description: 'For 40cv+ artifacts'
+            };
+            
+            const achievementElement = document.createElement('div');
+            achievementElement.className = 'achievement-card';
+            achievementElement.innerHTML = `
+                <div class="achievement-name">${achievement.name}</div>
+                <div class="achievement-desc">${achievement.description}</div>
+            `;
+            
+            achievementsList.appendChild(achievementElement);
+            
+            // Isi karakter
+            const charactersList = document.getElementById('charactersList');
+            charactersList.innerHTML = '';
+            
+            const characters = [10000089, 10000014, 10000048, 10000087, 10000074];
+            
+            characters.forEach(characterId => {
+                const characterElement = document.createElement('div');
+                characterElement.className = 'character';
+                characterElement.innerHTML = `
+                    <div class="character-id">${characterId}</div>
+                `;
+                
+                charactersList.appendChild(characterElement);
+            });
+        });
+    </script>
+</body>
+</html>
