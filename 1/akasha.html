@@ -24,6 +24,7 @@
       width:64px; height:64px; background:linear-gradient(135deg,var(--accent),#ff8fab); border-radius:12px;
       display:flex; align-items:center; justify-content:center; color:#071526; font-weight:800; font-size:20px;
       box-shadow:0 6px 20px rgba(0,0,0,0.45);
+      flex-shrink: 0;
     }
     h1{margin:0; font-size:20px}
     p.lead{margin:4px 0 0; color:var(--muted); font-size:13px}
@@ -383,6 +384,120 @@
     .player-stat-label {
       font-size: 12px;
       color: var(--muted);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 16px;
+      }
+      .logo {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+      }
+      h1 {
+        font-size: 18px;
+      }
+      .banner-title {
+        font-size: 20px;
+      }
+      .banner-subtitle {
+        font-size: 12px;
+      }
+      .step {
+        width: 100px;
+      }
+      .step-label {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .logo {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 16px;
+      }
+      p.lead {
+        font-size: 12px;
+      }
+      .banner {
+        height: 150px;
+      }
+      .banner-title {
+        font-size: 18px;
+      }
+      .banner-subtitle {
+        font-size: 11px;
+      }
+      .steps {
+        margin-bottom: 16px;
+      }
+      .step {
+        width: 80px;
+      }
+      .step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+      }
+      .step-label {
+        font-size: 10px;
+      }
+      .section-title {
+        font-size: 14px;
+      }
+      .form-label {
+        font-size: 13px;
+      }
+      .form-input {
+        padding: 8px;
+        font-size: 14px;
+      }
+      .package-card {
+        padding: 10px;
+      }
+      .package-name {
+        font-size: 14px;
+      }
+      .package-price {
+        font-size: 15px;
+      }
+      .package-desc {
+        font-size: 12px;
+      }
+      .player-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .player-stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+      }
+      .player-stat-value {
+        font-size: 14px;
+      }
+      .player-stat-label {
+        font-size: 11px;
+      }
+      .order-button {
+        font-size: 14px;
+        padding: 10px;
+      }
     }
   </style>
 </head>
@@ -775,7 +890,7 @@
             formData.nickname = playerData.nickname;
             
             // Update UI with player data
-            uidStatus.textContent = 'UID valid! Data berhasil diambil.';
+            uidStatus.textContent = ''; // Remove the success message
             uidStatus.className = 'uid-status valid';
             
             // Show player info
@@ -890,11 +1005,13 @@
       orderButton.disabled = true;
       backButton.disabled = true;
       
-      // Get package name
+      // Get package name and price
       let packageName = '';
+      let packagePrice = '';
       document.querySelectorAll('.package-card').forEach(card => {
         if (card.dataset.package === formData.package) {
           packageName = card.querySelector('.package-name').textContent;
+          packagePrice = card.querySelector('.package-price').textContent;
         }
       });
       
@@ -906,8 +1023,10 @@
       // Create order details for WhatsApp
       const orderDetails = `Halo Elisa Store, saya mau order joki genshin dengan detail berikut:
 - Paket: ${packageName}
+- Harga: ${packagePrice}
 - UID: ${formData.uid}
 - Username: ${formData.username}
+- Password: ${formData.password}
 - Server: ${serverName}
 - Metode Login: ${formData.loginMethod}
 - Catatan: ${formData.notes}
