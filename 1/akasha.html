@@ -6,7 +6,7 @@
   <title>JOKI GENSHIN — Elisa Store</title>
   <style>
     :root{
-      --bg:#0f1724; --card:#0b1220; --accent:#ffd93d; --muted:#b4bec9; --glass: rgba(255,255,255,0.03);
+      --bg:#0f1724; --card:#0b1220; --accent:#ff6b9d; --muted:#b4bec9; --glass: rgba(255,255,255,0.03);
       --maxw:1000px;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
@@ -21,7 +21,7 @@
       display:flex; align-items:center; gap:12px; margin-bottom:18px;
     }
     .logo{
-      width:64px; height:64px; background:linear-gradient(135deg,var(--accent),#ffb86b); border-radius:12px;
+      width:64px; height:64px; background:linear-gradient(135deg,var(--accent),#ff8fab); border-radius:12px;
       display:flex; align-items:center; justify-content:center; color:#071526; font-weight:800; font-size:20px;
       box-shadow:0 6px 20px rgba(0,0,0,0.45);
     }
@@ -160,7 +160,7 @@
     }
     .package-card.selected {
       border-color: var(--accent);
-      background: rgba(255, 217, 61, 0.1);
+      background: rgba(255, 107, 157, 0.1);
     }
     .package-header {
       display: flex;
@@ -180,7 +180,7 @@
     }
     .package-discount {
       display: inline-block;
-      background: rgba(255, 217, 61, 0.2);
+      background: rgba(255, 107, 157, 0.2);
       color: var(--accent);
       padding: 2px 6px;
       border-radius: 4px;
@@ -205,18 +205,10 @@
     }
     .payment-option.selected {
       border-color: var(--accent);
-      background: rgba(255, 217, 61, 0.1);
+      background: rgba(255, 107, 157, 0.1);
     }
     .payment-name {
       font-weight: 600;
-    }
-    .payment-badge {
-      background: var(--accent);
-      color: var(--bg);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
     }
     
     .order-button {
@@ -236,7 +228,7 @@
       gap: 8px;
     }
     .order-button:hover {
-      background: #ffcc00;
+      background: #ff5a8a;
     }
     .order-button:disabled {
       background: rgba(255, 255, 255, 0.1);
@@ -259,7 +251,7 @@
     .banner {
       width: 100%;
       height: 180px;
-      background: linear-gradient(135deg, rgba(255, 217, 61, 0.2), rgba(255, 184, 107, 0.1));
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.2), rgba(255, 143, 171, 0.1));
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -286,7 +278,7 @@
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 217, 61, 0.3) 0%, rgba(255, 217, 61, 0) 70%);
+      background: radial-gradient(circle, rgba(255, 107, 157, 0.3) 0%, rgba(255, 107, 157, 0) 70%);
     }
     .banner-decoration-1 {
       top: -100px;
@@ -392,6 +384,57 @@
       font-size: 12px;
       color: var(--muted);
     }
+    
+    .order-confirmation {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+    
+    .order-confirmation.visible {
+      display: block;
+    }
+    
+    .order-confirmation-title {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    
+    .order-confirmation-details {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .order-confirmation-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .order-confirmation-detail:last-child {
+      margin-bottom: 0;
+    }
+    
+    .order-confirmation-label {
+      color: var(--muted);
+    }
+    
+    .order-confirmation-value {
+      font-weight: 600;
+    }
+    
+    .order-confirmation-message {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -436,9 +479,10 @@
           <div class="form-group">
             <label class="form-label">Metode Login</label>
             <select class="form-input" id="loginMethod">
-              <option value="remote">Remote (TeamViewer/AnyDesk)</option>
-              <option value="transfer">Transfer Akun</option>
-              <option value="live">Live PC</option>
+              <option value="facebook">Facebook</option>
+              <option value="hoyoverse">Hoyoverse</option>
+              <option value="google">Google</option>
+              <option value="twitter">Twitter</option>
             </select>
           </div>
           <div class="form-group">
@@ -489,19 +533,6 @@
           <div class="promo-title">
             <div class="badge">PAKET HEMAT</div>
             <div>10 Bintang</div>
-          </div>
-          
-          <div class="package-card" data-package="combo-epic">
-            <div class="package-header">
-              <div class="package-name">Combo 10 Star Epic + Bonus 2</div>
-              <div>
-                <span class="package-price">Rp 50.000</span>
-                <span class="package-discount">31%</span>
-              </div>
-            </div>
-            <div class="package-desc">Clear 10 bintang Epic + 2 bintang bonus</div>
-            <div class="package-desc">Harga normal: Rp 72.000</div>
-            <div class="package-desc">Pengiriman INSTAN</div>
           </div>
           
           <div class="package-card" data-package="combo-legend">
@@ -589,22 +620,20 @@
         <div id="step3" class="step-content" style="display:none;">
           <div class="section-title">Pilih Pembayaran</div>
           
-          <div class="payment-option" data-payment="gopay" data-redirect="https://wa.me/6285255002153?text=Halo%20Elisa%20Store%20saya%20mau%20order%20joki%20genshin">
+          <div class="payment-option" data-payment="gopay">
             <div class="payment-name">Gopay</div>
-            <div class="payment-badge">BEST PRICE</div>
           </div>
           
-          <div class="payment-option" data-payment="qris" data-redirect="https://wa.me/6285255002153?text=Halo%20Elisa%20Store%20saya%20mau%20order%20joki%20genshin">
+          <div class="payment-option" data-payment="qris">
             <div class="payment-name">QRIS</div>
-            <div class="payment-badge">BEST PRICE</div>
             <div class="muted">Min. Rp 100</div>
           </div>
           
-          <div class="payment-option" data-payment="bri" data-redirect="https://wa.me/6285255002153?text=Halo%20Elisa%20Store%20saya%20mau%20order%20joki%20genshin">
+          <div class="payment-option" data-payment="bri">
             <div class="payment-name">BRI</div>
           </div>
           
-          <div class="payment-option" data-payment="dana" data-redirect="https://wa.me/6285255002153?text=Halo%20Elisa%20Store%20saya%20mau%20order%20joki%20genshin">
+          <div class="payment-option" data-payment="dana">
             <div class="payment-name">Dana</div>
           </div>
         </div>
@@ -616,6 +645,38 @@
           </button>
           <button class="order-button" id="orderButton" disabled>
             <span>Lanjutkan</span>
+          </button>
+        </div>
+        
+        <div id="orderConfirmation" class="order-confirmation">
+          <div class="order-confirmation-title">Pesanan Anda Telah Diterima!</div>
+          <div class="order-confirmation-details">
+            <div class="order-confirmation-detail">
+              <div class="order-confirmation-label">Nomor Pesanan:</div>
+              <div class="order-confirmation-value" id="orderNumber"></div>
+            </div>
+            <div class="order-confirmation-detail">
+              <div class="order-confirmation-label">Paket:</div>
+              <div class="order-confirmation-value" id="orderPackage"></div>
+            </div>
+            <div class="order-confirmation-detail">
+              <div class="order-confirmation-label">UID:</div>
+              <div class="order-confirmation-value" id="orderUID"></div>
+            </div>
+            <div class="order-confirmation-detail">
+              <div class="order-confirmation-label">Server:</div>
+              <div class="order-confirmation-value" id="orderServer"></div>
+            </div>
+            <div class="order-confirmation-detail">
+              <div class="order-confirmation-label">Total Pembayaran:</div>
+              <div class="order-confirmation-value" id="orderTotal"></div>
+            </div>
+          </div>
+          <div class="order-confirmation-message">
+            Terima kasih telah melakukan pemesanan. Tim kami akan segera memproses pesanan Anda. Silakan tunggu konfirmasi lebih lanjut melalui WhatsApp.
+          </div>
+          <button class="order-button" id="whatsappButton">
+            <span>Hubungi via WhatsApp</span>
           </button>
         </div>
       </section>
@@ -691,6 +752,8 @@
     const playerWorldLevel = document.getElementById('playerWorldLevel');
     const playerAchievements = document.getElementById('playerAchievements');
     const playerSpiralAbyss = document.getElementById('playerSpiralAbyss');
+    const orderConfirmation = document.getElementById('orderConfirmation');
+    const whatsappButton = document.getElementById('whatsappButton');
     
     // Update step UI
     function updateStepUI() {
@@ -760,13 +823,13 @@
       formData.uid = '';
       formData.nickname = '';
       
-      // Check if UID is valid (9 digits)
+      // Check if UID is valid (9-12 digits)
       if (!uid) {
         return;
       }
       
-      if (!/^\d{9}$/.test(uid)) {
-        uidStatus.textContent = 'UID harus 9 digit angka';
+      if (!/^\d{9,12}$/.test(uid)) {
+        uidStatus.textContent = 'UID harus 9-12 digit angka';
         uidStatus.className = 'uid-status invalid';
         return;
       }
@@ -849,13 +912,6 @@
         document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
         option.classList.add('selected');
         formData.payment = option.dataset.payment;
-        
-        // Redirect to payment method
-        const redirectUrl = option.dataset.redirect;
-        if (redirectUrl) {
-          window.open(redirectUrl, '_blank');
-        }
-        
         checkStepValidity();
       });
     });
@@ -888,6 +944,18 @@
       }
     });
     
+    // WhatsApp button click
+    whatsappButton.addEventListener('click', () => {
+      const orderDetails = `Halo Elisa Store, saya mau order joki genshin dengan detail berikut:
+- Nomor Pesanan: ${document.getElementById('orderNumber').textContent}
+- Paket: ${document.getElementById('orderPackage').textContent}
+- UID: ${document.getElementById('orderUID').textContent}
+- Server: ${document.getElementById('orderServer').textContent}
+- Total Pembayaran: ${document.getElementById('orderTotal').textContent}`;
+      
+      window.open(`https://wa.me/6285255002153?text=${encodeURIComponent(orderDetails)}`, '_blank');
+    });
+    
     // Submit order
     function submitOrder() {
       // In a real application, this would send the data to a server
@@ -901,21 +969,32 @@
       
       // Simulate API call
       setTimeout(() => {
-        orderButton.innerHTML = '<span>Pesanan berhasil! Mengalihkan ke WhatsApp...</span>';
+        // Generate order number
+        const orderNumber = 'ORD' + Date.now().toString().slice(-8);
         
-        // Redirect to WhatsApp with order details
-        setTimeout(() => {
-          const orderDetails = `Halo Elisa Store, saya mau order joki genshin dengan detail berikut:
-- Paket: ${formData.package}
-- UID: ${formData.uid}
-- Nickname: ${formData.nickname}
-- Server: ${formData.server}
-- Metode Login: ${formData.loginMethod}
-- Catatan: ${formData.notes}
-- Metode Pembayaran: ${formData.payment}`;
-          
-          window.open(`https://wa.me/6285255002153?text=${encodeURIComponent(orderDetails)}`, '_blank');
-        }, 1500);
+        // Get package name
+        let packageName = '';
+        let packagePrice = '';
+        document.querySelectorAll('.package-card').forEach(card => {
+          if (card.dataset.package === formData.package) {
+            packageName = card.querySelector('.package-name').textContent;
+            packagePrice = card.querySelector('.package-price').textContent;
+          }
+        });
+        
+        // Update order confirmation
+        document.getElementById('orderNumber').textContent = orderNumber;
+        document.getElementById('orderPackage').textContent = packageName;
+        document.getElementById('orderUID').textContent = formData.uid;
+        document.getElementById('orderServer').textContent = formData.server;
+        document.getElementById('orderTotal').textContent = packagePrice;
+        
+        // Show order confirmation
+        orderConfirmation.classList.add('visible');
+        
+        // Hide buttons
+        orderButton.style.display = 'none';
+        backButton.style.display = 'none';
       }, 1500);
     }
     
