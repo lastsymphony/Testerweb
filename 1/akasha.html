@@ -384,57 +384,6 @@
       font-size: 12px;
       color: var(--muted);
     }
-    
-    .order-confirmation {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 16px;
-      display: none;
-    }
-    
-    .order-confirmation.visible {
-      display: block;
-    }
-    
-    .order-confirmation-title {
-      font-weight: 700;
-      font-size: 18px;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-    
-    .order-confirmation-details {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
-    }
-    
-    .order-confirmation-detail {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    
-    .order-confirmation-detail:last-child {
-      margin-bottom: 0;
-    }
-    
-    .order-confirmation-label {
-      color: var(--muted);
-    }
-    
-    .order-confirmation-value {
-      font-weight: 600;
-    }
-    
-    .order-confirmation-message {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 16px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
@@ -484,6 +433,14 @@
               <option value="google">Google</option>
               <option value="twitter">Twitter</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-input" id="username" placeholder="Masukkan username akun">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="password" placeholder="Masukkan password akun">
           </div>
           <div class="form-group">
             <label class="form-label">UID Genshin Impact</label>
@@ -626,7 +583,6 @@
           
           <div class="payment-option" data-payment="qris">
             <div class="payment-name">QRIS</div>
-            <div class="muted">Min. Rp 100</div>
           </div>
           
           <div class="payment-option" data-payment="bri">
@@ -645,38 +601,6 @@
           </button>
           <button class="order-button" id="orderButton" disabled>
             <span>Lanjutkan</span>
-          </button>
-        </div>
-        
-        <div id="orderConfirmation" class="order-confirmation">
-          <div class="order-confirmation-title">Pesanan Anda Telah Diterima!</div>
-          <div class="order-confirmation-details">
-            <div class="order-confirmation-detail">
-              <div class="order-confirmation-label">Nomor Pesanan:</div>
-              <div class="order-confirmation-value" id="orderNumber"></div>
-            </div>
-            <div class="order-confirmation-detail">
-              <div class="order-confirmation-label">Paket:</div>
-              <div class="order-confirmation-value" id="orderPackage"></div>
-            </div>
-            <div class="order-confirmation-detail">
-              <div class="order-confirmation-label">UID:</div>
-              <div class="order-confirmation-value" id="orderUID"></div>
-            </div>
-            <div class="order-confirmation-detail">
-              <div class="order-confirmation-label">Server:</div>
-              <div class="order-confirmation-value" id="orderServer"></div>
-            </div>
-            <div class="order-confirmation-detail">
-              <div class="order-confirmation-label">Total Pembayaran:</div>
-              <div class="order-confirmation-value" id="orderTotal"></div>
-            </div>
-          </div>
-          <div class="order-confirmation-message">
-            Terima kasih telah melakukan pemesanan. Tim kami akan segera memproses pesanan Anda. Silakan tunggu konfirmasi lebih lanjut melalui WhatsApp.
-          </div>
-          <button class="order-button" id="whatsappButton">
-            <span>Hubungi via WhatsApp</span>
           </button>
         </div>
       </section>
@@ -729,6 +653,8 @@
     // Form data
     const formData = {
       loginMethod: '',
+      username: '',
+      password: '',
       uid: '',
       nickname: '',
       server: '',
@@ -752,8 +678,6 @@
     const playerWorldLevel = document.getElementById('playerWorldLevel');
     const playerAchievements = document.getElementById('playerAchievements');
     const playerSpiralAbyss = document.getElementById('playerSpiralAbyss');
-    const orderConfirmation = document.getElementById('orderConfirmation');
-    const whatsappButton = document.getElementById('whatsappButton');
     
     // Update step UI
     function updateStepUI() {
@@ -794,7 +718,7 @@
     function isCurrentStepValid() {
       switch (currentStep) {
         case 1:
-          return formData.uid !== '' && formData.nickname !== '';
+          return formData.uid !== '' && formData.username !== '' && formData.password !== '';
         case 2:
           return formData.package !== '';
         case 3:
@@ -807,7 +731,8 @@
     // Check if entire form is valid
     function isFormValid() {
       return formData.uid !== '' && 
-             formData.nickname !== '' && 
+             formData.username !== '' && 
+             formData.password !== '' && 
              formData.package !== '' && 
              formData.payment !== '';
     }
@@ -882,6 +807,16 @@
       formData.loginMethod = e.target.value;
     });
     
+    document.getElementById('username').addEventListener('input', (e) => {
+      formData.username = e.target.value;
+      checkStepValidity();
+    });
+    
+    document.getElementById('password').addEventListener('input', (e) => {
+      formData.password = e.target.value;
+      checkStepValidity();
+    });
+    
     uidInput.addEventListener('input', () => {
       // Debounce the validation
       clearTimeout(uidInput.validateTimeout);
@@ -931,7 +866,7 @@
         currentStep++;
         updateStepUI();
       } else {
-        // Submit form
+        // Submit form and redirect to WhatsApp
         submitOrder();
       }
     });
@@ -944,57 +879,49 @@
       }
     });
     
-    // WhatsApp button click
-    whatsappButton.addEventListener('click', () => {
-      const orderDetails = `Halo Elisa Store, saya mau order joki genshin dengan detail berikut:
-- Nomor Pesanan: ${document.getElementById('orderNumber').textContent}
-- Paket: ${document.getElementById('orderPackage').textContent}
-- UID: ${document.getElementById('orderUID').textContent}
-- Server: ${document.getElementById('orderServer').textContent}
-- Total Pembayaran: ${document.getElementById('orderTotal').textContent}`;
-      
-      window.open(`https://wa.me/6285255002153?text=${encodeURIComponent(orderDetails)}`, '_blank');
-    });
-    
     // Submit order
     function submitOrder() {
       // In a real application, this would send the data to a server
       console.log('Form data:', formData);
       
-      // Show success message
+      // Show loading message
       errorMessage.innerHTML = '';
       orderButton.innerHTML = '<span>Memproses pesanan...</span>';
       orderButton.disabled = true;
       backButton.disabled = true;
       
+      // Get package name
+      let packageName = '';
+      document.querySelectorAll('.package-card').forEach(card => {
+        if (card.dataset.package === formData.package) {
+          packageName = card.querySelector('.package-name').textContent;
+        }
+      });
+      
+      // Get server name
+      let serverName = '';
+      const serverSelect = document.getElementById('server');
+      serverName = serverSelect.options[serverSelect.selectedIndex].text;
+      
+      // Create order details for WhatsApp
+      const orderDetails = `Halo Elisa Store, saya mau order joki genshin dengan detail berikut:
+- Paket: ${packageName}
+- UID: ${formData.uid}
+- Username: ${formData.username}
+- Server: ${serverName}
+- Metode Login: ${formData.loginMethod}
+- Catatan: ${formData.notes}
+- Metode Pembayaran: ${formData.payment}`;
+      
       // Simulate API call
       setTimeout(() => {
-        // Generate order number
-        const orderNumber = 'ORD' + Date.now().toString().slice(-8);
+        // Redirect to WhatsApp with order details
+        window.open(`https://wa.me/6285255002153?text=${encodeURIComponent(orderDetails)}`, '_blank');
         
-        // Get package name
-        let packageName = '';
-        let packagePrice = '';
-        document.querySelectorAll('.package-card').forEach(card => {
-          if (card.dataset.package === formData.package) {
-            packageName = card.querySelector('.package-name').textContent;
-            packagePrice = card.querySelector('.package-price').textContent;
-          }
-        });
-        
-        // Update order confirmation
-        document.getElementById('orderNumber').textContent = orderNumber;
-        document.getElementById('orderPackage').textContent = packageName;
-        document.getElementById('orderUID').textContent = formData.uid;
-        document.getElementById('orderServer').textContent = formData.server;
-        document.getElementById('orderTotal').textContent = packagePrice;
-        
-        // Show order confirmation
-        orderConfirmation.classList.add('visible');
-        
-        // Hide buttons
-        orderButton.style.display = 'none';
-        backButton.style.display = 'none';
+        // Reset button
+        orderButton.innerHTML = '<span>Pesan Sekarang!</span>';
+        orderButton.disabled = false;
+        backButton.disabled = false;
       }, 1500);
     }
     
