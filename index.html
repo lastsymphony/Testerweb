@@ -1,93 +1,636 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Carousel 16:9</title>
-  <style>
-    *{box-sizing:border-box}
-    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f3f4f6}
-    .carousel{position:relative;width:90%;max-width:900px;overflow:hidden;border-radius:8px;background:#000}
-    /* 16:9 wrapper */
-    .frame{
-      width:100%;
-      /* maintain 16:9: padding-top = 9/16 * 100% = 56.25% */
-      position:relative;
-      padding-top:56.25%;
-      overflow:hidden;
-    }
-    .track{display:flex;transition:transform 0.6s ease;position:absolute;top:0;left:0;height:100%;width:300%}
-    .slide{min-width:100%;flex-shrink:0;height:100%}
-    .slide img{width:100%;height:100%;object-fit:cover;display:block}
-    .controls{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;transform:translateY(-50%)}
-    .btn{background:rgba(0,0,0,0.45);border:none;color:#fff;padding:8px 12px;cursor:pointer;margin:0 8px;border-radius:4px}
-    .dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px}
-    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer}
-    .dot.active{background:#fff}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern HLS (M3U8) Player</title>
+    <!-- Load hls.js library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-hover: #2d2d2d;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border-color: #333333;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--surface-color);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+
+        /* Player Section */
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            background-color: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .status-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 2rem 1rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-overlay.visible {
+            opacity: 1;
+        }
+
+        .placeholder-text {
+            position: absolute;
+            color: var(--text-secondary);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* Controls Section */
+        .controls-card {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        button.primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        button.primary-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .samples-section {
+            margin-top: 1rem;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .sample-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .chip {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Sidebar / History */
+        .sidebar {
+            background-color: var(--surface-color);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            max-height: 80vh;
+        }
+
+        .sidebar-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .clear-btn:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .history-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .history-item {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .history-item:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .history-url {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-history {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background-color: var(--surface-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 250px;
+            animation: slideIn 0.3s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast.error { border-left-color: var(--danger-color); }
+        .toast.success { border-left-color: var(--success-color); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            display: none;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
 </head>
 <body>
-  <div class="carousel" id="carousel">
-    <div class="frame">
-      <div class="track" id="track">
-        <div class="slide"><img src="/src/char/1.png" alt="1"></div>
-        <div class="slide"><img src="/src/char/2.png" alt="2"></div>
-        <div class="slide"><img src="/src/char/3.png" alt="3"></div>
-      </div>
-    </div>
 
-    <div class="controls">
-      <button class="btn" id="prev">Prev</button>
-      <button class="btn" id="next">Next</button>
-    </div>
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>HLS WebPlayer</span>
+        </div>
+    </header>
 
-    <div class="dots" id="dots">
-      <div class="dot" data-index="0"></div>
-      <div class="dot" data-index="1"></div>
-      <div class="dot" data-index="2"></div>
-    </div>
-  </div>
+    <main>
+        <section class="player-container">
+            <div class="video-wrapper">
+                <div class="placeholder-text" id="placeholder">
+                    <p>Enter an .m3u8 URL below to start</p>
+                </div>
+                <div class="loader" id="loader"></div>
+                <video id="video" controls crossorigin="anonymous"></video>
+                <div class="status-overlay" id="statusOverlay">Ready</div>
+            </div>
 
-  <script>
-    (function(){
-      const track = document.getElementById('track');
-      const slides = Array.from(track.children);
-      const prev = document.getElementById('prev');
-      const next = document.getElementById('next');
-      const dots = Array.from(document.querySelectorAll('.dot'));
-      let index = 0;
-      const intervalMs = 3000;
-      let timer = null;
+            <div class="controls-card">
+                <div class="input-group">
+                    <input type="text" id="streamUrl" placeholder="https://example.com/stream.m3u8" autocomplete="off">
+                    <button class="primary-btn" id="playBtn">Play</button>
+                </div>
 
-      function goTo(i){
-        index = (i + slides.length) % slides.length;
-        track.style.transform = `translateX(-${index * 100}%)`;
-        dots.forEach(d=>d.classList.toggle('active', Number(d.dataset.index)===index));
-      }
+                <div class="samples-section">
+                    <span class="section-label">Test Streams:</span>
+                    <div class="sample-chips">
+                        <button class="chip" data-url="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8">Big Buck Bunny</button>
+                        <button class="chip" data-url="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8">Sintel</button>
+                        <button class="chip" data-url="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8">Tears of Steel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-      function startTimer(){ stopTimer(); timer = setInterval(()=> goTo(index+1), intervalMs); }
-      function stopTimer(){ if(timer) clearInterval(timer); }
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">History</span>
+                <button class="clear-btn" id="clearHistory">Clear All</button>
+            </div>
+            <ul class="history-list" id="historyList">
+                <!-- History items will be injected here -->
+            </ul>
+        </aside>
+    </main>
 
-      prev.addEventListener('click', ()=>{ goTo(index-1); startTimer(); });
-      next.addEventListener('click', ()=>{ goTo(index+1); startTimer(); });
-      dots.forEach(d=> d.addEventListener('click', ()=>{ goTo(Number(d.dataset.index)); startTimer(); }));
+    <footer>
+        HLS Player using hls.js technology. Supports cross-browser streaming.
+    </footer>
 
-      const carousel = document.getElementById('carousel');
-      carousel.addEventListener('mouseenter', stopTimer);
-      carousel.addEventListener('mouseleave', startTimer);
+    <div class="toast-container" id="toastContainer"></div>
 
-      // ensure images loaded then init (helps with correct sizing)
-      let imgs = slides.map(s=>s.querySelector('img'));
-      let loaded = 0;
-      imgs.forEach(img=>{
-        if(img.complete) { loaded++; return; }
-        img.addEventListener('load', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
-        img.addEventListener('error', ()=>{ loaded++; if(loaded===imgs.length) goTo(0); });
-      });
-      // init immediately if all already loaded
-      if(loaded===imgs.length){ goTo(0); }
-      startTimer();
-    })();
-  </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('video');
+            const input = document.getElementById('streamUrl');
+            const playBtn = document.getElementById('playBtn');
+            const placeholder = document.getElementById('placeholder');
+            const loader = document.getElementById('loader');
+            const statusOverlay = document.getElementById('statusOverlay');
+            const historyList = document.getElementById('historyList');
+            const clearHistoryBtn = document.getElementById('clearHistory');
+            const chips = document.querySelectorAll('.chip');
+
+            let hls = null;
+            let playbackHistory = JSON.parse(localStorage.getItem('hls_history')) || [];
+
+            // Initialize UI
+            renderHistory();
+
+            // Event Listeners
+            playBtn.addEventListener('click', () => loadStream(input.value.trim()));
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') loadStream(input.value.trim());
+            });
+
+            clearHistoryBtn.addEventListener('click', clearHistory);
+
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const url = chip.getAttribute('data-url');
+                    input.value = url;
+                    loadStream(url);
+                });
+            });
+
+            // --- Core Player Logic ---
+
+            function loadStream(url) {
+                if (!url) {
+                    showToast('Please enter a valid URL', 'error');
+                    return;
+                }
+
+                if (!url.endsWith('.m3u8')) {
+                    showToast('URL should usually end with .m3u8', 'error');
+                    // We continue anyway, as some streams use query params
+                }
+
+                // UI Updates
+                resetPlayerUI();
+                loader.style.display = 'block';
+                placeholder.style.display = 'none';
+                updateStatus('Loading stream...');
+
+                // Add to history
+                addToHistory(url);
+
+                // Check for HLS support
+                if (Hls.isSupported()) {
+                    if (hls) {
+                        hls.destroy();
+                    }
+
+                    hls = new Hls({
+                        debug: false,
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                    });
+
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        loader.style.display = 'none';
+                        video.play().catch(e => console.log("Auto-play blocked by browser policy"));
+                        updateStatus('Playing');
+                        showToast('Stream loaded successfully', 'success');
+                    });
+
+                    hls.on(Hls.Events.ERROR, function (event, data) {
+                        if (data.fatal) {
+                            loader.style.display = 'none';
+                            handleHlsErrors(data);
+                        }
+                    });
+                    
+                    // Level switching for quality updates
+                    hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+                        const hlsInstance = data; // actually event data in newer versions, context dependent
+                        // Just a placeholder for future quality indicator logic
+                    });
+
+                }
+                // For Safari (Native HLS)
+                else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = url;
+                    video.addEventListener('loadedmetadata', function() {
+                        loader.style.display = 'none';
+                        video.play();
+                        updateStatus('Playing (Native)');
+                        showToast('Stream loaded successfully', 'success');
+                    });
+
+                    video.addEventListener('error', function() {
+                        loader.style.display = 'none';
+                        showToast('Error playing video source.', 'error');
+                        updateStatus('Error');
+                    });
+                }
+                // No support
+                else {
+                    loader.style.display = 'none';
+                    showToast('Your browser does not support HLS playback.', 'error');
+                    updateStatus('Unsupported Browser');
+                }
+            }
+
+            function handleHlsErrors(data) {
+                switch (data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        showToast("Network error - Is the URL correct?", "error");
+                        updateStatus('Network Error');
+                        console.error("Network Error", data.details);
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        showToast("Media error - trying to recover...", "error");
+                        updateStatus('Media Error');
+                        console.log("recovering...");
+                        hls.recoverMediaError();
+                        break;
+                    default:
+                        showToast("Unrecoverable error.", "error");
+                        updateStatus('Fatal Error');
+                        hls.destroy();
+                        break;
+                }
+            }
+
+            function resetPlayerUI() {
+                statusOverlay.classList.remove('visible');
+                loader.style.display = 'none';
+            }
+
+            function updateStatus(msg) {
+                statusOverlay.textContent = msg;
+                statusOverlay.classList.add('visible');
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    if(statusOverlay.textContent === msg) {
+                        statusOverlay.classList.remove('visible');
+                    }
+                }, 3000);
+            }
+
+            // --- History Management ---
+
+            function addToHistory(url) {
+                // Remove if exists to push to top
+                playbackHistory = playbackHistory.filter(item => item.url !== url);
+                
+                // Add new item to beginning
+                playbackHistory.unshift({
+                    url: url,
+                    timestamp: new Date().toLocaleString()
+                });
+
+                // Keep only last 10
+                if (playbackHistory.length > 10) {
+                    playbackHistory.pop();
+                }
+
+                localStorage.setItem('hls_history', JSON.stringify(playbackHistory));
+                renderHistory();
+            }
+
+            function renderHistory() {
+                historyList.innerHTML = '';
+
+                if (playbackHistory.length === 0) {
+                    historyList.innerHTML = '<li class="empty-history">No history yet</li>';
+                    return;
+                }
+
+                playbackHistory.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.innerHTML = `
+                        <span class="history-url" title="${item.url}">${item.url}</span>
+                        <span class="history-time">${item.timestamp}</span>
+                    `;
+                    li.addEventListener('click', () => {
+                        input.value = item.url;
+                        loadStream(item.url);
+                    });
+                    historyList.appendChild(li);
+                });
+            }
+
+            function clearHistory() {
+                playbackHistory = [];
+                localStorage.removeItem('hls_history');
+                renderHistory();
+            }
+
+            // --- Toast System ---
+
+            function showToast(message, type = 'normal') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+
+                container.appendChild(toast);
+
+                // Remove after 4 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'fadeOut 0.3s forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+        });
+    </script>
 </body>
 </html>
