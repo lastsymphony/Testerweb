@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Live Preview</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #090b10;
+      --panel: #10131a;
+      --panel-2: #151923;
+      --border: #252b38;
+      --text: #e8ebf0;
+      --muted: #8b93a3;
+      --accent: #4f7cff;
+      --danger: #ff5f56;
+      --success: #35d07f;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+
+    header {
+      height: 64px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(9, 11, 16, .94);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font-size: 17px;
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    button:hover {
+      border-color: #3a4355;
+      background: var(--panel-2);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    button.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    /* MAIN */
+
+    main {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+    }
+
+    .editor,
+    .preview-panel {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editor {
+      border-right: 1px solid var(--border);
+    }
+
+    .panel-header {
+      height: 46px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .panel-info {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* EDITOR */
+
+    .editor-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background: #0c0f15;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      resize: none;
+      outline: none;
+      border: 0;
+      padding: 18px;
+      background: transparent;
+      color: #d9deea;
+      font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        Consolas,
+        monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      tab-size: 2;
+    }
+
+    textarea::selection {
+      background: rgba(79, 124, 255, .35);
+    }
+
+    /* PREVIEW */
+
+    .preview-area {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background-color: #e5e7eb;
+
+      /* checkerboard */
+      background-image:
+        linear-gradient(45deg, #d1d5db 25%, transparent 25%),
+        linear-gradient(-45deg, #d1d5db 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #d1d5db 75%),
+        linear-gradient(-45deg, transparent 75%, #d1d5db 75%);
+      background-size: 24px 24px;
+      background-position:
+        0 0,
+        0 12px,
+        12px -12px,
+        -12px 0;
+    }
+
+    .svg-container {
+      width: 100%;
+      min-width: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .svg-container svg {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 180px);
+      width: auto;
+      height: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .3);
+    }
+
+    /* STATUS */
+
+    .status {
+      height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .status.error .status-dot {
+      background: var(--danger);
+    }
+
+    /* EMPTY */
+
+    .empty {
+      color: #555d6d;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .empty strong {
+      display: block;
+      color: #687184;
+      margin-bottom: 5px;
+    }
+
+    /* FULLSCREEN */
+
+    body.fullscreen .editor {
+      display: none;
+    }
+
+    body.fullscreen main {
+      grid-template-columns: 1fr;
+    }
+
+    body.fullscreen .preview-area {
+      padding: 40px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+      header {
+        padding: 0 12px;
+      }
+
+      .brand-text {
+        display: none;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 50% 50%;
+      }
+
+      .editor {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .preview-area {
+        padding: 18px;
+      }
+
+      .svg-container svg {
+        max-height: 100%;
+      }
+
+      body.fullscreen .preview-area {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⌁</div>
+      <div class="brand-text">
+        SVG <span>Live Preview</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button onclick="resetSVG()">Reset</button>
+      <button onclick="copySVG()">Copy SVG</button>
+      <button class="primary" onclick="toggleFullscreen()">
+        Preview
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- EDITOR -->
+
+    <section class="editor">
+
+      <div class="panel-header">
+        <div class="panel-title">SVG Editor</div>
+        <div class="panel-info">
+          Live rendering
+        </div>
+      </div>
+
+      <div class="editor-wrap">
+        <textarea
+          id="svgInput"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          placeholder="Paste SVG kamu di sini..."
+        ></textarea>
+      </div>
+
+      <div class="status" id="status">
+        <div class="status-dot"></div>
+        <span id="statusText">Ready</span>
+      </div>
+
+    </section>
+
+
+    <!-- PREVIEW -->
+
+    <section class="preview-panel">
+
+      <div class="panel-header">
+        <div class="panel-title">Preview</div>
+        <div class="panel-info">
+          Transparent background
+        </div>
+      </div>
+
+      <div class="preview-area">
+
+        <div
+          class="svg-container"
+          id="preview"
+        >
+          <div class="empty">
+            <strong>SVG Preview</strong>
+            Paste SVG di editor untuk melihat hasilnya.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="status">
+        <div class="status-dot"></div>
+        <span id="sizeInfo">0 × 0</span>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+
+const textarea = document.getElementById("svgInput");
+const preview = document.getElementById("preview");
+const status = document.getElementById("status");
+const statusText = document.getElementById("statusText");
+const sizeInfo = document.getElementById("sizeInfo");
+
+const STORAGE_KEY = "svg-live-preview";
+
+const defaultSVG = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="400"
+  viewBox="0 0 600 400"
+>
+  <rect
+    width="600"
+    height="400"
+    rx="24"
+    fill="#111827"
+  />
+
+  <circle
+    cx="300"
+    cy="170"
+    r="80"
+    fill="#4f7cff"
+  />
+
+  <text
+    x="300"
+    y="300"
+    text-anchor="middle"
+    fill="white"
+    font-family="Arial"
+    font-size="32"
+    font-weight="700"
+  >
+    SVG Preview
+  </text>
+
+  <text
+    x="300"
+    y="335"
+    text-anchor="middle"
+    fill="#9ca3af"
+    font-family="Arial"
+    font-size="16"
+  >
+    Edit me!
+  </text>
+</svg>
+`.trim();
+
+
+/* LOAD */
+
+const saved = localStorage.getItem(STORAGE_KEY);
+
+textarea.value = saved || defaultSVG;
+
+render();
+
+
+/* LIVE PREVIEW */
+
+let timer;
+
+textarea.addEventListener("input", () => {
+
+  clearTimeout(timer);
+
+  timer = setTimeout(() => {
+    render();
+    localStorage.setItem(
+      STORAGE_KEY,
+      textarea.value
+    );
+  }, 80);
+
+});
+
+
+/* RENDER */
+
+function render() {
+
+  const code = textarea.value.trim();
+
+  if (!code) {
+
+    preview.innerHTML = `
+      <div class="empty">
+        <strong>SVG Preview</strong>
+        Paste SVG di editor untuk melihat hasilnya.
+      </div>
+    `;
+
+    setStatus("Empty", true);
+
+    return;
+  }
+
+
+  try {
+
+    const parser = new DOMParser();
+
+    const doc = parser.parseFromString(
+      code,
+      "image/svg+xml"
+    );
+
+    const error = doc.querySelector("parsererror");
+
+    if (error) {
+      throw new Error("SVG tidak valid");
+    }
+
+
+    const svg = doc.documentElement;
+
+    if (
+      svg.tagName.toLowerCase() !== "svg"
+    ) {
+      throw new Error(
+        "Root element harus <svg>"
+      );
+    }
+
+
+    /* Clone supaya aman */
+
+    const cloned = svg.cloneNode(true);
+
+    preview.innerHTML = "";
+
+    preview.appendChild(cloned);
+
+
+    /* Ukuran */
+
+    const width =
+      svg.getAttribute("width");
+
+    const height =
+      svg.getAttribute("height");
+
+    const viewBox =
+      svg.getAttribute("viewBox");
+
+
+    if (viewBox) {
+
+      const values =
+        viewBox
+          .trim()
+          .split(/[\s,]+/)
+          .map(Number);
+
+      if (values.length === 4) {
+
+        sizeInfo.textContent =
+          `${values[2]} × ${values[3]} viewBox`;
+
+      } else {
+
+        sizeInfo.textContent =
+          "viewBox detected";
+
+      }
+
+    } else if (width && height) {
+
+      sizeInfo.textContent =
+        `${width} × ${height}`;
+
+    } else {
+
+      sizeInfo.textContent =
+        "Auto size";
+
+    }
+
+
+    setStatus("SVG valid", false);
+
+  } catch (err) {
+
+    preview.innerHTML = `
+      <div class="empty">
+        <strong>SVG Error</strong>
+        ${escapeHTML(err.message)}
+      </div>
+    `;
+
+    sizeInfo.textContent = "Invalid";
+
+    setStatus(
+      err.message,
+      true
+    );
+  }
+}
+
+
+/* STATUS */
+
+function setStatus(message, error) {
+
+  status.classList.toggle(
+    "error",
+    error
+  );
+
+  statusText.textContent =
+    message;
+}
+
+
+/* RESET */
+
+function resetSVG() {
+
+  if (
+    !confirm(
+      "Reset SVG ke template awal?"
+    )
+  ) {
+    return;
+  }
+
+  textarea.value =
+    defaultSVG;
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    defaultSVG
+  );
+
+  render();
+}
+
+
+/* COPY */
+
+async function copySVG() {
+
+  try {
+
+    await navigator.clipboard.writeText(
+      textarea.value
+    );
+
+    const old =
+      statusText.textContent;
+
+    setStatus(
+      "SVG berhasil dicopy",
+      false
+    );
+
+    setTimeout(() => {
+      setStatus(old, false);
+    }, 1500);
+
+  } catch {
+
+    alert(
+      "Gagal copy. Silakan copy manual."
+    );
+
+  }
+}
+
+
+/* FULLSCREEN */
+
+function toggleFullscreen() {
+
+  document.body.classList.toggle(
+    "fullscreen"
+  );
+
+}
+
+
+/* ESCAPE HTML */
+
+function escapeHTML(value) {
+
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* TAB = 2 SPACES */
+
+textarea.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (event.key === "Tab") {
+
+      event.preventDefault();
+
+      const start =
+        textarea.selectionStart;
+
+      const end =
+        textarea.selectionEnd;
+
+      textarea.value =
+        textarea.value.substring(0, start) +
+        "  " +
+        textarea.value.substring(end);
+
+      textarea.selectionStart =
+        textarea.selectionEnd =
+          start + 2;
+
+      render();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
