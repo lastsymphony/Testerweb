@@ -1,1317 +1,1740 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#111111">
-<title>Home</title>
-
-<style>
-:root {
-    --text: #fff;
-    --muted: rgba(255,255,255,.65);
-    --glass: rgba(20,20,20,.48);
-    --glass-hover: rgba(35,35,35,.62);
-    --border: rgba(255,255,255,.12);
-    --accent: #8b7cff;
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    color: var(--text);
-}
-
-body {
-    background: #111;
-}
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-.background {
-    position: fixed;
-    inset: 0;
-    z-index: -3;
-    background:
-        radial-gradient(
-            circle at center,
-            #292929 0%,
-            #111 75%
-        );
-    background-size: cover;
-    background-position: center;
-    transition: background-image .35s ease;
-}
-
-.background::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0,0,0,.28),
-            rgba(0,0,0,.48)
-        );
-    backdrop-filter: blur(0px);
-}
-
-/* =========================================================
-   APP
-========================================================= */
-
-.app {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding:
-        max(40px, env(safe-area-inset-top))
-        20px
-        max(30px, env(safe-area-inset-bottom));
-}
-
-.container {
-    width: min(760px, 100%);
-    margin: 0 auto;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-/* =========================================================
-   TOP
-========================================================= */
-
-.top {
-    padding-top: 8vh;
-    text-align: center;
-}
-
-.greeting {
-    font-size: 15px;
-    color: var(--muted);
-    margin-bottom: 10px;
-    letter-spacing: .2px;
-}
-
-.clock {
-    font-size: clamp(52px, 14vw, 92px);
-    font-weight: 600;
-    line-height: .95;
-    letter-spacing: -4px;
-    text-shadow: 0 8px 30px rgba(0,0,0,.25);
-}
-
-.date {
-    margin-top: 14px;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.search-wrap {
-    margin-top: 38px;
-}
-
-.search {
-    width: 100%;
-    height: 56px;
-    border-radius: 18px;
-    border: 1px solid var(--border);
-    outline: none;
-    background: rgba(20,20,20,.55);
-    backdrop-filter: blur(18px);
-    color: white;
-    padding: 0 20px;
-    font-size: 16px;
-    box-shadow: 0 12px 35px rgba(0,0,0,.16);
-    transition:
-        background .2s,
-        border-color .2s,
-        transform .2s;
-}
-
-.search::placeholder {
-    color: rgba(255,255,255,.45);
-}
-
-.search:focus {
-    background: rgba(20,20,20,.7);
-    border-color: rgba(255,255,255,.25);
-}
-
-/* =========================================================
-   BOOKMARKS
-========================================================= */
-
-.bookmarks {
-    margin-top: 32px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-}
-
-.bookmark {
-    position: relative;
-    min-width: 0;
-}
-
-.bookmark-link {
-    width: 100%;
-    min-height: 112px;
-    padding: 17px 10px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--glass);
-    backdrop-filter: blur(18px);
-    color: white;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 11px;
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        border-color .18s ease;
-}
-
-.bookmark-link:hover {
-    background: var(--glass-hover);
-    transform: translateY(-2px);
-    border-color: rgba(255,255,255,.2);
-}
-
-.bookmark-link:active {
-    transform: scale(.97);
-}
-
-.icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-    box-shadow: 0 8px 20px rgba(0,0,0,.18);
-}
-
-.bookmark-name {
-    width: 100%;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 13px;
-    color: rgba(255,255,255,.88);
-}
-
-.bookmark-menu {
-    position: absolute;
-    top: 7px;
-    right: 7px;
-    width: 26px;
-    height: 26px;
-    border: 0;
-    border-radius: 9px;
-    background: rgba(0,0,0,.3);
-    color: rgba(255,255,255,.7);
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity .15s;
-}
-
-.bookmark:hover .bookmark-menu,
-.bookmark-menu:focus {
-    opacity: 1;
-}
-
-.bookmark-menu:hover {
-    background: rgba(0,0,0,.55);
-    color: white;
-}
-
-/* =========================================================
-   ADD BUTTON
-========================================================= */
-
-.add {
-    margin-top: 12px;
-    width: 100%;
-    min-height: 52px;
-    border-radius: 17px;
-    border: 1px dashed rgba(255,255,255,.2);
-    background: rgba(20,20,20,.3);
-    color: rgba(255,255,255,.65);
-    cursor: pointer;
-    font-size: 14px;
-    transition: .2s;
-}
-
-.add:hover {
-    background: rgba(20,20,20,.5);
-    color: white;
-    border-color: rgba(255,255,255,.35);
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    margin-top: auto;
-    padding-top: 35px;
-    padding-bottom: 15px;
-    display: flex;
-    justify-content: center;
-}
-
-.settings-btn {
-    border: 1px solid var(--border);
-    background: rgba(20,20,20,.35);
-    backdrop-filter: blur(15px);
-    color: rgba(255,255,255,.6);
-    border-radius: 12px;
-    padding: 9px 15px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.settings-btn:hover {
-    color: white;
-    background: rgba(20,20,20,.55);
-}
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(0,0,0,.58);
-    backdrop-filter: blur(8px);
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-box {
-    width: min(430px, 100%);
-    background: rgba(25,25,25,.92);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 24px;
-    padding: 22px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.4);
-}
-
-.modal-title {
-    font-size: 19px;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.field {
-    margin-bottom: 14px;
-}
-
-.field label {
-    display: block;
-    color: rgba(255,255,255,.55);
-    font-size: 12px;
-    margin-bottom: 7px;
-}
-
-.field input {
-    width: 100%;
-    height: 48px;
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 13px;
-    background: rgba(0,0,0,.25);
-    color: white;
-    padding: 0 14px;
-    outline: none;
-    font-size: 14px;
-}
-
-.field input:focus {
-    border-color: rgba(255,255,255,.3);
-}
-
-.modal-actions {
-    display: flex;
-    gap: 9px;
-    margin-top: 20px;
-}
-
-.modal-actions button {
-    flex: 1;
-    height: 45px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.08);
-    color: white;
-    cursor: pointer;
-}
-
-.modal-actions .primary {
-    background: var(--accent);
-    border-color: transparent;
-}
-
-.modal-actions .danger {
-    background: rgba(220,60,60,.18);
-    color: #ff9b9b;
-}
-
-.close {
-    background: transparent !important;
-    color: rgba(255,255,255,.6) !important;
-}
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-.background-preview {
-    width: 100%;
-    height: 130px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.12);
-    background-size: cover;
-    background-position: center;
-    background-color: #111;
-    margin-bottom: 12px;
-}
-
-.file-input {
-    display: none;
-}
-
-.upload-btn {
-    width: 100%;
-    height: 45px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.13);
-    background: rgba(255,255,255,.07);
-    color: white;
-    cursor: pointer;
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 620px) {
-    .app {
-        padding-left: 14px;
-        padding-right: 14px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>Home</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --fg: #f5f5f5;
+      --muted: rgba(245, 245, 245, 0.55);
+      --card: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.14);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #7c9cff;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --overlay: 0.45;
+      --blur: 0px;
+      --clock-size: 1;
     }
 
-    .top {
-        padding-top: 7vh;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .clock {
-        letter-spacing: -3px;
+    body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+      padding: 24px 16px 80px;
     }
 
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 9px;
+    /* Background */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-color: var(--bg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: opacity 0.6s ease, filter 0.3s ease;
+      filter: blur(var(--blur));
     }
 
-    .bookmark-link {
-        min-height: 103px;
-        border-radius: 17px;
+    #bg-layer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, var(--overlay));
+      pointer-events: none;
+      transition: background 0.3s ease;
     }
 
-    .icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
+    .content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
     }
 
-    .bookmark-menu {
-        opacity: 1;
+    /* Header */
+    .header { text-align: center; user-select: none; }
+    #clock {
+      font-size: calc(clamp(3.2rem, 12vw, 5.5rem) * var(--clock-size));
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
     }
-}
+    #date {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    #greeting {
+      margin-top: 6px;
+      font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+      font-weight: 400;
+      color: var(--muted);
+    }
+    #greeting strong { color: var(--fg); font-weight: 500; }
+    .hidden { display: none !important; }
 
-@media (max-width: 390px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
+    /* Search */
+    .search-wrap { width: 100%; max-width: 560px; position: relative; }
+    #search-form {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 4px 4px 16px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    #search-form:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+      background: rgba(255, 255, 255, 0.12);
+    }
+    #search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--fg);
+      font-size: 1rem;
+      padding: 12px 8px;
+      min-width: 0;
+    }
+    #search-input::placeholder { color: var(--muted); }
+    #search-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #0a0a0a;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    #search-btn:hover { opacity: 0.9; }
+    #search-btn:active { transform: scale(0.94); }
+    #search-btn svg { width: 20px; height: 20px; }
+
+    /* Engine switcher */
+    .engine-switch {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .engine-btn {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .engine-btn:hover { color: var(--fg); border-color: rgba(255,255,255,0.25); }
+    .engine-btn.active {
+      background: var(--accent);
+      color: #0a0a0a;
+      border-color: var(--accent);
+      font-weight: 500;
     }
 
-    .bookmark-link {
-        min-height: 95px;
-        padding: 12px 7px;
+    /* Folder tabs */
+    .folder-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+    .folder-tab {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .folder-tab:hover { color: var(--fg); }
+    .folder-tab.active {
+      background: var(--card-hover);
+      color: var(--fg);
+      border-color: rgba(255,255,255,0.25);
     }
 
-    .icon {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
+    /* Bookmarks */
+    .bookmarks-section { width: 100%; }
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      padding-left: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-label button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .section-label button:hover { color: var(--fg); background: var(--card); }
+
+    #bookmarks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+      gap: 12px;
+      justify-items: center;
+      min-height: 60px;
     }
 
-    .bookmark-name {
-        font-size: 12px;
+    .bookmark {
+      width: 100%;
+      max-width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      cursor: grab;
+      position: relative;
+      padding: 8px 4px;
+      border-radius: 12px;
+      transition: background 0.15s, opacity 0.15s, transform 0.15s;
+      touch-action: none;
     }
-}
-</style>
+    .bookmark:active { cursor: grabbing; }
+    .bookmark:hover { background: var(--card); }
+    .bookmark.dragging {
+      opacity: 0.45;
+      transform: scale(0.95);
+    }
+    .bookmark.drag-over {
+      background: color-mix(in srgb, var(--accent) 25%, transparent);
+      outline: 2px dashed var(--accent);
+    }
+
+    .bm-avatar {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      user-select: none;
+      pointer-events: none;
+    }
+    .bm-label {
+      font-size: 0.78rem;
+      text-align: center;
+      line-height: 1.25;
+      color: var(--fg);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .bm-actions {
+      position: absolute;
+      top: 2px; right: 2px;
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .bookmark:hover .bm-actions,
+    .edit-mode .bm-actions { opacity: 1; }
+    .bm-actions button {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      line-height: 1;
+    }
+    .bm-actions button:hover { background: rgba(0, 0, 0, 0.8); }
+
+    .add-bm {
+      width: 100%; max-width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 4px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .add-bm:hover {
+      border-color: var(--accent);
+      color: var(--fg);
+      background: var(--card);
+    }
+    .add-bm .plus {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      font-weight: 300;
+      border: 1px dashed var(--border);
+    }
+    .add-bm span { font-size: 0.78rem; }
+
+    /* Quick Notes */
+    .notes-section {
+      width: 100%;
+      max-width: 560px;
+    }
+    .notes-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .notes-box textarea {
+      width: 100%;
+      min-height: 80px;
+      max-height: 160px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--fg);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      font-family: inherit;
+    }
+    .notes-box textarea::placeholder { color: var(--muted); }
+
+    /* Controls */
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--fg);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .ctrl-btn:hover {
+      background: var(--card-hover);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .ctrl-btn svg { width: 20px; height: 20px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px 20px;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      width: 100%;
+      max-width: 400px;
+      background: #161616;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      margin-bottom: 40px;
+    }
+    .modal h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+    .modal h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .modal h3:first-of-type { margin-top: 0; border-top: none; padding-top: 0; }
+    .modal label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .modal input[type="text"],
+    .modal input[type="url"],
+    .modal select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--fg);
+      font-size: 0.95rem;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
+    }
+    .modal input:focus, .modal select:focus { border-color: var(--accent); }
+    .modal select { cursor: pointer; }
+    .modal select option { background: #1a1a1a; }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .range-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+    .range-row span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    .toggle-row label { margin: 0; color: var(--fg); }
+    .toggle {
+      width: 44px; height: 24px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(20px); }
+
+    .color-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .color-swatch {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .color-swatch:hover { transform: scale(1.1); }
+    .color-swatch.active { border-color: #fff; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .modal-actions button:hover { opacity: 0.88; }
+    .btn-primary { background: var(--accent); color: #0a0a0a; }
+    .btn-ghost {
+      background: var(--card);
+      color: var(--fg);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    }
+
+    .bg-preview {
+      width: 100%;
+      height: 90px;
+      border-radius: 12px;
+      background: var(--bg);
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+    .bg-thumbs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .bg-thumb {
+      width: 56px; height: 40px;
+      border-radius: 8px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+    }
+    .bg-thumb.active { border-color: var(--accent); }
+    .bg-thumb .del {
+      position: absolute;
+      top: -6px; right: -6px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      border: none;
+      cursor: pointer;
+      display: none;
+      place-items: center;
+      line-height: 1;
+    }
+    .bg-thumb:hover .del { display: grid; }
+
+    .file-btn {
+      display: block;
+      width: 100%;
+      padding: 11px;
+      text-align: center;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      color: var(--fg);
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .file-btn:hover {
+      border-color: var(--accent);
+      background: var(--card-hover);
+    }
+    #bg-file { display: none; }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .data-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .data-actions button {
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--fg);
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .data-actions button:hover { background: var(--card-hover); }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 20px 0;
+    }
+
+    @media (max-width: 480px) {
+      #bookmarks {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .bm-avatar, .add-bm .plus {
+        width: 48px; height: 48px;
+        font-size: 1.2rem;
+      }
+      .controls { bottom: 16px; right: 16px; }
+    }
+  </style>
 </head>
-
 <body>
+  <div id="bg-layer"></div>
 
-<div class="background" id="background"></div>
-
-<main class="app">
-    <div class="container">
-
-        <section class="top">
-            <div class="greeting" id="greeting">
-                Selamat datang
-            </div>
-
-            <div class="clock" id="clock">
-                00:00
-            </div>
-
-            <div class="date" id="date">
-                —
-            </div>
-        </section>
-
-        <section class="search-wrap">
-            <form id="searchForm">
-                <input
-                    id="search"
-                    class="search"
-                    type="search"
-                    autocomplete="off"
-                    placeholder="Cari di web..."
-                    enterkeyhint="search"
-                >
-            </form>
-        </section>
-
-        <section class="bookmarks">
-            <div class="grid" id="grid"></div>
-
-            <button class="add" id="addBookmark">
-                + Tambah bookmark
-            </button>
-        </section>
-
-        <footer class="footer">
-            <button class="settings-btn" id="settingsButton">
-                Pengaturan
-            </button>
-        </footer>
-
+  <div class="content">
+    <div class="header">
+      <div id="clock">00:00</div>
+      <div id="date"></div>
+      <div id="greeting">Selamat malam</div>
     </div>
-</main>
 
-
-<!-- =======================================================
-     BOOKMARK MODAL
-======================================================== -->
-
-<div class="modal" id="bookmarkModal">
-    <div class="modal-box">
-
-        <div class="modal-title" id="bookmarkModalTitle">
-            Tambah bookmark
-        </div>
-
-        <div class="field">
-            <label>Nama</label>
-            <input id="bookmarkName" type="text" placeholder="Contoh: GitHub">
-        </div>
-
-        <div class="field">
-            <label>URL</label>
-            <input id="bookmarkUrl" type="url" placeholder="https://github.com">
-        </div>
-
-        <div class="modal-actions">
-            <button class="close" id="bookmarkCancel">
-                Batal
-            </button>
-
-            <button class="danger" id="bookmarkDelete" style="display:none">
-                Hapus
-            </button>
-
-            <button class="primary" id="bookmarkSave">
-                Simpan
-            </button>
-        </div>
-
-    </div>
-</div>
-
-
-<!-- =======================================================
-     SETTINGS MODAL
-======================================================== -->
-
-<div class="modal" id="settingsModal">
-    <div class="modal-box">
-
-        <div class="modal-title">
-            Pengaturan
-        </div>
-
-        <div class="background-preview" id="backgroundPreview"></div>
-
-        <input
-            type="file"
-            id="backgroundFile"
-            class="file-input"
-            accept="image/*"
-        >
-
-        <button class="upload-btn" id="uploadBackground">
-            Pilih background dari galeri
+    <div class="search-wrap">
+      <form id="search-form" action="https://www.google.com/search" method="get" target="_self">
+        <input id="search-input" type="search" name="q" placeholder="Cari di Google..." autocomplete="off" enterkeyhint="search" />
+        <button type="submit" id="search-btn" aria-label="Cari">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+          </svg>
         </button>
-
-        <div class="modal-actions">
-
-            <button class="close" id="settingsCancel">
-                Tutup
-            </button>
-
-            <button id="resetBackground">
-                Reset background
-            </button>
-
-        </div>
-
+      </form>
+      <div class="engine-switch" id="engine-switch"></div>
     </div>
-</div>
 
+    <div class="bookmarks-section">
+      <div class="folder-tabs" id="folder-tabs"></div>
+      <div class="section-label">
+        <span>Bookmark</span>
+        <button type="button" id="edit-mode-btn">Edit</button>
+      </div>
+      <div id="bookmarks"></div>
+    </div>
 
-<script>
-/* =========================================================
-   DEFAULT BOOKMARKS
-========================================================= */
+    <div class="notes-section">
+      <div class="section-label"><span>Quick Notes</span></div>
+      <div class="notes-box">
+        <textarea id="quick-notes" placeholder="Catatan cepat... (auto-save)"></textarea>
+      </div>
+    </div>
+  </div>
 
-const DEFAULT_BOOKMARKS = [
-    {
-        name: "GitHub",
-        url: "https://github.com",
-        color: "#24292f"
-    },
-    {
-        name: "YouTube",
-        url: "https://youtube.com",
-        color: "#ff0033"
-    },
-    {
-        name: "Instagram",
-        url: "https://instagram.com",
-        color: "#b44cff"
-    },
-    {
-        name: "Google",
-        url: "https://google.com",
-        color: "#4285f4"
-    },
-    {
-        name: "Vercel",
-        url: "https://vercel.com",
-        color: "#202020"
-    },
-    {
-        name: "ChatGPT",
-        url: "https://chatgpt.com",
-        color: "#10a37f"
-    },
-    {
-        name: "Portfolio",
-        url: "https://adityajatayu.my.id",
-        color: "#6d5dfc"
-    },
-    {
-        name: "Gallery",
-        url: "https://lastsymph.github.io/Generator-json-gallery-",
-        color: "#e06cff"
+  <div class="controls">
+    <button class="ctrl-btn" id="settings-btn" title="Pengaturan" aria-label="Pengaturan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bookmark Modal -->
+  <div class="modal-overlay" id="bm-modal">
+    <div class="modal">
+      <h2 id="bm-modal-title">Tambah Bookmark</h2>
+      <label for="bm-name">Nama</label>
+      <input type="text" id="bm-name" placeholder="Contoh: YouTube" maxlength="24" />
+      <label for="bm-url">URL</label>
+      <input type="url" id="bm-url" placeholder="https://..." />
+      <label for="bm-folder">Folder</label>
+      <select id="bm-folder"></select>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="bm-cancel">Batal</button>
+        <button type="button" class="btn-primary" id="bm-save">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Folder Modal -->
+  <div class="modal-overlay" id="folder-modal">
+    <div class="modal">
+      <h2>Kelola Folder</h2>
+      <label for="folder-name">Nama folder baru</label>
+      <input type="text" id="folder-name" placeholder="Contoh: Development" maxlength="20" />
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="folder-cancel">Batal</button>
+        <button type="button" class="btn-primary" id="folder-save">Tambah</button>
+      </div>
+      <h3>Folder saat ini</h3>
+      <div id="folder-list"></div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <h2>Pengaturan</h2>
+
+      <h3>Appearance</h3>
+      <label>Background</label>
+      <div class="bg-preview" id="bg-preview"></div>
+      <div class="bg-thumbs" id="bg-thumbs"></div>
+      <label class="file-btn" for="bg-file">+ Tambah foto dari galeri</label>
+      <input type="file" id="bg-file" accept="image/*" multiple />
+      <p class="hint">Bisa upload beberapa foto. Background akan berganti otomatis (slideshow).</p>
+
+      <label>Overlay gelap</label>
+      <div class="range-row">
+        <input type="range" id="opt-overlay" min="0" max="80" value="45" />
+        <span id="opt-overlay-val">45%</span>
+      </div>
+
+      <label>Blur background</label>
+      <div class="range-row">
+        <input type="range" id="opt-blur" min="0" max="20" value="0" />
+        <span id="opt-blur-val">0px</span>
+      </div>
+
+      <label>Ukuran jam</label>
+      <div class="range-row">
+        <input type="range" id="opt-clock-size" min="70" max="130" value="100" />
+        <span id="opt-clock-size-val">100%</span>
+      </div>
+
+      <label>Accent color</label>
+      <div class="color-row" id="accent-colors"></div>
+
+      <div class="toggle-row">
+        <label>Format 24 jam</label>
+        <button type="button" class="toggle on" id="opt-24h"></button>
+      </div>
+      <div class="toggle-row">
+        <label>Tampilkan tanggal</label>
+        <button type="button" class="toggle on" id="opt-date"></button>
+      </div>
+      <div class="toggle-row">
+        <label>Tampilkan sapaan</label>
+        <button type="button" class="toggle on" id="opt-greeting"></button>
+      </div>
+      <div class="toggle-row">
+        <label>Slideshow background</label>
+        <button type="button" class="toggle" id="opt-slideshow"></button>
+      </div>
+
+      <label for="user-name">Nama (untuk sapaan)</label>
+      <input type="text" id="user-name" placeholder="Opsional" maxlength="20" />
+
+      <h3>Search</h3>
+      <label>Search engine default</label>
+      <select id="opt-engine"></select>
+
+      <h3>Bookmarks</h3>
+      <div class="data-actions">
+        <button type="button" id="manage-folders-btn">Kelola folder</button>
+      </div>
+
+      <h3>Data</h3>
+      <div class="data-actions">
+        <button type="button" id="export-btn">Export semua data</button>
+        <button type="button" id="import-btn">Import data</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" />
+        <button type="button" id="reset-btn" style="color:#f87171;">Reset semua data</button>
+      </div>
+
+      <div class="modal-actions" style="margin-top:20px;">
+        <button type="button" class="btn-ghost" id="settings-close">Tutup</button>
+        <button type="button" class="btn-primary" id="settings-save">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════
+    // Constants & Defaults
+    // ═══════════════════════════════════════════════════════════════
+    const KEYS = {
+      bg: "hp_bgs",
+      name: "hp_name",
+      bookmarks: "hp_bookmarks",
+      folders: "hp_folders",
+      notes: "hp_notes",
+      settings: "hp_settings",
+      activeFolder: "hp_active_folder",
+      engine: "hp_engine",
+    };
+
+    const ENGINES = [
+      { id: "google", name: "Google", url: "https://www.google.com/search", param: "q" },
+      { id: "ddg", name: "DuckDuckGo", url: "https://duckduckgo.com/", param: "q" },
+      { id: "bing", name: "Bing", url: "https://www.bing.com/search", param: "q" },
+      { id: "youtube", name: "YouTube", url: "https://www.youtube.com/results", param: "search_query" },
+      { id: "github", name: "GitHub", url: "https://github.com/search", param: "q" },
+    ];
+
+    const ACCENT_COLORS = [
+      "#7c9cff", "#ef4444", "#f97316", "#eab308",
+      "#22c55e", "#14b8a6", "#3b82f6", "#8b5cf6",
+      "#ec4899", "#06b6d4",
+    ];
+
+    const DEFAULT_FOLDERS = [
+      { id: "all", name: "Semua" },
+      { id: "dev", name: "Development" },
+      { id: "social", name: "Social" },
+      { id: "tools", name: "Tools" },
+    ];
+
+    const DEFAULT_BOOKMARKS = [
+      { id: "1", name: "YouTube", url: "https://www.youtube.com", folder: "social" },
+      { id: "2", name: "Gmail", url: "https://mail.google.com", folder: "tools" },
+      { id: "3", name: "Drive", url: "https://drive.google.com", folder: "tools" },
+      { id: "4", name: "Twitter", url: "https://x.com", folder: "social" },
+      { id: "5", name: "Reddit", url: "https://www.reddit.com", folder: "social" },
+      { id: "6", name: "GitHub", url: "https://github.com", folder: "dev" },
+      { id: "7", name: "ChatGPT", url: "https://chatgpt.com", folder: "tools" },
+      { id: "8", name: "Vercel", url: "https://vercel.com", folder: "dev" },
+    ];
+
+    const DEFAULT_SETTINGS = {
+      overlay: 45,
+      blur: 0,
+      clockSize: 100,
+      accent: "#7c9cff",
+      hour24: true,
+      showDate: true,
+      showGreeting: true,
+      slideshow: false,
+      slideshowInterval: 30,
+    };
+
+    const COLORS = [
+      "#ef4444", "#f97316", "#eab308", "#22c55e",
+      "#14b8a6", "#3b82f6", "#8b5cf6", "#ec4899",
+      "#06b6d4", "#84cc16", "#f43f5e", "#a855f7",
+    ];
+
+    // ═══════════════════════════════════════════════════════════════
+    // State
+    // ═══════════════════════════════════════════════════════════════
+    let bookmarks = [];
+    let folders = [];
+    let backgrounds = []; // array of dataURLs
+    let settings = { ...DEFAULT_SETTINGS };
+    let activeFolder = "all";
+    let currentEngine = "google";
+    let editMode = false;
+    let editingId = null;
+    let slideshowTimer = null;
+    let bgIndex = 0;
+
+    // Drag state
+    let dragId = null;
+    let dragEl = null;
+
+    // ═══════════════════════════════════════════════════════════════
+    // Helpers
+    // ═══════════════════════════════════════════════════════════════
+    function colorFor(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      return COLORS[Math.abs(hash) % COLORS.length];
     }
-];
+    function initial(name) {
+      return ((name || "?").trim().charAt(0) || "?").toUpperCase();
+    }
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
 
+    // ═══════════════════════════════════════════════════════════════
+    // Clock / Date / Greeting
+    // ═══════════════════════════════════════════════════════════════
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, "0");
+      let displayH;
 
-/* =========================================================
-   STORAGE
-========================================================= */
+      if (settings.hour24) {
+        displayH = String(h).padStart(2, "0");
+        document.getElementById("clock").textContent = `${displayH}:${m}`;
+      } else {
+        const ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        document.getElementById("clock").textContent = `${h}:${m} ${ampm}`;
+      }
 
-const BOOKMARK_KEY = "speedDialBookmarks";
-const BACKGROUND_KEY = "speedDialBackground";
+      // Date
+      const dateEl = document.getElementById("date");
+      if (settings.showDate) {
+        const days = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        dateEl.classList.remove("hidden");
+      } else {
+        dateEl.classList.add("hidden");
+      }
 
+      // Greeting
+      const greetEl = document.getElementById("greeting");
+      if (settings.showGreeting) {
+        const hour = now.getHours();
+        let greet = "Selamat malam";
+        if (hour >= 4 && hour < 11) greet = "Selamat pagi";
+        else if (hour >= 11 && hour < 15) greet = "Selamat siang";
+        else if (hour >= 15 && hour < 18) greet = "Selamat sore";
+        const name = localStorage.getItem(KEYS.name) || "";
+        greetEl.innerHTML = name ? `${greet}, <strong>${escapeHtml(name)}</strong>` : greet;
+        greetEl.classList.remove("hidden");
+      } else {
+        greetEl.classList.add("hidden");
+      }
+    }
 
-function loadBookmarks() {
-    try {
-        const saved = localStorage.getItem(BOOKMARK_KEY);
+    // ═══════════════════════════════════════════════════════════════
+    // Background & Slideshow
+    // ═══════════════════════════════════════════════════════════════
+    function applyBg(dataUrl) {
+      const layer = document.getElementById("bg-layer");
+      const preview = document.getElementById("bg-preview");
+      if (dataUrl) {
+        layer.style.backgroundImage = `url(${dataUrl})`;
+        if (preview) preview.style.backgroundImage = `url(${dataUrl})`;
+      } else {
+        layer.style.backgroundImage = "none";
+        if (preview) preview.style.backgroundImage = "none";
+      }
+    }
 
-        if (!saved) {
-            return [...DEFAULT_BOOKMARKS];
+    function applyAppearance() {
+      document.documentElement.style.setProperty("--overlay", settings.overlay / 100);
+      document.documentElement.style.setProperty("--blur", settings.blur + "px");
+      document.documentElement.style.setProperty("--clock-size", settings.clockSize / 100);
+      document.documentElement.style.setProperty("--accent", settings.accent);
+      applyBg(backgrounds[bgIndex] || null);
+    }
+
+    function startSlideshow() {
+      stopSlideshow();
+      if (!settings.slideshow || backgrounds.length < 2) return;
+      slideshowTimer = setInterval(() => {
+        bgIndex = (bgIndex + 1) % backgrounds.length;
+        applyBg(backgrounds[bgIndex]);
+        renderBgThumbs();
+      }, (settings.slideshowInterval || 30) * 1000);
+    }
+
+    function stopSlideshow() {
+      if (slideshowTimer) {
+        clearInterval(slideshowTimer);
+        slideshowTimer = null;
+      }
+    }
+
+    function loadBgs() {
+      try {
+        const raw = localStorage.getItem(KEYS.bg);
+        backgrounds = raw ? JSON.parse(raw) : [];
+      } catch { backgrounds = []; }
+      bgIndex = 0;
+      applyAppearance();
+      startSlideshow();
+    }
+
+    function saveBgs() {
+      try {
+        localStorage.setItem(KEYS.bg, JSON.stringify(backgrounds));
+      } catch (e) {
+        alert("Gagal menyimpan background. Coba foto yang lebih kecil.");
+      }
+    }
+
+    function processImage(file) {
+      return new Promise((resolve, reject) => {
+        if (!file.type.startsWith("image/")) return reject();
+        if (file.size > 3 * 1024 * 1024) {
+          alert("Satu foto terlalu besar (>3 MB). Lewati.");
+          return reject();
         }
-
-        const parsed = JSON.parse(saved);
-
-        if (!Array.isArray(parsed)) {
-            return [...DEFAULT_BOOKMARKS];
-        }
-
-        return parsed;
-
-    } catch {
-        return [...DEFAULT_BOOKMARKS];
-    }
-}
-
-
-function saveBookmarks() {
-    localStorage.setItem(
-        BOOKMARK_KEY,
-        JSON.stringify(bookmarks)
-    );
-}
-
-
-let bookmarks = loadBookmarks();
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
-
-const grid = document.getElementById("grid");
-
-const bookmarkModal =
-    document.getElementById("bookmarkModal");
-
-const bookmarkModalTitle =
-    document.getElementById("bookmarkModalTitle");
-
-const bookmarkName =
-    document.getElementById("bookmarkName");
-
-const bookmarkUrl =
-    document.getElementById("bookmarkUrl");
-
-const bookmarkDelete =
-    document.getElementById("bookmarkDelete");
-
-const bookmarkSave =
-    document.getElementById("bookmarkSave");
-
-const bookmarkCancel =
-    document.getElementById("bookmarkCancel");
-
-const settingsModal =
-    document.getElementById("settingsModal");
-
-const settingsButton =
-    document.getElementById("settingsButton");
-
-const settingsCancel =
-    document.getElementById("settingsCancel");
-
-const background =
-    document.getElementById("background");
-
-const backgroundPreview =
-    document.getElementById("backgroundPreview");
-
-const backgroundFile =
-    document.getElementById("backgroundFile");
-
-const uploadBackground =
-    document.getElementById("uploadBackground");
-
-const resetBackground =
-    document.getElementById("resetBackground");
-
-const search =
-    document.getElementById("search");
-
-const searchForm =
-    document.getElementById("searchForm");
-
-
-let editingIndex = -1;
-
-
-/* =========================================================
-   BOOKMARK RENDER
-========================================================= */
-
-function getInitial(name) {
-    const clean = name.trim();
-
-    if (!clean) {
-        return "?";
-    }
-
-    const words = clean.split(/\s+/);
-
-    if (words.length >= 2) {
-        return (
-            words[0][0] +
-            words[1][0]
-        ).toUpperCase();
-    }
-
-    return clean
-        .substring(0, 2)
-        .toUpperCase();
-}
-
-
-function generateColor(name) {
-    let hash = 0;
-
-    for (let i = 0; i < name.length; i++) {
-        hash =
-            name.charCodeAt(i) +
-            ((hash << 5) - hash);
-    }
-
-    const hue =
-        Math.abs(hash) % 360;
-
-    return `hsl(${hue} 55% 48%)`;
-}
-
-
-function renderBookmarks() {
-
-    grid.innerHTML = "";
-
-    bookmarks.forEach((bookmark, index) => {
-
-        const item =
-            document.createElement("div");
-
-        item.className = "bookmark";
-
-        const link =
-            document.createElement("a");
-
-        link.className = "bookmark-link";
-        link.href = bookmark.url;
-
-        const icon =
-            document.createElement("div");
-
-        icon.className = "icon";
-
-        icon.textContent =
-            getInitial(bookmark.name);
-
-        icon.style.background =
-            bookmark.color ||
-            generateColor(bookmark.name);
-
-        const name =
-            document.createElement("div");
-
-        name.className = "bookmark-name";
-        name.textContent =
-            bookmark.name;
-
-        link.appendChild(icon);
-        link.appendChild(name);
-
-
-        const menu =
-            document.createElement("button");
-
-        menu.className = "bookmark-menu";
-        menu.type = "button";
-        menu.textContent = "⋯";
-
-        menu.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                openBookmarkEditor(index);
-            }
-        );
-
-
-        item.appendChild(link);
-        item.appendChild(menu);
-
-        grid.appendChild(item);
-    });
-}
-
-
-/* =========================================================
-   BOOKMARK MODAL
-========================================================= */
-
-function openBookmarkEditor(index = -1) {
-
-    editingIndex = index;
-
-    if (index === -1) {
-
-        bookmarkModalTitle.textContent =
-            "Tambah bookmark";
-
-        bookmarkName.value = "";
-        bookmarkUrl.value = "";
-
-        bookmarkDelete.style.display =
-            "none";
-
-    } else {
-
-        const bookmark =
-            bookmarks[index];
-
-        bookmarkModalTitle.textContent =
-            "Edit bookmark";
-
-        bookmarkName.value =
-            bookmark.name;
-
-        bookmarkUrl.value =
-            bookmark.url;
-
-        bookmarkDelete.style.display =
-            "block";
-    }
-
-    bookmarkModal.classList.add("active");
-
-    setTimeout(() => {
-        bookmarkName.focus();
-    }, 100);
-}
-
-
-function closeBookmarkModal() {
-
-    bookmarkModal.classList.remove(
-        "active"
-    );
-
-    editingIndex = -1;
-}
-
-
-document
-    .getElementById("addBookmark")
-    .addEventListener(
-        "click",
-        () => openBookmarkEditor()
-    );
-
-
-bookmarkCancel.addEventListener(
-    "click",
-    closeBookmarkModal
-);
-
-
-bookmarkSave.addEventListener(
-    "click",
-    () => {
-
-        const name =
-            bookmarkName.value.trim();
-
-        let url =
-            bookmarkUrl.value.trim();
-
-        if (!name || !url) {
-            return;
-        }
-
-        if (
-            !url.startsWith("http://") &&
-            !url.startsWith("https://")
-        ) {
-            url = "https://" + url;
-        }
-
-
-        if (editingIndex === -1) {
-
-            bookmarks.push({
-                name,
-                url,
-                color: generateColor(name)
-            });
-
-        } else {
-
-            bookmarks[editingIndex].name =
-                name;
-
-            bookmarks[editingIndex].url =
-                url;
-        }
-
-
-        saveBookmarks();
-        renderBookmarks();
-        closeBookmarkModal();
-    }
-);
-
-
-bookmarkDelete.addEventListener(
-    "click",
-    () => {
-
-        if (editingIndex === -1) {
-            return;
-        }
-
-        bookmarks.splice(
-            editingIndex,
-            1
-        );
-
-        saveBookmarks();
-        renderBookmarks();
-        closeBookmarkModal();
-    }
-);
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-searchForm.addEventListener(
-    "submit",
-    event => {
-
-        event.preventDefault();
-
-        const query =
-            search.value.trim();
-
-        if (!query) {
-            return;
-        }
-
-        const url =
-            "https://www.google.com/search?q=" +
-            encodeURIComponent(query);
-
-        window.location.href = url;
-    }
-);
-
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-const clock =
-    document.getElementById("clock");
-
-const date =
-    document.getElementById("date");
-
-const greeting =
-    document.getElementById("greeting");
-
-
-function updateClock() {
-
-    const now = new Date();
-
-    const hours =
-        now.getHours();
-
-    const minutes =
-        now.getMinutes()
-            .toString()
-            .padStart(2, "0");
-
-    clock.textContent =
-        `${hours.toString().padStart(2, "0")}:${minutes}`;
-
-
-    const formattedDate =
-        new Intl.DateTimeFormat(
-            "id-ID",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            }
-        ).format(now);
-
-    date.textContent =
-        formattedDate;
-
-
-    let text;
-
-    if (hours >= 5 && hours < 11) {
-        text = "Selamat pagi";
-    } else if (hours >= 11 && hours < 15) {
-        text = "Selamat siang";
-    } else if (hours >= 15 && hours < 18) {
-        text = "Selamat sore";
-    } else {
-        text = "Selamat malam";
-    }
-
-    greeting.textContent = text;
-}
-
-
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-function applyBackground(dataUrl) {
-
-    if (!dataUrl) {
-
-        background.style.backgroundImage =
-            "";
-
-        backgroundPreview.style.backgroundImage =
-            "";
-
-        return;
-    }
-
-    background.style.backgroundImage =
-        `url("${dataUrl}")`;
-
-    backgroundPreview.style.backgroundImage =
-        `url("${dataUrl}")`;
-}
-
-
-function loadBackground() {
-
-    const saved =
-        localStorage.getItem(
-            BACKGROUND_KEY
-        );
-
-    if (saved) {
-        applyBackground(saved);
-    }
-}
-
-
-uploadBackground.addEventListener(
-    "click",
-    () => backgroundFile.click()
-);
-
-
-backgroundFile.addEventListener(
-    "change",
-    event => {
-
-        const file =
-            event.target.files[0];
-
-        if (!file) {
-            return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-            return;
-        }
-
-
-        const reader =
-            new FileReader();
-
-
+        const reader = new FileReader();
         reader.onload = () => {
-
-            const dataUrl =
-                reader.result;
-
-            try {
-
-                localStorage.setItem(
-                    BACKGROUND_KEY,
-                    dataUrl
-                );
-
-                applyBackground(
-                    dataUrl
-                );
-
-            } catch {
-
-                alert(
-                    "Gambar terlalu besar untuk disimpan di browser. Coba gunakan foto dengan ukuran lebih kecil."
-                );
+          const img = new Image();
+          img.onload = () => {
+            const maxSide = 1400;
+            let w = img.width, h = img.height;
+            if (w > maxSide || h > maxSide) {
+              if (w > h) { h = Math.round(h * maxSide / w); w = maxSide; }
+              else { w = Math.round(w * maxSide / h); h = maxSide; }
             }
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", 0.8));
+          };
+          img.onerror = reject;
+          img.src = reader.result;
         };
-
-
+        reader.onerror = reject;
         reader.readAsDataURL(file);
+      });
     }
-);
 
+    document.getElementById("bg-file").addEventListener("change", async (e) => {
+      const files = [...e.target.files];
+      for (const f of files) {
+        try {
+          const dataUrl = await processImage(f);
+          backgrounds.push(dataUrl);
+        } catch {}
+      }
+      saveBgs();
+      bgIndex = backgrounds.length - 1;
+      applyBg(backgrounds[bgIndex]);
+      renderBgThumbs();
+      startSlideshow();
+      e.target.value = "";
+    });
 
-resetBackground.addEventListener(
-    "click",
-    () => {
-
-        localStorage.removeItem(
-            BACKGROUND_KEY
-        );
-
-        backgroundFile.value = "";
-
-        applyBackground(null);
+    function renderBgThumbs() {
+      const container = document.getElementById("bg-thumbs");
+      if (!container) return;
+      container.innerHTML = "";
+      backgrounds.forEach((bg, i) => {
+        const thumb = document.createElement("div");
+        thumb.className = "bg-thumb" + (i === bgIndex ? " active" : "");
+        thumb.style.backgroundImage = `url(${bg})`;
+        thumb.addEventListener("click", () => {
+          bgIndex = i;
+          applyBg(bg);
+          renderBgThumbs();
+        });
+        const del = document.createElement("button");
+        del.className = "del";
+        del.textContent = "×";
+        del.addEventListener("click", (e) => {
+          e.stopPropagation();
+          backgrounds.splice(i, 1);
+          if (bgIndex >= backgrounds.length) bgIndex = Math.max(0, backgrounds.length - 1);
+          saveBgs();
+          applyBg(backgrounds[bgIndex] || null);
+          renderBgThumbs();
+          startSlideshow();
+        });
+        thumb.appendChild(del);
+        container.appendChild(thumb);
+      });
     }
-);
 
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-settingsButton.addEventListener(
-    "click",
-    () => {
-
-        settingsModal.classList.add(
-            "active"
-        );
+    // ═══════════════════════════════════════════════════════════════
+    // Search Engine
+    // ═══════════════════════════════════════════════════════════════
+    function setEngine(id) {
+      currentEngine = id;
+      localStorage.setItem(KEYS.engine, id);
+      const eng = ENGINES.find(e => e.id === id) || ENGINES[0];
+      const form = document.getElementById("search-form");
+      form.action = eng.url;
+      const input = document.getElementById("search-input");
+      input.name = eng.param;
+      input.placeholder = `Cari di ${eng.name}...`;
+      renderEngineSwitch();
     }
-);
 
-
-settingsCancel.addEventListener(
-    "click",
-    () => {
-
-        settingsModal.classList.remove(
-            "active"
-        );
+    function renderEngineSwitch() {
+      const container = document.getElementById("engine-switch");
+      container.innerHTML = "";
+      ENGINES.forEach(eng => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "engine-btn" + (eng.id === currentEngine ? " active" : "");
+        btn.textContent = eng.name;
+        btn.addEventListener("click", () => setEngine(eng.id));
+        container.appendChild(btn);
+      });
     }
-);
 
+    // ═══════════════════════════════════════════════════════════════
+    // Folders
+    // ═══════════════════════════════════════════════════════════════
+    function loadFolders() {
+      try {
+        const raw = localStorage.getItem(KEYS.folders);
+        folders = raw ? JSON.parse(raw) : [...DEFAULT_FOLDERS];
+      } catch { folders = [...DEFAULT_FOLDERS]; }
+      // Ensure "all" exists
+      if (!folders.find(f => f.id === "all")) {
+        folders.unshift({ id: "all", name: "Semua" });
+      }
+      activeFolder = localStorage.getItem(KEYS.activeFolder) || "all";
+    }
 
-/* =========================================================
-   MODAL OUTSIDE CLICK
-========================================================= */
+    function saveFolders() {
+      localStorage.setItem(KEYS.folders, JSON.stringify(folders));
+    }
 
-bookmarkModal.addEventListener(
-    "click",
-    event => {
+    function renderFolderTabs() {
+      const container = document.getElementById("folder-tabs");
+      container.innerHTML = "";
+      folders.forEach(f => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "folder-tab" + (f.id === activeFolder ? " active" : "");
+        btn.textContent = f.name;
+        btn.addEventListener("click", () => {
+          activeFolder = f.id;
+          localStorage.setItem(KEYS.activeFolder, activeFolder);
+          renderFolderTabs();
+          renderBookmarks();
+        });
+        container.appendChild(btn);
+      });
+    }
 
-        if (
-            event.target ===
-            bookmarkModal
-        ) {
-            closeBookmarkModal();
+    function populateFolderSelect(selected) {
+      const sel = document.getElementById("bm-folder");
+      sel.innerHTML = "";
+      folders.filter(f => f.id !== "all").forEach(f => {
+        const opt = document.createElement("option");
+        opt.value = f.id;
+        opt.textContent = f.name;
+        if (f.id === selected) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      // fallback
+      if (sel.options.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "tools";
+        opt.textContent = "Tools";
+        sel.appendChild(opt);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // Bookmarks + Drag & Drop
+    // ═══════════════════════════════════════════════════════════════
+    function loadBookmarks() {
+      try {
+        const raw = localStorage.getItem(KEYS.bookmarks);
+        bookmarks = raw ? JSON.parse(raw) : [...DEFAULT_BOOKMARKS];
+      } catch { bookmarks = [...DEFAULT_BOOKMARKS]; }
+      renderBookmarks();
+    }
+
+    function saveBookmarks() {
+      localStorage.setItem(KEYS.bookmarks, JSON.stringify(bookmarks));
+    }
+
+    function getVisibleBookmarks() {
+      if (activeFolder === "all") return bookmarks;
+      return bookmarks.filter(b => b.folder === activeFolder);
+    }
+
+    function renderBookmarks() {
+      const container = document.getElementById("bookmarks");
+      container.innerHTML = "";
+      container.classList.toggle("edit-mode", editMode);
+
+      const list = getVisibleBookmarks();
+
+      if (list.length === 0 && !editMode) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Belum ada bookmark di folder ini.";
+        container.appendChild(empty);
+      }
+
+      list.forEach(bm => {
+        const a = document.createElement("a");
+        a.className = "bookmark";
+        a.dataset.id = bm.id;
+        a.href = bm.url;
+        a.target = "_self";
+        a.rel = "noopener";
+        a.draggable = true;
+
+        const avatar = document.createElement("div");
+        avatar.className = "bm-avatar";
+        avatar.style.background = colorFor(bm.name);
+        avatar.textContent = initial(bm.name);
+
+        const label = document.createElement("div");
+        label.className = "bm-label";
+        label.textContent = bm.name;
+
+        a.appendChild(avatar);
+        a.appendChild(label);
+
+        // Drag events
+        a.addEventListener("dragstart", onDragStart);
+        a.addEventListener("dragend", onDragEnd);
+        a.addEventListener("dragover", onDragOver);
+        a.addEventListener("dragleave", onDragLeave);
+        a.addEventListener("drop", onDrop);
+
+        // Touch support for mobile
+        a.addEventListener("touchstart", onTouchStart, { passive: false });
+        a.addEventListener("touchmove", onTouchMove, { passive: false });
+        a.addEventListener("touchend", onTouchEnd);
+
+        if (editMode) {
+          a.removeAttribute("href");
+          a.style.cursor = "default";
+          a.draggable = false;
+
+          const actions = document.createElement("div");
+          actions.className = "bm-actions";
+          actions.style.opacity = "1";
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.title = "Edit";
+          editBtn.textContent = "✎";
+          editBtn.addEventListener("click", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            openBmModal(bm);
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.title = "Hapus";
+          delBtn.textContent = "×";
+          delBtn.addEventListener("click", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            bookmarks = bookmarks.filter(b => b.id !== bm.id);
+            saveBookmarks();
+            renderBookmarks();
+          });
+
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+          a.appendChild(actions);
         }
+
+        container.appendChild(a);
+      });
+
+      if (editMode || list.length === 0) {
+        const add = document.createElement("button");
+        add.type = "button";
+        add.className = "add-bm";
+        add.innerHTML = `<div class="plus">+</div><span>Tambah</span>`;
+        add.addEventListener("click", () => openBmModal(null));
+        container.appendChild(add);
+      }
     }
-);
 
+    // ── Desktop Drag ──
+    function onDragStart(e) {
+      if (editMode) { e.preventDefault(); return; }
+      dragId = e.currentTarget.dataset.id;
+      dragEl = e.currentTarget;
+      e.currentTarget.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", dragId);
+    }
+    function onDragEnd(e) {
+      e.currentTarget.classList.remove("dragging");
+      document.querySelectorAll(".bookmark.drag-over").forEach(el => el.classList.remove("drag-over"));
+      dragId = null;
+      dragEl = null;
+    }
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      const target = e.currentTarget;
+      if (target.dataset.id !== dragId) {
+        target.classList.add("drag-over");
+      }
+    }
+    function onDragLeave(e) {
+      e.currentTarget.classList.remove("drag-over");
+    }
+    function onDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove("drag-over");
+      const targetId = e.currentTarget.dataset.id;
+      if (!dragId || dragId === targetId) return;
+      reorderBookmarks(dragId, targetId);
+    }
 
-settingsModal.addEventListener(
-    "click",
-    event => {
+    // ── Touch Drag (simple swap on long-press + move) ──
+    let touchTimer = null;
+    let touchDragging = false;
+    let touchStartY = 0;
 
-        if (
-            event.target ===
-            settingsModal
-        ) {
-            settingsModal.classList.remove(
-                "active"
-            );
+    function onTouchStart(e) {
+      if (editMode) return;
+      const el = e.currentTarget;
+      touchStartY = e.touches[0].clientY;
+      touchTimer = setTimeout(() => {
+        touchDragging = true;
+        dragId = el.dataset.id;
+        dragEl = el;
+        el.classList.add("dragging");
+        if (navigator.vibrate) navigator.vibrate(30);
+      }, 400);
+    }
+    function onTouchMove(e) {
+      if (!touchDragging) {
+        // cancel if scrolled
+        if (Math.abs(e.touches[0].clientY - touchStartY) > 10) {
+          clearTimeout(touchTimer);
         }
+        return;
+      }
+      e.preventDefault();
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const bm = target?.closest?.(".bookmark");
+      document.querySelectorAll(".bookmark.drag-over").forEach(el => el.classList.remove("drag-over"));
+      if (bm && bm.dataset.id !== dragId) {
+        bm.classList.add("drag-over");
+      }
     }
-);
+    function onTouchEnd(e) {
+      clearTimeout(touchTimer);
+      if (!touchDragging) return;
+      touchDragging = false;
+      if (dragEl) dragEl.classList.remove("dragging");
+      const over = document.querySelector(".bookmark.drag-over");
+      if (over && dragId) {
+        over.classList.remove("drag-over");
+        reorderBookmarks(dragId, over.dataset.id);
+      }
+      document.querySelectorAll(".bookmark.drag-over").forEach(el => el.classList.remove("drag-over"));
+      dragId = null;
+      dragEl = null;
+    }
 
+    function reorderBookmarks(fromId, toId) {
+      const fromIdx = bookmarks.findIndex(b => b.id === fromId);
+      const toIdx = bookmarks.findIndex(b => b.id === toId);
+      if (fromIdx === -1 || toIdx === -1) return;
+      const [item] = bookmarks.splice(fromIdx, 1);
+      bookmarks.splice(toIdx, 0, item);
+      saveBookmarks();
+      renderBookmarks();
+    }
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+    // ═══════════════════════════════════════════════════════════════
+    // Bookmark Modal
+    // ═══════════════════════════════════════════════════════════════
+    function openBmModal(bm) {
+      editingId = bm ? bm.id : null;
+      document.getElementById("bm-modal-title").textContent = bm ? "Edit Bookmark" : "Tambah Bookmark";
+      document.getElementById("bm-name").value = bm ? bm.name : "";
+      document.getElementById("bm-url").value = bm ? bm.url : "";
+      populateFolderSelect(bm ? bm.folder : (activeFolder !== "all" ? activeFolder : "tools"));
+      document.getElementById("bm-modal").classList.add("open");
+      setTimeout(() => document.getElementById("bm-name").focus(), 50);
+    }
+    function closeBmModal() {
+      document.getElementById("bm-modal").classList.remove("open");
+      editingId = null;
+    }
+    document.getElementById("bm-cancel").addEventListener("click", closeBmModal);
+    document.getElementById("bm-modal").addEventListener("click", e => {
+      if (e.target.id === "bm-modal") closeBmModal();
+    });
+    document.getElementById("bm-save").addEventListener("click", () => {
+      const name = document.getElementById("bm-name").value.trim();
+      let url = document.getElementById("bm-url").value.trim();
+      const folder = document.getElementById("bm-folder").value;
+      if (!name || !url) { alert("Nama dan URL wajib diisi."); return; }
+      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
 
-document.addEventListener(
-    "keydown",
-    event => {
+      if (editingId) {
+        const idx = bookmarks.findIndex(b => b.id === editingId);
+        if (idx !== -1) bookmarks[idx] = { ...bookmarks[idx], name, url, folder };
+      } else {
+        bookmarks.push({ id: uid(), name, url, folder });
+      }
+      saveBookmarks();
+      renderBookmarks();
+      closeBmModal();
+    });
 
-        if (event.key !== "Escape") {
-            return;
+    // ═══════════════════════════════════════════════════════════════
+    // Folder Management
+    // ═══════════════════════════════════════════════════════════════
+    document.getElementById("manage-folders-btn").addEventListener("click", () => {
+      document.getElementById("settings-modal").classList.remove("open");
+      renderFolderList();
+      document.getElementById("folder-modal").classList.add("open");
+    });
+
+    function renderFolderList() {
+      const list = document.getElementById("folder-list");
+      list.innerHTML = "";
+      folders.filter(f => f.id !== "all").forEach(f => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);";
+        row.innerHTML = `<span>${escapeHtml(f.name)}</span>`;
+        const del = document.createElement("button");
+        del.type = "button";
+        del.textContent = "Hapus";
+        del.style.cssText = "background:none;border:none;color:#f87171;font-size:0.8rem;cursor:pointer;";
+        del.addEventListener("click", () => {
+          if (!confirm(`Hapus folder "${f.name}"? Bookmark di dalamnya pindah ke Tools.`)) return;
+          bookmarks.forEach(b => { if (b.folder === f.id) b.folder = "tools"; });
+          folders = folders.filter(x => x.id !== f.id);
+          if (activeFolder === f.id) activeFolder = "all";
+          saveFolders();
+          saveBookmarks();
+          renderFolderList();
+          renderFolderTabs();
+          renderBookmarks();
+        });
+        row.appendChild(del);
+        list.appendChild(row);
+      });
+    }
+
+    document.getElementById("folder-cancel").addEventListener("click", () => {
+      document.getElementById("folder-modal").classList.remove("open");
+    });
+    document.getElementById("folder-modal").addEventListener("click", e => {
+      if (e.target.id === "folder-modal") document.getElementById("folder-modal").classList.remove("open");
+    });
+    document.getElementById("folder-save").addEventListener("click", () => {
+      const name = document.getElementById("folder-name").value.trim();
+      if (!name) return;
+      folders.push({ id: uid(), name });
+      saveFolders();
+      document.getElementById("folder-name").value = "";
+      renderFolderList();
+      renderFolderTabs();
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // Quick Notes
+    // ═══════════════════════════════════════════════════════════════
+    function loadNotes() {
+      document.getElementById("quick-notes").value = localStorage.getItem(KEYS.notes) || "";
+    }
+    let notesTimer = null;
+    document.getElementById("quick-notes").addEventListener("input", (e) => {
+      clearTimeout(notesTimer);
+      notesTimer = setTimeout(() => {
+        localStorage.setItem(KEYS.notes, e.target.value);
+      }, 400);
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // Settings
+    // ═══════════════════════════════════════════════════════════════
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(KEYS.settings);
+        if (raw) settings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+      } catch {}
+      currentEngine = localStorage.getItem(KEYS.engine) || "google";
+    }
+
+    function saveSettings() {
+      localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+    }
+
+    function openSettings() {
+      // Populate
+      document.getElementById("user-name").value = localStorage.getItem(KEYS.name) || "";
+      document.getElementById("opt-overlay").value = settings.overlay;
+      document.getElementById("opt-overlay-val").textContent = settings.overlay + "%";
+      document.getElementById("opt-blur").value = settings.blur;
+      document.getElementById("opt-blur-val").textContent = settings.blur + "px";
+      document.getElementById("opt-clock-size").value = settings.clockSize;
+      document.getElementById("opt-clock-size-val").textContent = settings.clockSize + "%";
+      document.getElementById("opt-24h").classList.toggle("on", settings.hour24);
+      document.getElementById("opt-date").classList.toggle("on", settings.showDate);
+      document.getElementById("opt-greeting").classList.toggle("on", settings.showGreeting);
+      document.getElementById("opt-slideshow").classList.toggle("on", settings.slideshow);
+
+      // Accent
+      const accentBox = document.getElementById("accent-colors");
+      accentBox.innerHTML = "";
+      ACCENT_COLORS.forEach(c => {
+        const sw = document.createElement("button");
+        sw.type = "button";
+        sw.className = "color-swatch" + (c === settings.accent ? " active" : "");
+        sw.style.background = c;
+        sw.addEventListener("click", () => {
+          settings.accent = c;
+          document.documentElement.style.setProperty("--accent", c);
+          accentBox.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("active"));
+          sw.classList.add("active");
+        });
+        accentBox.appendChild(sw);
+      });
+
+      // Engine select
+      const engSel = document.getElementById("opt-engine");
+      engSel.innerHTML = "";
+      ENGINES.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = e.name;
+        if (e.id === currentEngine) opt.selected = true;
+        engSel.appendChild(opt);
+      });
+
+      renderBgThumbs();
+      applyBg(backgrounds[bgIndex] || null);
+      document.getElementById("settings-modal").classList.add("open");
+    }
+
+    // Live range updates
+    document.getElementById("opt-overlay").addEventListener("input", (e) => {
+      settings.overlay = +e.target.value;
+      document.getElementById("opt-overlay-val").textContent = settings.overlay + "%";
+      document.documentElement.style.setProperty("--overlay", settings.overlay / 100);
+    });
+    document.getElementById("opt-blur").addEventListener("input", (e) => {
+      settings.blur = +e.target.value;
+      document.getElementById("opt-blur-val").textContent = settings.blur + "px";
+      document.documentElement.style.setProperty("--blur", settings.blur + "px");
+    });
+    document.getElementById("opt-clock-size").addEventListener("input", (e) => {
+      settings.clockSize = +e.target.value;
+      document.getElementById("opt-clock-size-val").textContent = settings.clockSize + "%";
+      document.documentElement.style.setProperty("--clock-size", settings.clockSize / 100);
+    });
+
+    // Toggles
+    ["opt-24h", "opt-date", "opt-greeting", "opt-slideshow"].forEach(id => {
+      document.getElementById(id).addEventListener("click", function () {
+        this.classList.toggle("on");
+      });
+    });
+
+    document.getElementById("settings-btn").addEventListener("click", openSettings);
+    document.getElementById("settings-close").addEventListener("click", () => {
+      document.getElementById("settings-modal").classList.remove("open");
+      // revert live preview to saved
+      loadSettings();
+      applyAppearance();
+      updateClock();
+    });
+    document.getElementById("settings-modal").addEventListener("click", e => {
+      if (e.target.id === "settings-modal") {
+        document.getElementById("settings-modal").classList.remove("open");
+        loadSettings();
+        applyAppearance();
+        updateClock();
+      }
+    });
+
+    document.getElementById("settings-save").addEventListener("click", () => {
+      settings.hour24 = document.getElementById("opt-24h").classList.contains("on");
+      settings.showDate = document.getElementById("opt-date").classList.contains("on");
+      settings.showGreeting = document.getElementById("opt-greeting").classList.contains("on");
+      settings.slideshow = document.getElementById("opt-slideshow").classList.contains("on");
+      settings.overlay = +document.getElementById("opt-overlay").value;
+      settings.blur = +document.getElementById("opt-blur").value;
+      settings.clockSize = +document.getElementById("opt-clock-size").value;
+
+      const name = document.getElementById("user-name").value.trim();
+      if (name) localStorage.setItem(KEYS.name, name);
+      else localStorage.removeItem(KEYS.name);
+
+      const engId = document.getElementById("opt-engine").value;
+      setEngine(engId);
+
+      saveSettings();
+      applyAppearance();
+      startSlideshow();
+      updateClock();
+      document.getElementById("settings-modal").classList.remove("open");
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // Export / Import / Reset
+    // ═══════════════════════════════════════════════════════════════
+    document.getElementById("export-btn").addEventListener("click", () => {
+      const data = {
+        version: 1,
+        bookmarks,
+        folders,
+        notes: localStorage.getItem(KEYS.notes) || "",
+        settings,
+        name: localStorage.getItem(KEYS.name) || "",
+        engine: currentEngine,
+        // backgrounds excluded (too large for practical JSON share)
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `homepage-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById("import-btn").addEventListener("click", () => {
+      document.getElementById("import-file").click();
+    });
+    document.getElementById("import-file").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (data.bookmarks) { bookmarks = data.bookmarks; saveBookmarks(); }
+          if (data.folders) { folders = data.folders; saveFolders(); }
+          if (data.notes !== undefined) {
+            localStorage.setItem(KEYS.notes, data.notes);
+            document.getElementById("quick-notes").value = data.notes;
+          }
+          if (data.settings) { settings = { ...DEFAULT_SETTINGS, ...data.settings }; saveSettings(); }
+          if (data.name) localStorage.setItem(KEYS.name, data.name);
+          if (data.engine) setEngine(data.engine);
+          applyAppearance();
+          renderFolderTabs();
+          renderBookmarks();
+          updateClock();
+          startSlideshow();
+          alert("Import berhasil!");
+        } catch {
+          alert("File tidak valid.");
         }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    });
 
-        closeBookmarkModal();
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      if (!confirm("Hapus SEMUA data (bookmark, folder, notes, settings, background)?")) return;
+      Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+      location.reload();
+    });
 
-        settingsModal.classList.remove(
-            "active"
-        );
-    }
-);
+    // ═══════════════════════════════════════════════════════════════
+    // Edit mode
+    // ═══════════════════════════════════════════════════════════════
+    document.getElementById("edit-mode-btn").addEventListener("click", () => {
+      editMode = !editMode;
+      document.getElementById("edit-mode-btn").textContent = editMode ? "Selesai" : "Edit";
+      renderBookmarks();
+    });
 
+    // ═══════════════════════════════════════════════════════════════
+    // Keyboard shortcuts
+    // ═══════════════════════════════════════════════════════════════
+    document.addEventListener("keydown", (e) => {
+      if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+        if (e.key === "Escape") document.activeElement.blur();
+        return;
+      }
+      if (document.querySelector(".modal-overlay.open")) {
+        if (e.key === "Escape") {
+          document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
+        }
+        return;
+      }
+      if (e.key === "/") {
+        e.preventDefault();
+        document.getElementById("search-input").focus();
+      }
+      if (e.key === "s" || e.key === "S") {
+        openSettings();
+      }
+      if (e.key === "e" || e.key === "E") {
+        editMode = !editMode;
+        document.getElementById("edit-mode-btn").textContent = editMode ? "Selesai" : "Edit";
+        renderBookmarks();
+      }
+      // 1-9 open bookmark
+      if (e.key >= "1" && e.key <= "9") {
+        const list = getVisibleBookmarks();
+        const idx = parseInt(e.key, 10) - 1;
+        if (list[idx]) window.location.href = list[idx].url;
+      }
+    });
 
-/* =========================================================
-   INIT
-========================================================= */
-
-renderBookmarks();
-loadBackground();
-
-</script>
-
+    // ═══════════════════════════════════════════════════════════════
+    // Init
+    // ═══════════════════════════════════════════════════════════════
+    loadSettings();
+    loadBgs();
+    loadFolders();
+    loadBookmarks();
+    loadNotes();
+    setEngine(currentEngine);
+    renderFolderTabs();
+    applyAppearance();
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
 </body>
 </html>
