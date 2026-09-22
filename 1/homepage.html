@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>Home</title>
+
+<style>
+:root {
+    --text: #fff;
+    --muted: rgba(255,255,255,.65);
+    --glass: rgba(20,20,20,.48);
+    --glass-hover: rgba(35,35,35,.62);
+    --border: rgba(255,255,255,.12);
+    --accent: #8b7cff;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    color: var(--text);
+}
+
+body {
+    background: #111;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    background:
+        radial-gradient(
+            circle at center,
+            #292929 0%,
+            #111 75%
+        );
+    background-size: cover;
+    background-position: center;
+    transition: background-image .35s ease;
+}
+
+.background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,.28),
+            rgba(0,0,0,.48)
+        );
+    backdrop-filter: blur(0px);
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding:
+        max(40px, env(safe-area-inset-top))
+        20px
+        max(30px, env(safe-area-inset-bottom));
+}
+
+.container {
+    width: min(760px, 100%);
+    margin: 0 auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   TOP
+========================================================= */
+
+.top {
+    padding-top: 8vh;
+    text-align: center;
+}
+
+.greeting {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    letter-spacing: .2px;
+}
+
+.clock {
+    font-size: clamp(52px, 14vw, 92px);
+    font-weight: 600;
+    line-height: .95;
+    letter-spacing: -4px;
+    text-shadow: 0 8px 30px rgba(0,0,0,.25);
+}
+
+.date {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-wrap {
+    margin-top: 38px;
+}
+
+.search {
+    width: 100%;
+    height: 56px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    outline: none;
+    background: rgba(20,20,20,.55);
+    backdrop-filter: blur(18px);
+    color: white;
+    padding: 0 20px;
+    font-size: 16px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.16);
+    transition:
+        background .2s,
+        border-color .2s,
+        transform .2s;
+}
+
+.search::placeholder {
+    color: rgba(255,255,255,.45);
+}
+
+.search:focus {
+    background: rgba(20,20,20,.7);
+    border-color: rgba(255,255,255,.25);
+}
+
+/* =========================================================
+   BOOKMARKS
+========================================================= */
+
+.bookmarks {
+    margin-top: 32px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.bookmark {
+    position: relative;
+    min-width: 0;
+}
+
+.bookmark-link {
+    width: 100%;
+    min-height: 112px;
+    padding: 17px 10px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    color: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
+
+.bookmark-link:hover {
+    background: var(--glass-hover);
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.2);
+}
+
+.bookmark-link:active {
+    transform: scale(.97);
+}
+
+.icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
+
+.bookmark-name {
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    color: rgba(255,255,255,.88);
+}
+
+.bookmark-menu {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 9px;
+    background: rgba(0,0,0,.3);
+    color: rgba(255,255,255,.7);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.bookmark:hover .bookmark-menu,
+.bookmark-menu:focus {
+    opacity: 1;
+}
+
+.bookmark-menu:hover {
+    background: rgba(0,0,0,.55);
+    color: white;
+}
+
+/* =========================================================
+   ADD BUTTON
+========================================================= */
+
+.add {
+    margin-top: 12px;
+    width: 100%;
+    min-height: 52px;
+    border-radius: 17px;
+    border: 1px dashed rgba(255,255,255,.2);
+    background: rgba(20,20,20,.3);
+    color: rgba(255,255,255,.65);
+    cursor: pointer;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.add:hover {
+    background: rgba(20,20,20,.5);
+    color: white;
+    border-color: rgba(255,255,255,.35);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    margin-top: auto;
+    padding-top: 35px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.settings-btn {
+    border: 1px solid var(--border);
+    background: rgba(20,20,20,.35);
+    backdrop-filter: blur(15px);
+    color: rgba(255,255,255,.6);
+    border-radius: 12px;
+    padding: 9px 15px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.settings-btn:hover {
+    color: white;
+    background: rgba(20,20,20,.55);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.58);
+    backdrop-filter: blur(8px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-box {
+    width: min(430px, 100%);
+    background: rgba(25,25,25,.92);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4);
+}
+
+.modal-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.field {
+    margin-bottom: 14px;
+}
+
+.field label {
+    display: block;
+    color: rgba(255,255,255,.55);
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.field input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 13px;
+    background: rgba(0,0,0,.25);
+    color: white;
+    padding: 0 14px;
+    outline: none;
+    font-size: 14px;
+}
+
+.field input:focus {
+    border-color: rgba(255,255,255,.3);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    height: 45px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.08);
+    color: white;
+    cursor: pointer;
+}
+
+.modal-actions .primary {
+    background: var(--accent);
+    border-color: transparent;
+}
+
+.modal-actions .danger {
+    background: rgba(220,60,60,.18);
+    color: #ff9b9b;
+}
+
+.close {
+    background: transparent !important;
+    color: rgba(255,255,255,.6) !important;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.background-preview {
+    width: 100%;
+    height: 130px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.12);
+    background-size: cover;
+    background-position: center;
+    background-color: #111;
+    margin-bottom: 12px;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-btn {
+    width: 100%;
+    height: 45px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.13);
+    background: rgba(255,255,255,.07);
+    color: white;
+    cursor: pointer;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 620px) {
+    .app {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .top {
+        padding-top: 7vh;
+    }
+
+    .clock {
+        letter-spacing: -3px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+    }
+
+    .bookmark-link {
+        min-height: 103px;
+        border-radius: 17px;
+    }
+
+    .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .bookmark-menu {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 390px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .bookmark-link {
+        min-height: 95px;
+        padding: 12px 7px;
+    }
+
+    .icon {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    .bookmark-name {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background" id="background"></div>
+
+<main class="app">
+    <div class="container">
+
+        <section class="top">
+            <div class="greeting" id="greeting">
+                Selamat datang
+            </div>
+
+            <div class="clock" id="clock">
+                00:00
+            </div>
+
+            <div class="date" id="date">
+                —
+            </div>
+        </section>
+
+        <section class="search-wrap">
+            <form id="searchForm">
+                <input
+                    id="search"
+                    class="search"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="Cari di web..."
+                    enterkeyhint="search"
+                >
+            </form>
+        </section>
+
+        <section class="bookmarks">
+            <div class="grid" id="grid"></div>
+
+            <button class="add" id="addBookmark">
+                + Tambah bookmark
+            </button>
+        </section>
+
+        <footer class="footer">
+            <button class="settings-btn" id="settingsButton">
+                Pengaturan
+            </button>
+        </footer>
+
+    </div>
+</main>
+
+
+<!-- =======================================================
+     BOOKMARK MODAL
+======================================================== -->
+
+<div class="modal" id="bookmarkModal">
+    <div class="modal-box">
+
+        <div class="modal-title" id="bookmarkModalTitle">
+            Tambah bookmark
+        </div>
+
+        <div class="field">
+            <label>Nama</label>
+            <input id="bookmarkName" type="text" placeholder="Contoh: GitHub">
+        </div>
+
+        <div class="field">
+            <label>URL</label>
+            <input id="bookmarkUrl" type="url" placeholder="https://github.com">
+        </div>
+
+        <div class="modal-actions">
+            <button class="close" id="bookmarkCancel">
+                Batal
+            </button>
+
+            <button class="danger" id="bookmarkDelete" style="display:none">
+                Hapus
+            </button>
+
+            <button class="primary" id="bookmarkSave">
+                Simpan
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- =======================================================
+     SETTINGS MODAL
+======================================================== -->
+
+<div class="modal" id="settingsModal">
+    <div class="modal-box">
+
+        <div class="modal-title">
+            Pengaturan
+        </div>
+
+        <div class="background-preview" id="backgroundPreview"></div>
+
+        <input
+            type="file"
+            id="backgroundFile"
+            class="file-input"
+            accept="image/*"
+        >
+
+        <button class="upload-btn" id="uploadBackground">
+            Pilih background dari galeri
+        </button>
+
+        <div class="modal-actions">
+
+            <button class="close" id="settingsCancel">
+                Tutup
+            </button>
+
+            <button id="resetBackground">
+                Reset background
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+/* =========================================================
+   DEFAULT BOOKMARKS
+========================================================= */
+
+const DEFAULT_BOOKMARKS = [
+    {
+        name: "GitHub",
+        url: "https://github.com",
+        color: "#24292f"
+    },
+    {
+        name: "YouTube",
+        url: "https://youtube.com",
+        color: "#ff0033"
+    },
+    {
+        name: "Instagram",
+        url: "https://instagram.com",
+        color: "#b44cff"
+    },
+    {
+        name: "Google",
+        url: "https://google.com",
+        color: "#4285f4"
+    },
+    {
+        name: "Vercel",
+        url: "https://vercel.com",
+        color: "#202020"
+    },
+    {
+        name: "ChatGPT",
+        url: "https://chatgpt.com",
+        color: "#10a37f"
+    },
+    {
+        name: "Portfolio",
+        url: "https://adityajatayu.my.id",
+        color: "#6d5dfc"
+    },
+    {
+        name: "Gallery",
+        url: "https://lastsymph.github.io/Generator-json-gallery-",
+        color: "#e06cff"
+    }
+];
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const BOOKMARK_KEY = "speedDialBookmarks";
+const BACKGROUND_KEY = "speedDialBackground";
+
+
+function loadBookmarks() {
+    try {
+        const saved = localStorage.getItem(BOOKMARK_KEY);
+
+        if (!saved) {
+            return [...DEFAULT_BOOKMARKS];
+        }
+
+        const parsed = JSON.parse(saved);
+
+        if (!Array.isArray(parsed)) {
+            return [...DEFAULT_BOOKMARKS];
+        }
+
+        return parsed;
+
+    } catch {
+        return [...DEFAULT_BOOKMARKS];
+    }
+}
+
+
+function saveBookmarks() {
+    localStorage.setItem(
+        BOOKMARK_KEY,
+        JSON.stringify(bookmarks)
+    );
+}
+
+
+let bookmarks = loadBookmarks();
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const grid = document.getElementById("grid");
+
+const bookmarkModal =
+    document.getElementById("bookmarkModal");
+
+const bookmarkModalTitle =
+    document.getElementById("bookmarkModalTitle");
+
+const bookmarkName =
+    document.getElementById("bookmarkName");
+
+const bookmarkUrl =
+    document.getElementById("bookmarkUrl");
+
+const bookmarkDelete =
+    document.getElementById("bookmarkDelete");
+
+const bookmarkSave =
+    document.getElementById("bookmarkSave");
+
+const bookmarkCancel =
+    document.getElementById("bookmarkCancel");
+
+const settingsModal =
+    document.getElementById("settingsModal");
+
+const settingsButton =
+    document.getElementById("settingsButton");
+
+const settingsCancel =
+    document.getElementById("settingsCancel");
+
+const background =
+    document.getElementById("background");
+
+const backgroundPreview =
+    document.getElementById("backgroundPreview");
+
+const backgroundFile =
+    document.getElementById("backgroundFile");
+
+const uploadBackground =
+    document.getElementById("uploadBackground");
+
+const resetBackground =
+    document.getElementById("resetBackground");
+
+const search =
+    document.getElementById("search");
+
+const searchForm =
+    document.getElementById("searchForm");
+
+
+let editingIndex = -1;
+
+
+/* =========================================================
+   BOOKMARK RENDER
+========================================================= */
+
+function getInitial(name) {
+    const clean = name.trim();
+
+    if (!clean) {
+        return "?";
+    }
+
+    const words = clean.split(/\s+/);
+
+    if (words.length >= 2) {
+        return (
+            words[0][0] +
+            words[1][0]
+        ).toUpperCase();
+    }
+
+    return clean
+        .substring(0, 2)
+        .toUpperCase();
+}
+
+
+function generateColor(name) {
+    let hash = 0;
+
+    for (let i = 0; i < name.length; i++) {
+        hash =
+            name.charCodeAt(i) +
+            ((hash << 5) - hash);
+    }
+
+    const hue =
+        Math.abs(hash) % 360;
+
+    return `hsl(${hue} 55% 48%)`;
+}
+
+
+function renderBookmarks() {
+
+    grid.innerHTML = "";
+
+    bookmarks.forEach((bookmark, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "bookmark";
+
+        const link =
+            document.createElement("a");
+
+        link.className = "bookmark-link";
+        link.href = bookmark.url;
+
+        const icon =
+            document.createElement("div");
+
+        icon.className = "icon";
+
+        icon.textContent =
+            getInitial(bookmark.name);
+
+        icon.style.background =
+            bookmark.color ||
+            generateColor(bookmark.name);
+
+        const name =
+            document.createElement("div");
+
+        name.className = "bookmark-name";
+        name.textContent =
+            bookmark.name;
+
+        link.appendChild(icon);
+        link.appendChild(name);
+
+
+        const menu =
+            document.createElement("button");
+
+        menu.className = "bookmark-menu";
+        menu.type = "button";
+        menu.textContent = "⋯";
+
+        menu.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openBookmarkEditor(index);
+            }
+        );
+
+
+        item.appendChild(link);
+        item.appendChild(menu);
+
+        grid.appendChild(item);
+    });
+}
+
+
+/* =========================================================
+   BOOKMARK MODAL
+========================================================= */
+
+function openBookmarkEditor(index = -1) {
+
+    editingIndex = index;
+
+    if (index === -1) {
+
+        bookmarkModalTitle.textContent =
+            "Tambah bookmark";
+
+        bookmarkName.value = "";
+        bookmarkUrl.value = "";
+
+        bookmarkDelete.style.display =
+            "none";
+
+    } else {
+
+        const bookmark =
+            bookmarks[index];
+
+        bookmarkModalTitle.textContent =
+            "Edit bookmark";
+
+        bookmarkName.value =
+            bookmark.name;
+
+        bookmarkUrl.value =
+            bookmark.url;
+
+        bookmarkDelete.style.display =
+            "block";
+    }
+
+    bookmarkModal.classList.add("active");
+
+    setTimeout(() => {
+        bookmarkName.focus();
+    }, 100);
+}
+
+
+function closeBookmarkModal() {
+
+    bookmarkModal.classList.remove(
+        "active"
+    );
+
+    editingIndex = -1;
+}
+
+
+document
+    .getElementById("addBookmark")
+    .addEventListener(
+        "click",
+        () => openBookmarkEditor()
+    );
+
+
+bookmarkCancel.addEventListener(
+    "click",
+    closeBookmarkModal
+);
+
+
+bookmarkSave.addEventListener(
+    "click",
+    () => {
+
+        const name =
+            bookmarkName.value.trim();
+
+        let url =
+            bookmarkUrl.value.trim();
+
+        if (!name || !url) {
+            return;
+        }
+
+        if (
+            !url.startsWith("http://") &&
+            !url.startsWith("https://")
+        ) {
+            url = "https://" + url;
+        }
+
+
+        if (editingIndex === -1) {
+
+            bookmarks.push({
+                name,
+                url,
+                color: generateColor(name)
+            });
+
+        } else {
+
+            bookmarks[editingIndex].name =
+                name;
+
+            bookmarks[editingIndex].url =
+                url;
+        }
+
+
+        saveBookmarks();
+        renderBookmarks();
+        closeBookmarkModal();
+    }
+);
+
+
+bookmarkDelete.addEventListener(
+    "click",
+    () => {
+
+        if (editingIndex === -1) {
+            return;
+        }
+
+        bookmarks.splice(
+            editingIndex,
+            1
+        );
+
+        saveBookmarks();
+        renderBookmarks();
+        closeBookmarkModal();
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchForm.addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+        const query =
+            search.value.trim();
+
+        if (!query) {
+            return;
+        }
+
+        const url =
+            "https://www.google.com/search?q=" +
+            encodeURIComponent(query);
+
+        window.location.href = url;
+    }
+);
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+const clock =
+    document.getElementById("clock");
+
+const date =
+    document.getElementById("date");
+
+const greeting =
+    document.getElementById("greeting");
+
+
+function updateClock() {
+
+    const now = new Date();
+
+    const hours =
+        now.getHours();
+
+    const minutes =
+        now.getMinutes()
+            .toString()
+            .padStart(2, "0");
+
+    clock.textContent =
+        `${hours.toString().padStart(2, "0")}:${minutes}`;
+
+
+    const formattedDate =
+        new Intl.DateTimeFormat(
+            "id-ID",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        ).format(now);
+
+    date.textContent =
+        formattedDate;
+
+
+    let text;
+
+    if (hours >= 5 && hours < 11) {
+        text = "Selamat pagi";
+    } else if (hours >= 11 && hours < 15) {
+        text = "Selamat siang";
+    } else if (hours >= 15 && hours < 18) {
+        text = "Selamat sore";
+    } else {
+        text = "Selamat malam";
+    }
+
+    greeting.textContent = text;
+}
+
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+function applyBackground(dataUrl) {
+
+    if (!dataUrl) {
+
+        background.style.backgroundImage =
+            "";
+
+        backgroundPreview.style.backgroundImage =
+            "";
+
+        return;
+    }
+
+    background.style.backgroundImage =
+        `url("${dataUrl}")`;
+
+    backgroundPreview.style.backgroundImage =
+        `url("${dataUrl}")`;
+}
+
+
+function loadBackground() {
+
+    const saved =
+        localStorage.getItem(
+            BACKGROUND_KEY
+        );
+
+    if (saved) {
+        applyBackground(saved);
+    }
+}
+
+
+uploadBackground.addEventListener(
+    "click",
+    () => backgroundFile.click()
+);
+
+
+backgroundFile.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = () => {
+
+            const dataUrl =
+                reader.result;
+
+            try {
+
+                localStorage.setItem(
+                    BACKGROUND_KEY,
+                    dataUrl
+                );
+
+                applyBackground(
+                    dataUrl
+                );
+
+            } catch {
+
+                alert(
+                    "Gambar terlalu besar untuk disimpan di browser. Coba gunakan foto dengan ukuran lebih kecil."
+                );
+            }
+        };
+
+
+        reader.readAsDataURL(file);
+    }
+);
+
+
+resetBackground.addEventListener(
+    "click",
+    () => {
+
+        localStorage.removeItem(
+            BACKGROUND_KEY
+        );
+
+        backgroundFile.value = "";
+
+        applyBackground(null);
+    }
+);
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+settingsButton.addEventListener(
+    "click",
+    () => {
+
+        settingsModal.classList.add(
+            "active"
+        );
+    }
+);
+
+
+settingsCancel.addEventListener(
+    "click",
+    () => {
+
+        settingsModal.classList.remove(
+            "active"
+        );
+    }
+);
+
+
+/* =========================================================
+   MODAL OUTSIDE CLICK
+========================================================= */
+
+bookmarkModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            bookmarkModal
+        ) {
+            closeBookmarkModal();
+        }
+    }
+);
+
+
+settingsModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            settingsModal
+        ) {
+            settingsModal.classList.remove(
+                "active"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        closeBookmarkModal();
+
+        settingsModal.classList.remove(
+            "active"
+        );
+    }
+);
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+renderBookmarks();
+loadBackground();
+
+</script>
+
+</body>
+</html>
